@@ -19,19 +19,9 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         $this->call([
-            UserLevelSeeder::class,
+    
             UserSeeder::class,
-            CareerSeeder::class,
-            DepartementsSeeder::class,
-           
-            RateOfWorkSeeder::class,
-            TypeOfWorkSeeder::class,
-            AcademicTitleSeeder::class,
-            AcademicDegreeSeeder::class,
-            BodilySeeder::class,
-            UnityItemsSeeder::class,
-            FirstSeeder::class,
-            SecondSeeder::class,
+          
         ]);
     }
 }
