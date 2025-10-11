@@ -2,27 +2,25 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Criteria;
-use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class EmployeeController extends Controller
+class AdminController extends Controller
 {
    
-    public function index(Request $request)
+    public function index()
     {
-     
+        // dd(123);
+        return view('admin.index');
     }
 
-
+   
     public function create()
     {
         //
     }
 
-   
-    public function store(Request $request)
+      public function store(Request $request)
     {
         //
     }
@@ -30,22 +28,22 @@ class EmployeeController extends Controller
    
     public function show($id)
     {
-       
+        //
     }
 
-    
+   
     public function edit($id)
     {
         //
     }
 
-  
+   
     public function update(Request $request, $id)
     {
         //
     }
 
-    
+  
     public function destroy($id)
     {
         //

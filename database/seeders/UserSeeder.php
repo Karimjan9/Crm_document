@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class UserSeeder extends Seeder
@@ -29,28 +30,29 @@ class UserSeeder extends Seeder
             'name'=>'Admin',
             'login'=>'admin',
             'phone'=>'1234567890',
-            'password'=>bcrypt('admin123')
+            'password'=>Hash::make('admin123')
         ]);
+        
         $user->assignRole('admin');
         $user=User::create([
             'name'=>'Employee',
             'login'=>'employee',
             'phone'=>'1234567891',
-            'password'=>bcrypt('employee123')
+            'password'=>Hash::make('employee123')
         ]);
         $user->assignRole('epmployee');
         $user=User::create([
             'name'=>'User',
             'login'=>'user',
             'phone'=>'1234567892',
-            'password'=>bcrypt('user123')
+            'password'=>Hash::make('user123')
         ]);
         $user->assignRole('user');
         $user=User::create([
             'name'=>'Courier',
             'login'=>'courier',
             'phone'=>'1234567893',
-            'password'=>bcrypt('courier123')
+            'password'=>Hash::make('courier123')
         ]);
         $user->assignRole('courier');
     }

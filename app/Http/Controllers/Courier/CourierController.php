@@ -1,21 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Courier;
 
-use App\Models\Criteria;
-use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class EmployeeController extends Controller
+class CourierController extends Controller
 {
    
-    public function index(Request $request)
+    public function index()
     {
-     
+        dd('courier');
     }
 
-
+   
     public function create()
     {
         //
@@ -30,10 +28,10 @@ class EmployeeController extends Controller
    
     public function show($id)
     {
-       
+        //
     }
 
-    
+   
     public function edit($id)
     {
         //
@@ -45,7 +43,7 @@ class EmployeeController extends Controller
         //
     }
 
-    
+  
     public function destroy($id)
     {
         //

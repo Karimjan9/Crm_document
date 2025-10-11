@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
 
         try {
             //code...
-            view()->share('criterias', Criteria::all());
+          
         } catch (\Throwable $th) {
             //throw $th;
         }
