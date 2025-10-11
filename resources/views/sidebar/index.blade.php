@@ -22,21 +22,21 @@
                     </a>
                     <ul>
                         <li>
-                            <a href="#" onclick="redrect('{{ route('kadr_role.actions.index') }}')">
+                            <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <div style="margin-right: 5px;">Foydalanuvchilar</div>
                                 <span class="badge bg-warning text-dark"></span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" onclick="redrect('{{ route('kadr_role.department_update.index') }}')">
+                            <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <div style="margin-right: 5px;">Bo'limlar</div>
                                 <span class="badge bg-warning text-dark"></span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" onclick="redrect('{{ route('kadr_role.career_update.index') }}')">
+                            <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <div style="margin-right: 5px;">Bo'im va Jihozlar  </div>
                                 <span class="badge bg-warning text-dark"></span>
@@ -55,14 +55,14 @@
                     <ul>
             
                         <li>
-                            <a href="#" onclick="redrect('{{ route('storekeeper_role.prixod.index') }}')">
+                            <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <div style="margin-right: 5px;">Jo'natma</div>
                                 <span class="badge bg-warning text-dark"></span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" onclick="redrect('{{ route('storekeeper_role.cargo.index') }}')">
+                            <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <div style="margin-right: 5px;">Cargo</div>
                                 <span class="badge bg-warning text-dark"></span>
@@ -70,7 +70,7 @@
                 
                         </li>
                         <li>
-                            <a href="#" onclick="redrect('{{ route('storekeeper_role.provider.index') }}')">
+                            <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <div style="margin-right: 5px;">Jo'natuvchi</div>
                                 <span class="badge bg-warning text-dark"></span>
@@ -89,21 +89,21 @@
                     </a>
                     <ul>
                         <li>
-                            <a href="#" onclick="redrect('{{ route('storekeeper_role.items.index') }}')">
+                            <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <div style="margin-right: 5px;">Jihoz modeli</div>
                                 <span class="badge bg-warning text-dark"></span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" onclick="redrect('{{ route('storekeeper_role.second_type_item.index') }}')">
+                            <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <div style="margin-right: 5px;">Jihoz nomi </div> 
                                 <span class="badge bg-warning text-dark"></span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" onclick="redrect('{{ route('storekeeper_role.type_item_take.index') }}')">
+                            <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <div style="margin-right: 5px;">Jihoz turi </div> 
                                 <span class="badge bg-warning text-dark"></span>
@@ -111,7 +111,7 @@
                         </li>
                        
                         <li>
-                            <a href="#" onclick="redrect('{{ route('storekeeper_role.item_unity.index') }}')">
+                            <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <div style="margin-right: 5px;">Jihoz birligi </div> 
                                 <span class="badge bg-warning text-dark"></span>
@@ -128,7 +128,7 @@
                     </a>
                     <ul>
                         <li>
-                            <a href="#" onclick="redrect('{{ route('storekeeper_role.command_input') }}')">
+                            <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <div style="margin-right: 5px;">Jihoz modeli</div>
                                 <span class="badge bg-warning text-dark"></span>
@@ -146,7 +146,7 @@
                     </a>
                     <ul>
                         <li>
-                            <a href="#" onclick="redrect('{{ route('storekeeper_role.rank.index') }}')">
+                            <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                                 <i class="bx bx-right-arrow-alt"></i>
                                 <div style="margin-right: 5px;">Mansab sozlash</div>
                                 <span class="badge bg-warning text-dark"></span>
@@ -167,7 +167,7 @@
                 </a>
                 <ul>
                     <li>
-                        <a href="#" onclick="redrect('{{ route('user_role.application.index') }}')">
+                        <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                             <i class="bx bx-right-arrow-alt"></i>
                             <div style="margin-right: 5px;">Mening talabnomalarim</div>
                             <span class="badge bg-warning text-dark"></span>
@@ -185,7 +185,7 @@
                 </a>
                 <ul>
                     <li>
-                        <a href="#" onclick="redrect('{{ route('user_role.users_invertar.index') }}')">
+                        <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                             <i class="bx bx-right-arrow-alt"></i>
                             <div style="margin-right: 5px;">Qabul qilish qismi</div>
                             <span class="badge bg-warning text-dark"></span>
@@ -204,14 +204,14 @@
                 <ul>
                 
                     <li>
-                        <a href="#" onclick="redrect('{{ route('user_role.show_invertar_deps') }}')">
+                        <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                             <i class="bx bx-right-arrow-alt"></i>
                             <div style="margin-right: 5px;">Mening jihozlarim</div>
                             <span class="badge bg-warning text-dark"></span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" onclick="redrect('{{ route('user_role.show_repair_items') }}')">
+                        <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                             <i class="bx bx-right-arrow-alt"></i>
                             <div style="margin-right: 5px;">Tamirdagi jihozlar</div>
                             <span class="badge bg-warning text-dark"></span>
@@ -230,7 +230,7 @@
                 <ul>
                 
                     <li>
-                        <a href="#" onclick="redrect('{{ route('tech_checker.tech_checker.index') }}')">
+                        <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                             <i class="bx bx-right-arrow-alt"></i>
                             <div style="margin-right: 5px;">Jihozlarni tekshirish</div>
                             <span class="badge bg-warning text-dark"></span>
@@ -255,7 +255,7 @@
             </a>
             <ul>
                 <li>
-                    <a href="#" onclick="redrect('{{ route('user_role.application.index') }}')">
+                    <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                         <i class="bx bx-right-arrow-alt"></i>
                         <div style="margin-right: 5px;">Mening talabnomalarim</div>
                         <span class="badge bg-warning text-dark"></span>
@@ -273,7 +273,7 @@
             </a>
             <ul>
                 <li>
-                    <a href="#" onclick="redrect('{{ route('user_role.users_invertar.index') }}')">
+                    <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                         <i class="bx bx-right-arrow-alt"></i>
                         <div style="margin-right: 5px;">Qabul qilish qismi</div>
                         <span class="badge bg-warning text-dark"></span>
@@ -292,14 +292,14 @@
             <ul>
                
                 <li>
-                    <a href="#" onclick="redrect('{{ route('user_role.show_invertar_deps') }}')">
+                    <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                         <i class="bx bx-right-arrow-alt"></i>
                         <div style="margin-right: 5px;">Mening jihozlarim</div>
                         <span class="badge bg-warning text-dark"></span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" onclick="redrect('{{ route('user_role.show_repair_items') }}')">
+                    <a href="#" onclick="redrect('{{ route('admin.index') }}')">
                         <i class="bx bx-right-arrow-alt"></i>
                         <div style="margin-right: 5px;">Tamirdagi jihozlar</div>
                         <span class="badge bg-warning text-dark"></span>

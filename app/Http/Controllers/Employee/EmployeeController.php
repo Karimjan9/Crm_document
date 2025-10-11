@@ -1,27 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Employee;
 
-use App\Models\Criteria;
-use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
-   
-    public function index(Request $request)
+
+    public function index()
     {
-     
+        dd('employee');
     }
 
-
+   
     public function create()
     {
         //
     }
 
-   
+    
     public function store(Request $request)
     {
         //
@@ -30,22 +28,22 @@ class EmployeeController extends Controller
    
     public function show($id)
     {
-       
+        //
     }
 
-    
+   
     public function edit($id)
     {
         //
     }
 
-  
+   
     public function update(Request $request, $id)
     {
         //
     }
 
-    
+   
     public function destroy($id)
     {
         //

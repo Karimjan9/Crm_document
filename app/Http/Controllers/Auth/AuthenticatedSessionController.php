@@ -27,36 +27,20 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        if($request->user()->hasRole("rektor")){
+        if($request->user()->hasRole("admin")){
 
-            return redirect()->route('rektor_role.show_all_statistic');
+            return redirect()->route('admin.index');
 
-        }else if($request->user()->hasRole("bugalter")){
+        }else if($request->user()->hasRole("employee")){
 
-            return redirect()->route('bugalter_role.accountant.index');
+            return redirect()->route('admin.index');
 
-        }else if($request->user()->hasRole("admin_barn")){
+        }else if($request->user()->hasRole("courier")){
 
-            return redirect()->route('admin_barn_role.missing_equipment.index' );
+            return redirect()->route('courier.index'); 
 
-        }else if($request->user()->hasRole("storekeeper")){
-
-            return redirect()->route('storekeeper_role.prixod.index');
-
-        }else if($request->user()->hasRole("kadr")){
-
-            return redirect()->route('kadr_role.actions.index');
-        
-        }else if($request->user()->hasRole("user")){
-
-            return redirect()->route('user_role.users_invertar.index');
-        }else if($request->user()->hasRole("tech_checker")){
-          
-            return redirect()->route('user_role.users_invertar.index');
-        }else if($request->user()->hasRole("other_checker")){
-
-            return redirect()->route('user_role.users_invertar.index');
         }
+        
 
     }
 
