@@ -93,6 +93,7 @@
 
     <div class="sidebar-header">
         <div>
+            
             <img src="{{ url('logo-icon.png') }}" class="logo-icon" alt="logo icon">
         </div>
         <div>
@@ -100,9 +101,10 @@
         </div>
         <div class="toggle-icon ms-auto">
             <i class='bx bx-chevron-left'></i>
+        
         </div>
     </div>
-
+    
     <!--navigation-->
     <ul class="metismenu" id="menu">
         @role('admin')
