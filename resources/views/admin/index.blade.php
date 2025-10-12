@@ -100,7 +100,7 @@
         z-index: 10;
     }
 
-    /* Custom button */
+    
     .btn-custom {
         background: var(--blue-light);
         border: none;

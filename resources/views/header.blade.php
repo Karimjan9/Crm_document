@@ -1,22 +1,139 @@
 <header>
+    <!-- Google Font -->
+   
+
+    <style>
+        .topbar {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            background-color: #15172a !important;
+            padding: 10px 25px !important;
+            width: 100% !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            z-index: 1000 !important;
+            height: 75px !important;
+            border-bottom: 1px solid #00d1ff33 !important;
+        }
+
+        .navbar {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+        }
+
+        /* 🔹 Global Voice */
+        .brand-animated {
+            font-family: 'Poppins', sans-serif !important;
+            font-size: 30px !important;
+            font-weight: 700 !important;
+            color: #00d1ff !important;
+            letter-spacing: 1px !important;
+            animation: fadeIn 1s ease-in-out !important;
+            position: absolute !important;
+            left: 50px !important;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mobile-toggle-menu i {
+            font-size: 26px !important;
+            color: #fff !important;
+            cursor: pointer !important;
+            transition: 0.3s !important;
+        }
+
+        .mobile-toggle-menu i:hover {
+            color: #00d1ff !important;
+        }
+
+        .weather-date {
+            display: flex !important;
+            align-items: center !important;
+            gap: 25px !important;
+            color: #fff !important;
+            font-size: 18px !important;
+            font-weight: 600 !important;
+            position: absolute !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+        }
+
+        .weather-date i {
+            color: #00d1ff !important;
+            margin-right: 6px !important;
+            font-size: 22px !important;
+        }
+
+        .user-box {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+        }
+
+        .user-box img {
+            width: 45px !important;
+            height: 45px !important;
+            border-radius: 50% !important;
+            border: 2px solid #00d1ff !important;
+            object-fit: cover !important;
+        }
+
+        .user-info .user-name {
+            color: #fff !important;
+            font-weight: 600 !important;
+            font-size: 15px !important;
+            margin: 0 !important;
+        }
+
+        .dropdown-menu {
+            background-color: #1f2137 !important;
+            border: none !important;
+            border-radius: 10px !important;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .dropdown-item {
+            color: #fff !important;
+            transition: 0.3s !important;
+        }
+
+        .dropdown-item:hover {
+            background-color: #00d1ff !important;
+            color: #15172a !important;
+        }
+
+        .bx {
+            color: #fff !important;
+        }
+    </style>
+
     <div class="topbar d-flex align-items-center">
         <nav class="navbar navbar-expand">
-            <div class="mobile-toggle-menu"><i class='bx bx-menu'></i></div>
-            <div class="search-bar flex-grow-1">
-                <div class="position-relative search-bar-box"></div>
+            
+           
+            <div class="brand-animated" id="brandName">Global Voice</div>
+
+            <!-- 🔹 Ob-havo va sana -->
+            <div class="weather-date" id="weatherDate">
+                <div class="weather"><i class='bx bx-cloud'></i><span id="weatherInfo">Yuklanmoqda...</span></div>
+                <div class="date"><i class='bx bx-calendar'></i><span id="dateInfo"></span></div>
             </div>
 
-            @role('user')
-                <div class="top-menu ms-auto">
-                    <ul class="navbar-nav align-items-center">
-                        <li class="nav-item mobile-search-icon">
-                            <a class="nav-link" href="#"><i class="bx bx-search"></i></a>
-                        </li>
-                    </ul>
-                </div>
-            @endrole
-
-            <div class="user-box dropdown">
+            <!-- 🔹 Foydalanuvchi paneli -->
+            <div class="user-box dropdown ms-auto">
                 <a class="d-flex align-items-center nav-link dropdown-toggle dropdown-toggle-nocaret"
                    href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{ url('avatar-2.png') }}" class="user-img" alt="user avatar">
@@ -36,236 +153,74 @@
         </nav>
     </div>
 
-    <div id="notification_modals"></div>
+   <header style="display:flex; align-items:center; justify-content:space-between; padding:10px 40px; background-color:#15172a; color:white; position:fixed; top:0; width:100%; z-index:999;">
+    <!-- Chap tomonda animatsiyali matn -->
+    <div id="brandName" style="font-size:26px; font-weight:600; font-family:'Poppins', sans-serif; letter-spacing:1px;">
+        Global Voice
+    </div>
 
-    @role('user')
-        <script>
-            function notification_main() {
-                $.ajax('/user/get_notification', {
-                    type: 'GET',
-                    success: function (data, status) {
-                        let html = ``;
-                        let html_modal = ``;
+    <!-- O‘rta qismda ob-havo -->
+    <div id="weatherInfo" style="font-size:20px; text-align:center; flex:1;">
+        Ob-havo yuklanmoqda...
+    </div>
 
-                        for (const iterator of data.notifications) {
-                            html += `
-                            <a class="dropdown-item" href="javascript:;">
-                                <div class="d-flex align-items-center">
-                                    <div class="notify bg-light-primary text-primary"><i class="bx bx-group"></i></div>
-                                    <div class="flex-grow-1" data-bs-toggle="modal" data-bs-target="#exampleExtraLargeModal_${ iterator['id'] }">
-                                        <h6 class="msg-name">${ iterator['title'] }<span class="msg-time float-end">${ iterator['date'] }</span></h6>
-                                        <p class="msg-info">${ iterator['message'] }</p>
-                                    </div>
-                                </div>
-                            </a>
-                            `;
-                            html_modal += `
-                            <div class="nm modal fade" id="exampleExtraLargeModal_${ iterator['id'] }" tabindex="-1" aria-hidden="true" style="display: none;" data-id="${ iterator['id'] }">
-                                <div class="modal-dialog modal-xl">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">${ iterator['title'] }</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            ${ iterator['message'] }
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>`;
-                        }
+    <!-- O‘ng tomonda sana -->
+    <div id="dateInfo" style="font-size:18px; text-align:right; min-width:220px;">
+        Sana yuklanmoqda...
+    </div>
 
-                        $('#notification_list').html(html);
-                        $('#notification_modals').html(html_modal);
-                        $('#alert_notification_count').html(`<span class="alert-count">${data.count}</span>`);
+    <script>
+        // === Sana ===
+        function updateDate() {
+            const now = new Date();
+            const days = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
+            const months = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'];
+            const day = days[now.getDay()];
+            const date = now.getDate();
+            const month = months[now.getMonth()];
+            const year = now.getFullYear();
+            document.getElementById("dateInfo").innerText = `${day}, ${date} ${month} ${year}`;
+        }
+        updateDate();
 
-                        var myModalEl = document.getElementsByClassName('nm');
-                        for (const iterator of myModalEl) {
-                            iterator.addEventListener('show.bs.modal', function () {
-                                $.ajax('/user/set_status_notification', {
-                                    type: 'POST',
-                                    data: {
-                                        "_token": "{{ csrf_token() }}",
-                                        "id": $(iterator).data('id')
-                                    },
-                                });
-                            });
-                            iterator.addEventListener('hide.bs.modal', function () {
-                                notification_main();
-                            });
-                        }
-                    },
-                    error: function (jqXhr, textStatus, errorMessage) {
-                        console.log(errorMessage);
-                    }
-                });
+        // === Ob-havo ===
+        const apiKey = "2a540431e9b3f8a9b6c46e2055b7b001";
+        const city = "Bukhara";
+        async function getWeather() {
+            try {
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=uz`);
+                const data = await res.json();
+                const temp = Math.round(data.main.temp);
+                const desc = data.weather[0].description;
+                document.getElementById("weatherInfo").innerText = `${city}: ${temp}°C, ${desc}`;
+            } catch (err) {
+                document.getElementById("weatherInfo").innerText = "Ob-havo olinmadi";
             }
+        }
+        getWeather();
 
-            notification_main();
-            setInterval(() => { notification_main(); }, 100000);
-        </script>
-    @endrole
+        // === Brend animatsiyasi (har 10s da o'zgaradi) ===
+        const brandTexts = ["Global Voice", "Innovative Future", "Smart Planet", "Creative Vision"];
+        let index = 0;
+        function changeBrandName() {
+            const el = document.getElementById("brandName");
+            el.style.opacity = 0;
+            setTimeout(() => {
+                index = (index + 1) % brandTexts.length;
+                el.innerText = brandTexts[index];
+                el.style.opacity = 1;
+            }, 500);
+        }
+        setInterval(changeBrandName, 10000);
+    </script>
 </header>
 
-<div id="pwdModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="text-center">Parolni o`zgartirish</h5>
-            </div>
-            <div class="modal-body">
-                <div class="col-md-12">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="text-center">
-                                <form action="{{route('change-password')}}" method="post" class="row g-3">
-                                    @csrf
-                                    <fieldset>
-                                        <div class="form-group">
-                                            <label class="form-label">Yangi parol (minimum 4 ta simvol)</label>
-                                            <input class="form-control input-lg password" required name="password" type="password">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Yangi parol (yana bir bor)</label>
-                                            <input class="form-control input-lg password_confirmation" required name="password_confirmation" type="password">
-                                        </div>
-                                        <div class="error"></div>
-                                    </fieldset>
-                                    <div class="modal-footer">
-                                        <div class="col-md-12">
-                                            <button class="btn btn-info text-white" type="submit" id="submit">Saqlash</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-$('[name="password"]').on("keyup change blur", function() {
-    if($(this).val().length >= 4 && $(this).val().length <= 20) {
-        $(this).attr('style', '');
-    } else {
-        $(this).attr('style', 'border: 4px solid red;');
-        $("#submit").attr("disabled", "disabled");
-    }
-});
-$(".password_confirmation").on("keyup", function() {
-    var value_input1 = $(".password").val();
-    var value_input2 = $(this).val();
-    if(value_input1 != value_input2) {
-        $(".error").html("Parollar bir xil emas!");
-        $("#submit").attr("disabled", "disabled");
-    } else {
-        $("#submit").removeAttr("disabled");
-        $(".error").html("");
-    }
-});
-</script>
-
-
+<!-- Zamonaviy shrift -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
 <style>
-header {
-    font-family: "Inter","ui-sans-serif","system-ui","-apple-system",
-                 "Segoe UI","Roboto","Helvetica Neue","Arial",
-                 "Noto Sans","sans-serif","Apple Color Emoji",
-                 "Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
-    background-color: #ffffff;
-    color: #15172a;
-    border-bottom: 1px solid rgba(21, 23, 42, 0.08);
-    box-shadow: 0 1px 6px rgba(21, 23, 42, 0.1);
-}
-.topbar {
-    background-color: #fff;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-}
-.navbar-nav .nav-link,
-.user-box .user-info p {
-    color: #15172a !important;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-}
-.navbar-nav .nav-link:hover {
-    color: #4e54c8 !important;
-    transition: 0.3s ease;
-}
-.user-box .user-img {
-    border-radius: 50%;
-    border: 2px solid #15172a10;
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    transition: all 0.3s ease;
-}
-.user-box:hover .user-img {
-    border-color: #4e54c8;
-}
-.dropdown-menu {
-    font-size: 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(21, 23, 42, 0.1);
-    box-shadow: 0 5px 25px rgba(21, 23, 42, 0.1);
-}
-.dropdown-menu .dropdown-item {
-    color: #15172a;
-    font-weight: 500;
-}
-.dropdown-menu .dropdown-item:hover {
-    background-color: #f2f3f8;
-    color: #4e54c8;
-}
-.mobile-toggle-menu i,
-.navbar-nav i {
-    color: #15172a;
-    font-size: 20px;
-    transition: 0.3s ease;
-}
-.mobile-toggle-menu i:hover,
-.navbar-nav i:hover {
-    color: #4e54c8;
-}
-.modal-content {
-    font-family: inherit;
-    border-radius: 12px;
-    border: 1px solid rgba(21, 23, 42, 0.1);
-    box-shadow: 0 5px 25px rgba(21, 23, 42, 0.15);
-}
-.modal-header h5 {
-    color: #15172a;
-    font-weight: 600;
-}
-.btn-info {
-    background-color: #15172a;
-    border: none;
-    font-weight: 500;
-}
-.btn-info:hover {
-    background-color: #202446;
-}
-.form-control {
-    border: 1px solid rgba(21, 23, 42, 0.3);
-    color: #15172a;
-    background-color: #fff;
-    font-family: inherit;
-    border-radius: 8px;
-}
-.form-control:focus {
-    border-color: #4e54c8;
-    box-shadow: 0 0 0 3px rgba(78,84,200,0.15);
-}
-.error {
-    color: #e63946;
-    font-weight: 500;
+#brandName {
+    transition: opacity 0.6s ease-in-out;
 }
 </style>
+
+</header>
