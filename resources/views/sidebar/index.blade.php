@@ -1,12 +1,12 @@
 <div class="sidebar-wrapper" data-simplebar="true">
     <style>
         
-        .sidebar-wrapper {
-            background-color: #ffffff !important;
-            color: #15172a !important;
+        /* .sidebar-wrapper {
+            background-color: #15172a!important;
+            color: #ffffff !important;
             font-family: "Inter", "system-ui", sans-serif;
             transition: 0.3s ease;
-        }
+        } */
 
         .sidebar-header {
             background: linear-gradient(135deg, #0066ff, #00aaff);
@@ -24,7 +24,7 @@
             margin-left: 10px;
         }
 
-        .metismenu a {
+        /* .metismenu a {
             color: #15172a !important;
             padding: 10px 15px;
             border-radius: 8px;
@@ -32,7 +32,7 @@
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-        }
+        } */
 
         .metismenu a:hover {
             background: #f0f7ff;
@@ -117,51 +117,17 @@
                     <li><a href="#"><i class='bx bx-cog'></i> Bo'lim va Jihozlar</a></li>
                 </ul>
             </li>
-
-            <li>
+               <li>
                 <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                    <div class="parent-icon"><i class='bx bx-package'></i></div>
-                    <div class="menu-title">Cargo</div>
+                    <div class="parent-icon"><i class='bx bx-user-circle'></i></div>
+                    <div class="menu-title">Filiallar</div>
                 </a>
                 <ul>
-                    <li><a href="#"><i class='bx bx-send'></i> Jo'natma</a></li>
-                    <li><a href="#"><i class='bx bx-cube'></i> Cargo</a></li>
-                    <li><a href="#"><i class='bx bx-user-pin'></i> Jo'natuvchi</a></li>
+                <li><a href="{{ route('admin.filial.index') }}"><i class='bx bx-user'></i> Filial qismi </a></li>
+                  
                 </ul>
             </li>
-
-            <li>
-                <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                    <div class="parent-icon"><i class='bx bx-chip'></i></div>
-                    <div class="menu-title">Jihozlar</div>
-                </a>
-                <ul>
-                    <li><a href="#"><i class='bx bx-shape-square'></i> Jihoz modeli</a></li>
-                    <li><a href="#"><i class='bx bx-rename'></i> Jihoz nomi</a></li>
-                    <li><a href="#"><i class='bx bx-category'></i> Jihoz turi</a></li>
-                    <li><a href="#"><i class='bx bx-barcode'></i> Jihoz birligi</a></li>
-                </ul>
-            </li>
-
-            <li>
-                <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                    <div class="parent-icon"><i class='bx bx-file'></i></div>
-                    <div class="menu-title">Tugma excel uchun</div>
-                </a>
-                <ul>
-                    <li><a href="#"><i class='bx bx-spreadsheet'></i> Jihoz modeli</a></li>
-                </ul>
-            </li>
-
-            <li>
-                <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                    <div class="parent-icon"><i class='bx bx-briefcase'></i></div>
-                    <div class="menu-title">Mansablar</div>
-                </a>
-                <ul>
-                    <li><a href="#"><i class='bx bx-cog'></i> Mansab sozlash</a></li>
-                </ul>
-            </li>
+         
         @endrole
     </ul>
     <!--end navigation-->

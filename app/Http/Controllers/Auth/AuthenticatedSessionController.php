@@ -19,8 +19,9 @@ class AuthenticatedSessionController extends Controller
     {
         return view('login');
     }
-
-
+    /**
+     * Handle an incoming authentication request.
+     */
     public function store(LoginRequest $request)
     {
         $request->authenticate();
@@ -38,7 +39,6 @@ class AuthenticatedSessionController extends Controller
         }else if($request->user()->hasRole("courier")){
 
             return redirect()->route('courier.index'); 
-
         }
         
 
