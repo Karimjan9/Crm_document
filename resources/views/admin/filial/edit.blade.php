@@ -2,20 +2,20 @@
 
 @section('style')
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
     :root {
         --text-color: #15172a;
         --blue-main: #1e3a8a;
         --blue-light: #2563eb;
-        --blue-bg: #f0f6ff;
-        --white: #ffffff;
-        --border-color: #e5e7eb;
+        --white: rgba(255, 255, 255, 0.7);
+        --border-color: rgba(229, 231, 235, 0.4);
     }
 
     body {
-        font-family: "Inter", "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans", "sans-serif";
-        background: var(--blue-bg);
+        font-family: "Poppins", "Inter", "system-ui", "Segoe UI", "Roboto", sans-serif;
+        background: linear-gradient(135deg, #dbeafe, #eff6ff);
+        backdrop-filter: blur(8px);
         color: var(--text-color);
         margin: 0;
         padding: 0;
@@ -26,27 +26,31 @@
     }
 
     .page-breadcrumb {
-        background: var(--white);
+        background: rgba(255, 255, 255, 0.45);
+        backdrop-filter: blur(10px);
         border-radius: 12px;
         padding: 12px 20px;
-        box-shadow: 0 2px 8px rgba(30, 58, 138, 0.08);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 10px rgba(37, 99, 235, 0.08);
     }
 
     .breadcrumb-title {
         font-weight: 600;
-        color: var(--text-color);
+        color: var(--blue-main);
     }
 
     .card {
-        background: var(--white);
+        background: rgba(255, 255, 255, 0.4);
         border-radius: 16px;
-        box-shadow: 0 4px 10px rgba(30, 58, 138, 0.08);
+        backdrop-filter: blur(10px);
         border: 1px solid var(--border-color);
+        box-shadow: 0 4px 14px rgba(30, 58, 138, 0.1);
         transition: all 0.3s ease;
     }
 
     .card:hover {
-        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.15);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 18px rgba(37, 99, 235, 0.2);
     }
 
     .card-body {
@@ -66,13 +70,16 @@
         border: 1px solid var(--border-color);
         border-radius: 8px;
         font-size: 14px;
-        transition: all 0.2s ease;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(6px);
+        transition: all 0.25s ease;
     }
 
     .form-control:focus {
         outline: none;
         border-color: var(--blue-light);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.25);
+        background: rgba(255, 255, 255, 0.8);
     }
 
     .btn-custom {
@@ -84,39 +91,47 @@
         font-weight: 500;
         font-size: 14px;
         transition: 0.3s;
+        backdrop-filter: blur(4px);
     }
 
     .btn-custom:hover {
         background: var(--blue-main);
         transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(30, 58, 138, 0.25);
+        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+        backdrop-filter: blur(10px);
     }
 
     .btn-outline {
-        background: var(--white);
+        background: rgba(255, 255, 255, 0.4);
         color: var(--blue-light);
         border: 1px solid var(--blue-light);
         padding: 10px 18px;
         border-radius: 8px;
         font-weight: 500;
         transition: 0.3s;
+        backdrop-filter: blur(6px);
     }
 
     .btn-outline:hover {
         background: var(--blue-light);
         color: var(--white);
+        backdrop-filter: blur(10px);
     }
+
     .alert {
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border-radius: 10px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
+
     .alert-success {
-        background-color: #d1fae5;
+        background-color: rgba(16, 185, 129, 0.15);
         color: #065f46;
         border: 1px solid #10b981;
     }
+
     .alert-danger {
-        background-color: #fee2e2;
+        background-color: rgba(239, 68, 68, 0.15);
         color: #991b1b;
         border: 1px solid #ef4444;
     }
@@ -126,9 +141,9 @@
 @section('body')
 <div class="page-wrapper">
     <div class="page-content">
-             
+
         <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
-            <div class="breadcrumb-title pe-3"> Filial tahrirlash formasi</div>
+            <div class="breadcrumb-title pe-3">Filial tahrirlash formasi</div>
             <a href="{{ route('admin.filial.index') }}" class="btn btn-outline">← Orqaga</a>
         </div>
 
@@ -149,7 +164,7 @@
 
                     <div class="mb-3">
                         <label for="description">Filial izoh</label>
-                        <textarea id="description"  name="description" rows="4" class="form-control" placeholder="Filial haqida qisqacha ma’lumot...">{{ $filial->description }}</textarea>
+                        <textarea id="description" name="description" rows="4" class="form-control" placeholder="Filial haqida qisqacha ma’lumot...">{{ $filial->description }}</textarea>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">

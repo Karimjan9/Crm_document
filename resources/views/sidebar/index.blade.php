@@ -1,20 +1,15 @@
 <div class="sidebar-wrapper" data-simplebar="true">
     <style>
-        
-        /* .sidebar-wrapper {
-            background-color: #15172a!important;
-            color: #ffffff !important;
-            font-family: "Inter", "system-ui", sans-serif;
-            transition: 0.3s ease;
-        } */
+        /* === Sidebar dizayn (oq-kok + neon effekt) === */
 
         .sidebar-header {
-            background: linear-gradient(135deg, #0066ff, #00aaff);
+            background: linear-gradient(135deg, rgba(0,102,255,0.85), rgba(0,170,255,0.8));
             color: #fff !important;
             padding: 16px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid #e6f0ff;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
         }
 
         .sidebar-header .logo-text {
@@ -22,87 +17,85 @@
             font-weight: 600;
             font-size: 17px;
             margin-left: 10px;
+            letter-spacing: 0.5px;
         }
 
-        /* .metismenu a {
-            color: #15172a !important;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin: 3px 8px;
-            transition: all 0.2s ease;
+        .sidebar-wrapper {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .metismenu a {
+            
             display: flex;
             align-items: center;
-        } */
+            color: #0f172a;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
 
+        /* === Neon hover effekti === */
         .metismenu a:hover {
-            background: #f0f7ff;
-            color: #0066ff !important;
+            background: rgb(253, 249, 249);
+            box-shadow: 0 0 12px rgba(0,102,255,0.35);
+            color: #0056ff !important;
+            transform: translateX(2px);
         }
 
         .metismenu li.active > a {
-            background: #e6f2ff;
+            background: rgba(0,102,255,0.1);
+            box-shadow: 0 0 8px rgba(0,102,255,0.3);
             color: #0066ff !important;
         }
 
-        
+        /* === Iconlar uchun ranglar === */
         .parent-icon i {
-            font-size: 25px;
+            font-size: 22px;
             margin-right: 10px;
             transition: 0.3s ease;
         }
 
+        .metismenu li:nth-child(1) .parent-icon i { color: #007bff; }
+        .metismenu li:nth-child(2) .parent-icon i { color: #00aaff; }
+        .metismenu li:nth-child(3) .parent-icon i { color: #28a745; }
+        .metismenu li:nth-child(4) .parent-icon i { color: #6f42c1; }
+        .metismenu li:nth-child(5) .parent-icon i { color: #e91e63; }
 
-        .metismenu li:nth-child(1) .parent-icon i { color: #007bff; }   
-        .metismenu li:nth-child(2) .parent-icon i { color: #28a745; }  
-        .metismenu li:nth-child(3) .parent-icon i { color: #ff9800; }  
-        .metismenu li:nth-child(4) .parent-icon i { color: #6f42c1; }   
-        .metismenu li:nth-child(5) .parent-icon i { color: #e91e63; }   
+        /* === Submenyular === */
+            .metismenu ul {
+                
+                background: rgba(255,255,255,0.2);
+                border-left: 3px solid rgba(0,102,255,0.3);
+                border-radius: 6px;
+                padding-left: 10px;
+                margin: 4px 0;
+            }
 
-    
-        [data-simplebar="true"] .metismenu li:nth-child(1) .parent-icon i { color: #007bff; }
-        [data-simplebar="true"] .metismenu li:nth-child(2) .parent-icon i { color: #ff9800; }
-        [data-simplebar="true"] .metismenu li:nth-child(3) .parent-icon i { color: #28a745; }
-        [data-simplebar="true"] .metismenu li:nth-child(4) .parent-icon i { color: #6f42c1; }
-
-        
-        .metismenu ul li a i {
-            font-size: 18px;
-            margin-right: 8px;
-            color: #0095ff;
-            transition: transform 0.3s ease, color 0.2s ease;
+        .metismenu ul li a {
+            color: #0f172a;
+            font-size: 14px;
         }
 
         .metismenu ul li a:hover i {
-            transform: translateX(3px);
+            transform: translateX(4px);
             color: #0066ff;
         }
 
-        .metismenu ul {
-            background: #f9fbff;
-            border-left: 3px solid #007bff20;
-            border-radius: 6px;
-            padding-left: 10px;
-        }
-
+        /* === Badge === */
         .badge.bg-warning.text-dark {
             background-color: #e0ecff !important;
             color: #15172a !important;
             font-size: 11px;
         }
+
     </style>
 
     <div class="sidebar-header">
-        <div>
-            
-            <img src="{{ url('logo-icon.png') }}" class="logo-icon" alt="logo icon">
-        </div>
-        <div>
-            <h4 class="logo-text">{{ "Global Voice" }}</h4>
-        </div>
-        <div class="toggle-icon ms-auto">
-            <i class='bx bx-chevron-left'></i>
-        
-        </div>
+
     </div>
     
     <!--navigation-->
@@ -119,17 +112,15 @@
                     <li><a href="#"><i class='bx bx-cog'></i> Bo'lim va Jihozlar</a></li>
                 </ul>
             </li>
-               <li>
+            <li>
                 <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                    <div class="parent-icon"><i class='bx bx-user-circle'></i></div>
+                    <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
                     <div class="menu-title">Filiallar</div>
                 </a>
                 <ul>
-                <li><a href="{{ route('admin.filial.index') }}"><i class='bx bx-user'></i> Filial qismi </a></li>
-                  
+                    <li><a href="{{ route('admin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi </a></li>
                 </ul>
             </li>
-         
         @endrole
     </ul>
     <!--end navigation-->
