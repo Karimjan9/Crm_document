@@ -48,8 +48,8 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/web.php'));
             Route::middleware(['web','auth','role:admin'])
               
-                ->prefix('admin') // URL prefiksi
-                ->as('admin.') // route name prefiksi
+                // ->prefix('admin') // URL prefiksi
+                // ->as('admin.') // route name prefiksi
                 ->group(base_path('routes/admin/admin.php')); // yangi faylingga yo‘l
              Route::middleware(['web','auth','role:employee'])
              

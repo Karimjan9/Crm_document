@@ -3,12 +3,12 @@
         /* === Sidebar dizayn (oq-kok + neon effekt) === */
 
         .sidebar-header {
-            background: linear-gradient(135deg, rgba(0,102,255,0.85), rgba(0,170,255,0.8));
+            background: linear-gradient(135deg, rgba(0,102,255,0.85), rgba(0,170,255,0.8)) !important;
             color: #fff !important;
             padding: 16px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.15);
+            border-bottom: 1px solid rgb(238, 230, 230);
             backdrop-filter: blur(10px);
         }
 
@@ -21,7 +21,7 @@
         }
 
         .sidebar-wrapper {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgb(255, 255, 255);
             backdrop-filter: blur(16px);
             border-right: 1px solid rgba(255,255,255,0.1);
         }
@@ -47,7 +47,7 @@
         }
 
         .metismenu li.active > a {
-            background: rgba(0,102,255,0.1);
+            background: rgb(238, 240, 243);
             box-shadow: 0 0 8px rgba(0,102,255,0.3);
             color: #0066ff !important;
         }
@@ -68,7 +68,7 @@
         /* === Submenyular === */
             .metismenu ul {
                 
-                background: rgba(255,255,255,0.2);
+                background: rgb(245, 241, 241) !important;
                 border-left: 3px solid rgba(0,102,255,0.3);
                 border-radius: 6px;
                 padding-left: 10px;
@@ -88,7 +88,7 @@
         /* === Badge === */
         .badge.bg-warning.text-dark {
             background-color: #e0ecff !important;
-            color: #15172a !important;
+            color: #dddee7 !important;
             font-size: 11px;
         }
 
@@ -107,7 +107,7 @@
                     <div class="menu-title">Foydalanuvchilar</div>
                 </a>
                 <ul>
-                    <li><a href="#"><i class='bx bx-user'></i> Foydalanuvchilar</a></li>
+                    <li><a href="{{ route('admin.index') }}"><i class='bx bx-user'></i> Foydalanuvchilar</a></li>
                     <li><a href="#"><i class='bx bx-buildings'></i> Bo'limlar</a></li>
                     <li><a href="#"><i class='bx bx-cog'></i> Bo'lim va Jihozlar</a></li>
                 </ul>
