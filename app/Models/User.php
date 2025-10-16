@@ -6,6 +6,7 @@ namespace App\Models;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -13,9 +14,10 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable,HasRoles;
 
-
+    use SoftDeletes;
     protected $fillable = [
         'name',
+        'filial_id',
         'login',
         'phone',
         'password',
@@ -42,29 +44,10 @@ class User extends Authenticatable
 
    
    
-    // public function hasRole($role) {
-    //     $counter=0;
-    //     if (is_array($role)) {
-    //        foreach ($role as $key => $rol) {
-    //             if ($this->user_level->name == $rol) {
-    //                 $counter=$counter+1;
-                    
-    //             }
-    //        }
-    //        if ($counter==1) {
-    //             return true;
-    //        }
-    //        return false;
-    //     }else{
-    //         if ($this->user_level->name == $role) {
-
-    //             return true;
-    //         }
-    
-    //         return false;
-    //     }
-       
-    // }
+     public function filial()
+    {
+        return $this->belongsTo(FilialModel::class);
+    }
 
 
    

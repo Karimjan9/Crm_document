@@ -40,7 +40,7 @@ class UserSeeder extends Seeder
             'phone'=>'1234567891',
             'password'=>Hash::make('employee123')
         ]);
-        $user->assignRole('epmployee');
+        $user->assignRole('employee');
         $user=User::create([
             'name'=>'User',
             'login'=>'user',
