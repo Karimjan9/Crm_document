@@ -53,14 +53,14 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/admin/admin.php')); // yangi faylingga yo‘l
              Route::middleware(['web','auth','role:employee'])
              
-                ->prefix('employee') // URL prefiksi
-                ->as('employee.') // route name prefiksi
+                // ->prefix('employee') // URL prefiksi
+                // ->as('employee.') // route name prefiksi
                 ->group(base_path('routes/employee/employee.php')); // yangi faylingga yo‘l
 
             Route::middleware(['web','auth','role:courier'])
                
-                ->prefix('courier') // URL prefiksi
-                ->as('courier.') // route name prefiksi
+                // ->prefix('courier') // URL prefiksi
+                // ->as('courier.') // route name prefiksi
                 ->group(base_path('routes/courier/courier.php')); // yangi faylingga yo‘l
         });
     }
