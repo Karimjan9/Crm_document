@@ -88,9 +88,11 @@
         <div class="logo-text">Admin Panel</div>
     </div>
     
-
+    <!--navigation-->
     <ul class="metismenu" id="menu">
         @role('admin')
+
+            <!-- Foydalanuvchilar -->
             <li>
                 <a href="javascript:;" class="has-arrow" aria-expanded="false">
                     <div class="parent-icon"><i class='bx bx-user-circle'></i></div>
@@ -103,26 +105,34 @@
                 </ul>
             </li>
 
-          
+            <!-- Filiallar -->
             <li>
                 <a href="javascript:;" class="has-arrow" aria-expanded="false">
                     <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
                     <div class="menu-title">Filiallar</div>
                 </a>
                 <ul>
-                    <li><a href="{{ route('admin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi </a></li>
+                    <li><a href="{{ route('admin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi</a></li>
                 </ul>
             </li>
 
-            
+            <!-- Kuryer bo‘limi -->
             <li>
                 <a href="javascript:;" class="has-arrow" aria-expanded="false">
                     <div class="parent-icon"><i class='bx bx-package'></i></div>
                     <div class="menu-title">Kuryer</div>
-                </a>
+                </a>      
                 <ul>
-                    <li><a href="#"><i class='bx bx-download'></i> Dokument olish</a></li>
-                    <li><a href="#"><i class='bx bx-upload'></i> Dokument yuborish</a></li>
+                    <li>
+                        <a href="{{ route('courier.courier.index') }}">
+                            <i class='bx bx-user-pin'></i> Employee
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('courier.courier.index') }}">
+                            <i class='bx bx-cycling'></i> Courierba
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endrole
