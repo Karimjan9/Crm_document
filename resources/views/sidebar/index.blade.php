@@ -133,12 +133,12 @@
                 </a>      
                 <ul>
                     <li>
-                        <a href="{{ route('courier.courier.index') }}">
+                        <a href="{{ route('admin.filial.index') }}">
                             <i class='bx bx-user-pin'></i> Employee
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('courier.courier.index') }}">
+                        <a href="{{ route('admin.filial.index') }}">
                             <i class='bx bx-cycling'></i> Courierba
                         </a>
                     </li>
