@@ -52,6 +52,9 @@ Route::get('/', function () {
    
 });
 
+
+
+
     Route::get('/change-password', [AuthenticatedSessionController::class, 'change-password'])->name('change-password');
 
         Route::any('/destroy', [AuthenticatedSessionController::class, 'destroy'])->name('destroy');
