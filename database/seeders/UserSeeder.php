@@ -6,54 +6,71 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
-        
-        $role = Role::create(['name' => 'admin']);
+        // 🔹 Rollarni xavfsiz yaratish (agar mavjud bo‘lsa - qayta yaratmaydi)
+        $roles = [
+            'admin',
+            'employee',
+            'user',
+            'courier',
+        ];
 
-        $role = Role::create(['name' => 'epmployee']);
+        foreach ($roles as $roleName) {
+            Role::firstOrCreate([
+                'name' => $roleName,
+                'guard_name' => 'web',
+            ]);
+        }
 
-        $role = Role::create(['name' => 'user']);
+        // 🔹 Userlar yaratish
+        $users = [
+            [
+                'name' => 'Admin',
+                'login' => 'admin',
+                'phone' => '1234567890',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Employee',
+                'login' => 'employee',
+                'phone' => '1234567891',
+                'password' => Hash::make('employee123'),
+                'role' => 'employee',
+            ],
+            [
+                'name' => 'User',
+                'login' => 'user',
+                'phone' => '1234567892',
+                'password' => Hash::make('user123'),
+                'role' => 'user',
+            ],
+            [
+                'name' => 'Courier',
+                'login' => 'courier',
+                'phone' => '1234567893',
+                'password' => Hash::make('courier123'),
+                'role' => 'courier',
+            ],
+        ];
 
-        $role = Role::create(['name' => 'courier']);
-
-        $user=User::create([
-            'name'=>'Admin',
-            'login'=>'admin',
-            'phone'=>'1234567890',
-            'password'=>Hash::make('admin123')
-        ]);
-        
-        $user->assignRole('admin');
-        $user=User::create([
-            'name'=>'Employee',
-            'login'=>'employee',
-            'phone'=>'1234567891',
-            'password'=>Hash::make('employee123')
-        ]);
-        $user->assignRole('employee');
-        $user=User::create([
-            'name'=>'User',
-            'login'=>'user',
-            'phone'=>'1234567892',
-            'password'=>Hash::make('user123')
-        ]);
-        $user->assignRole('user');
-        $user=User::create([
-            'name'=>'Courier',
-            'login'=>'courier',
-            'phone'=>'1234567893',
-            'password'=>Hash::make('courier123')
-        ]);
-        $user->assignRole('courier');
+        foreach ($users as $data) {
+            $user = User::firstOrCreate(
+                ['login' => $data['login']],
+                [
+                    'name' => $data['name'],
+                    'phone' => $data['phone'],
+                    'password' => $data['password'],
+                ]
+            );
+            $user->assignRole($data['role']);
+        }
     }
 }

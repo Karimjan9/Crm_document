@@ -1,4 +1,4 @@
-<div class="sidebar-wrapper" data-simplebar="true">
+<div class="sidebar-wrapper" data-simplebar="true"> 
     <style>
         /* === Sidebar dizayn (oq-kok + neon effekt) === */
 
@@ -27,7 +27,6 @@
         }
 
         .metismenu a {
-            
             display: flex;
             align-items: center;
             color: #0f172a;
@@ -52,7 +51,7 @@
             color: #0066ff !important;
         }
 
-        /* === Iconlar uchun ranglar === */
+        /* === Icon ranglar === */
         .parent-icon i {
             font-size: 22px;
             margin-right: 10px;
@@ -66,14 +65,13 @@
         .metismenu li:nth-child(5) .parent-icon i { color: #e91e63; }
 
         /* === Submenyular === */
-            .metismenu ul {
-                
-                background: rgb(245, 241, 241) !important;
-                border-left: 3px solid rgba(0,102,255,0.3);
-                border-radius: 6px;
-                padding-left: 10px;
-                margin: 4px 0;
-            }
+        .metismenu ul {
+            background: rgb(245, 241, 241) !important;
+            border-left: 3px solid rgba(0,102,255,0.3);
+            border-radius: 6px;
+            padding-left: 10px;
+            margin: 4px 0;
+        }
 
         .metismenu ul li a {
             color: #0f172a;
@@ -84,18 +82,10 @@
             transform: translateX(4px);
             color: #0066ff;
         }
-
-        /* === Badge === */
-        .badge.bg-warning.text-dark {
-            background-color: #e0ecff !important;
-            color: #dddee7 !important;
-            font-size: 11px;
-        }
-
     </style>
 
     <div class="sidebar-header">
-
+        <div class="logo-text">Admin Panel</div>
     </div>
     
     <!--navigation-->
@@ -123,13 +113,35 @@
                     <li><a href="#"><i class='bx bx-cog'></i> Bo'lim va Jihozlar</a></li>
                 </ul>
             </li>
+
+            <!-- Filiallar -->
             <li>
                 <a href="javascript:;" class="has-arrow" aria-expanded="false">
                     <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
                     <div class="menu-title">Filiallar</div>
                 </a>
                 <ul>
-                    <li><a href="{{ route('admin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi </a></li>
+                    <li><a href="{{ route('admin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi</a></li>
+                </ul>
+            </li>
+
+            <!-- Kuryer bo‘limi -->
+            <li>
+                <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                    <div class="parent-icon"><i class='bx bx-package'></i></div>
+                    <div class="menu-title">Kuryer</div>
+                </a>      
+                <ul>
+                    <li>
+                        <a href="{{ route('courier.courier.index') }}">
+                            <i class='bx bx-user-pin'></i> Employee
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('courier.courier.index') }}">
+                            <i class='bx bx-cycling'></i> Courierba
+                        </a>
+                    </li>
                 </ul>
             </li>
              <li>

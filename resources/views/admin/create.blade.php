@@ -40,7 +40,7 @@
     }
 
     .breadcrumb-title {
-        font-weight: 600;
+        font-weight: 700;
         font-size: 19px;
         color: var(--blue-main);
         letter-spacing: 0.9px;
@@ -86,6 +86,18 @@
         border-color: var(--blue-main);
         box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
         background-color: var(--white);
+    }
+
+    /* 🌫 Shafof effekt faqat "Rolni tanlang" uchun */
+    #role:focus {
+        background: rgba(37, 99, 235, 0.08) !important;
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15) !important;
+        transition: all 0.3s ease;
+    }
+
+    #role option {
+        background-color: rgba(255, 255, 255, 0.95);
     }
 
     .btn-custom {
@@ -180,21 +192,23 @@
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
+
                     <div class="mb-3">
-                            <label for="phone" class="form-label">Phone number</label>
-                            <div class="input-group">
-                                <span class="input-group-text" id="basic-addon1">+998</span>
-                                <input type="text" 
-                                    class="form-control" 
-                                    id="phone" 
-                                    name="phone" 
-                                    maxlength="9"
-                                    pattern="[0-9]{9}" 
-                                    placeholder="901234567"
-                                    required>
-                            </div>
+                        <label for="phone" class="form-label">Phone number</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1">+998</span>
+                            <input type="text" 
+                                class="form-control" 
+                                id="phone" 
+                                name="phone" 
+                                maxlength="9"
+                                pattern="[0-9]{9}" 
+                                placeholder="901234567"
+                                required>
                         </div>
-                            <div class="mb-3">
+                    </div>
+
+                    <div class="mb-3">
                         <label for="role">Rolni tanlang</label>
                         <select name="role" id="role" class="form-control" required>
                             <option value="">-- Rolni tanlang --</option>
@@ -224,6 +238,7 @@
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
+
                     {{-- LOGIN --}}
                     <div class="mb-3">
                         <label for="login">Login</label>
@@ -252,9 +267,6 @@
                                class="form-control" placeholder="Parolni qaytadan kiriting..." required>
                     </div>
 
-                    {{-- ROL --}}
-                  
-
                     {{-- TUGMALAR --}}
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="submit" class="btn btn-custom">Saqlash</button>
@@ -281,7 +293,7 @@
             }
         }
 
-        toggleFilial(); // Dastlab yuklanganda
+        toggleFilial();
         roleSelect.addEventListener('change', toggleFilial);
     });
 </script>
