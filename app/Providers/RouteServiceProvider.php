@@ -55,6 +55,7 @@ class RouteServiceProvider extends ServiceProvider
              
                 // ->prefix('employee') // URL prefiksi
                 // ->as('employee.') // route name prefiksi
+                
                 ->group(base_path('routes/employee/employee.php')); // yangi faylingga yo‘l
 
             Route::middleware(['web','auth','role:courier'])

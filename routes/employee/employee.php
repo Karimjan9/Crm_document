@@ -7,7 +7,6 @@ use App\Http\Controllers\Employee\EmployeeController;
 
 
 Route::name('employee.')->prefix('employee')->group(function(){
-    
-    Route::get('/courier', [EmployeeController::class, 'index'])->name('courier.index');
+    Route::get('/employee', [EmployeeController::class, 'index'])->name('index');
     // Add more courier routes here
 });

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\FilialController;
+use App\Http\Controllers\Admin\ExpenseController;
+use App\Http\Controllers\Admin\DocumentController;
 
 
 
@@ -22,5 +24,13 @@ Route::name('admin.')->prefix('admin')->group(function(){
     Route::delete('/delete/{id}', [AdminController::class, 'destroy'])->name('destroy');
 
     Route::resource('/filial',FilialController::class)->except(['show']);
+
+    Route::resource('/expense',ExpenseController::class);
+
+    Route::get('/expense_static', [ExpenseController::class, 'statistika'])->name('statistika');
+
+    Route::resource('/document',DocumentController::class);
+
+    Route::get('/document_static', [DocumentController::class, 'statistika'])->name('document.statistika');
 });
 

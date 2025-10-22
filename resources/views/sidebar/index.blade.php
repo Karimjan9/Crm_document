@@ -101,6 +101,17 @@
     <!--navigation-->
     <ul class="metismenu" id="menu">
         @role('admin')
+         <li>
+                <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                    <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
+                    <div class="menu-title">Crm document</div>
+                </a>
+                <ul>
+                    <li><a href="{{ route('admin.document.statistika') }}"><i class='bx bx-map'></i> Document </a></li>
+             
+                    <li><a href="{{ route('admin.document.index') }}"><i class='bx bx-map'></i> Document work </a></li>
+                </ul>
+            </li>
             <li>
                 <a href="javascript:;" class="has-arrow" aria-expanded="false">
                     <div class="parent-icon"><i class='bx bx-user-circle'></i></div>
@@ -119,6 +130,17 @@
                 </a>
                 <ul>
                     <li><a href="{{ route('admin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi </a></li>
+                </ul>
+            </li>
+             <li>
+                <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                    <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
+                    <div class="menu-title">Xarajatlar</div>
+                </a>
+                <ul>
+                    <li><a href="{{ route('admin.expense.index') }}"><i class='bx bx-map'></i> Xarajatlar faoliyat </a></li>
+              
+                    <li><a href="{{ route('admin.statistika') }}"><i class='bx bx-map'></i> Xarajatlar statistika </a></li>
                 </ul>
             </li>
         @endrole
