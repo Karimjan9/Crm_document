@@ -14,13 +14,16 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // 🔹 Rollarni xavfsiz yaratish (agar mavjud bo‘lsa - qayta yaratmaydi)
+        // 🔹 Rollar ro‘yxati
         $roles = [
-            'admin',
+            'super_admin',
+            'admin_manager',
+            'admin_filial',
             'employee',
             'user',
             'courier',
         ];
+
 
         foreach ($roles as $roleName) {
             Role::firstOrCreate([
@@ -29,14 +32,28 @@ class UserSeeder extends Seeder
             ]);
         }
 
-        // 🔹 Userlar yaratish
+        // 🔹 Userlar ro‘yxati
         $users = [
             [
-                'name' => 'Admin',
-                'login' => 'admin',
-                'phone' => '1234567890',
-                'password' => Hash::make('admin123'),
-                'role' => 'admin',
+                'name' => 'Super Admin',
+                'login' => 'superadmin',
+                'phone' => '1234567899',
+                'password' => Hash::make('super123'),
+                'role' => 'super_admin',
+            ],
+            [
+                'name' => 'Admin Manager',
+                'login' => 'adminmanager',
+                'phone' => '1234567898',
+                'password' => Hash::make('manager123'),
+                'role' => 'admin_manager',
+            ],
+            [
+                'name' => 'Admin Filial',
+                'login' => 'adminfilial',
+                'phone' => '1234567897',
+                'password' => Hash::make('filial123'),
+                'role' => 'admin_filial',
             ],
             [
                 'name' => 'Employee',
@@ -61,6 +78,7 @@ class UserSeeder extends Seeder
             ],
         ];
 
+        // 🔹 Har bir userni yaratish va rolini biriktirish
         foreach ($users as $data) {
             $user = User::firstOrCreate(
                 ['login' => $data['login']],

@@ -90,7 +90,7 @@
     
     <!--navigation-->
     <ul class="metismenu" id="menu">
-        @role('admin')
+       @hasanyrole('super_admin|admin_manager')
          <li>
                 <a href="javascript:;" class="has-arrow" aria-expanded="false">
                     <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
@@ -155,7 +155,7 @@
                     <li><a href="{{ route('admin.statistika') }}"><i class='bx bx-map'></i> Xarajatlar statistika </a></li>
                 </ul>
             </li>
-        @endrole
+     @endhasanyrole
     </ul>
     <!--end navigation-->
 </div>
