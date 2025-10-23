@@ -63,6 +63,7 @@
         .metismenu li:nth-child(3) .parent-icon i { color: #28a745; }
         .metismenu li:nth-child(4) .parent-icon i { color: #6f42c1; }
         .metismenu li:nth-child(5) .parent-icon i { color: #e91e63; }
+        .metismenu li:nth-child(6) .parent-icon i { color: #ff9800; } /* Kalendar uchun rang */
 
         /* === Submenyular === */
         .metismenu ul {
@@ -92,69 +93,82 @@
     <ul class="metismenu" id="menu">
         @role('admin')
          <li>
-                <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                    <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
-                    <div class="menu-title">Crm document</div>
-                </a>
-                <ul>
-                    <li><a href="{{ route('admin.document.statistika') }}"><i class='bx bx-map'></i> Document </a></li>
-             
-                    <li><a href="{{ route('admin.document.index') }}"><i class='bx bx-map'></i> Document work </a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                    <div class="parent-icon"><i class='bx bx-user-circle'></i></div>
-                    <div class="menu-title">Foydalanuvchilar</div>
-                </a>
-                <ul>
-                    <li><a href="{{ route('admin.index') }}"><i class='bx bx-user'></i> Foydalanuvchilar</a></li>
-                    <li><a href="#"><i class='bx bx-buildings'></i> Bo'limlar</a></li>
-                    <li><a href="#"><i class='bx bx-cog'></i> Bo'lim va Jihozlar</a></li>
-                </ul>
-            </li>
+            <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
+                <div class="menu-title">Crm document</div>
+            </a>
+            <ul>
+                <li><a href="{{ route('admin.document.statistika') }}"><i class='bx bx-map'></i> Document </a></li>
+                <li><a href="{{ route('admin.document.index') }}"><i class='bx bx-map'></i> Document work </a></li>
+            </ul>
+        </li>
 
-            <!-- Filiallar -->
-            <li>
-                <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                    <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
-                    <div class="menu-title">Filiallar</div>
-                </a>
-                <ul>
-                    <li><a href="{{ route('admin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi</a></li>
-                </ul>
-            </li>
+        <li>
+            <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                <div class="parent-icon"><i class='bx bx-user-circle'></i></div>
+                <div class="menu-title">Foydalanuvchilar</div>
+            </a>
+            <ul>
+                <li><a href="{{ route('admin.index') }}"><i class='bx bx-user'></i> Foydalanuvchilar</a></li>
+                <li><a href="#"><i class='bx bx-buildings'></i> Bo'limlar</a></li>
+                <li><a href="#"><i class='bx bx-cog'></i> Bo'lim va Jihozlar</a></li>
+            </ul>
+        </li>
 
-            <!-- Kuryer bo‘limi -->
-            <li>
-                <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                    <div class="parent-icon"><i class='bx bx-package'></i></div>
-                    <div class="menu-title">Kuryer</div>
-                </a>      
-                <ul>
-                    <li>
-                        <a href="{{ route('admin.filial.index') }}">
-                            <i class='bx bx-user-pin'></i> Employee
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.filial.index') }}">
-                            <i class='bx bx-cycling'></i> Courierba
-                        </a>
-                    </li>
-                </ul>
-            </li>
-             <li>
-                <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                    <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
-                    <div class="menu-title">Xarajatlar</div>
-                </a>
-                <ul>
-                    <li><a href="{{ route('admin.expense.index') }}"><i class='bx bx-map'></i> Xarajatlar faoliyat </a></li>
-              
-                    <li><a href="{{ route('admin.statistika') }}"><i class='bx bx-map'></i> Xarajatlar statistika </a></li>
-                </ul>
-            </li>
+        <!-- Filiallar -->
+        <li>
+            <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
+                <div class="menu-title">Filiallar</div>
+            </a>
+            <ul>
+                <li><a href="{{ route('admin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi</a></li>
+            </ul>
+        </li>
+
+        <!-- Kuryer bo‘limi -->
+        <li>
+            <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                <div class="parent-icon"><i class='bx bx-package'></i></div>
+                <div class="menu-title">Kuryer</div>
+            </a>      
+            <ul>
+                <li>
+                    <a href="{{ route('admin.filial.index') }}">
+                        <i class='bx bx-user-pin'></i> Employee
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.filial.index') }}">
+                        <i class='bx bx-cycling'></i> Courierba
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Xarajatlar -->
+        <li>
+            <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                <div class="parent-icon"><i class='bx bx-money'></i></div>
+                <div class="menu-title">Xarajatlar</div>
+            </a>
+            <ul>
+                <li><a href="{{ route('admin.expense.index') }}"><i class='bx bx-coin-stack'></i> Xarajatlar faoliyat </a></li>
+                <li><a href="{{ route('admin.statistika') }}"><i class='bx bx-line-chart'></i> Xarajatlar statistika </a></li>
+            </ul>
+        </li>
+
+        <!-- 🗓 Kalendar bo‘limi -->
+        <li>
+            <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                <div class="parent-icon"><i class='bx bx-calendar'></i></div>
+                <div class="menu-title">Kalendar</div>
+            </a>
+            <ul>
+                <li><a href="{{ route('admin.calendar.index') }}"><i class='bx bx-calendar-event'></i> sanalar </a></li>
+                <li><a href="{{ route('admin.calendar.create') }}"><i class='bx bx-plus-circle'></i> Tahrirlash </a></li>
+            </ul>
+        </li>
         @endrole
     </ul>
     <!--end navigation-->

@@ -52,6 +52,15 @@ Route::get('/', function () {
    
 });
 
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('calendar', function () {
+        return view('admin.calendar.index');
+    })->name('calendar.index');
+
+    Route::get('calendar/create', function () {
+        return view('admin.calendar.create');
+    })->name('calendar.create');
+});
 
 
 
