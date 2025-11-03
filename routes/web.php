@@ -5,9 +5,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
-
-
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Courier\CourierController;
+use App\Http\Controllers\KalendarController;
+
+
 // use dompdf;
 
 
@@ -52,9 +54,33 @@ Route::get('/', function () {
    
 });
 
+
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/calendar', function () {
+        return view('admin.calendar.index');
+    })->name('calendar.index');
+
+    Route::get('/calendar/create', function () {
+        return view('admin.calendar.create');
+    })->name('calendar.create');
+});
+
+
+Route::get('/courier', [CourierController::class, 'index'])->name('courier.index');
+
+
+
+
     Route::get('/change-password', [AuthenticatedSessionController::class, 'change-password'])->name('change-password');
 
         Route::any('/destroy', [AuthenticatedSessionController::class, 'destroy'])->name('destroy');
+    
+
+
+       
+
 
         // Route::get('/change_session', [PrixodController::class, 'clear_session'])->name('clear_session');
 

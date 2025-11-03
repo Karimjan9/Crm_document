@@ -241,7 +241,7 @@
 
                     {{-- LOGIN --}}
                     <div class="mb-3">
-                        <label for="login">Login</label>
+                        <label for="login">Login</label>    
                         <input type="text" id="login" name="login" class="form-control" 
                                placeholder="Masalan: alisher01"
                                value="{{ old('login') }}" required>
