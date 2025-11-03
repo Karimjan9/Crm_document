@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\FilialController;
 use App\Http\Controllers\Admin\ExpenseController;
+use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\DocumentController;
 
 
@@ -32,5 +33,8 @@ Route::name('admin.')->prefix('admin')->group(function(){
     Route::resource('/document',DocumentController::class);
 
     Route::get('/document_static', [DocumentController::class, 'statistika'])->name('document.statistika');
+
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+
 });
 
