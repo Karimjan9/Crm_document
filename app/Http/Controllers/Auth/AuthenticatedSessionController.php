@@ -27,10 +27,15 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        // dd($request->user()->hasRole("employee"));
-        if($request->user()->hasRole("admin")){
+      
+        if($request->user()->hasRole("admin_manager") || $request->user()->hasRole("super_admin")){
 
             return redirect()->route('admin.index');
+
+        }
+        else if($request->user()->hasRole("admin_filial")){
+            // dd(1);
+            return redirect()->route('employee.index');
 
         }else if($request->user()->hasRole("employee")){
             // dd(1);
