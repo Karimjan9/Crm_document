@@ -3,7 +3,7 @@
 @section('body')
 <div class="page-wrapper">
   <div class="page-content">
-    <h1>📅 Calendar — index sahifasi ishlayapti</h1>
+    <h1>➕ Calendar — yangi ma’lumot qo‘shish sahifasi</h1>
   </div>
 </div>
 @endsection

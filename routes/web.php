@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Courier\CourierController;
 use App\Http\Controllers\KalendarController;
+
 
 // use dompdf;
 
@@ -53,15 +55,21 @@ Route::get('/', function () {
 });
 
 
+
+
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('calendar', function () {
+    Route::get('/calendar', function () {
         return view('admin.calendar.index');
     })->name('calendar.index');
 
-    Route::get('calendar/create', function () {
+    Route::get('/calendar/create', function () {
         return view('admin.calendar.create');
     })->name('calendar.create');
 });
+
+
+Route::get('/courier', [CourierController::class, 'index'])->name('courier.index');
+
 
 
 
