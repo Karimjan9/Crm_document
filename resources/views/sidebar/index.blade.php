@@ -1,6 +1,6 @@
 <div class="sidebar-wrapper" data-simplebar="true"> 
     <style>
-        /* === Sidebar dizayn (oq-kok + neon effekt) === */
+      
 
         .sidebar-header {
             background: linear-gradient(135deg, rgba(0,102,255,0.85), rgba(0,170,255,0.8)) !important;
@@ -37,7 +37,7 @@
             z-index: 1;
         }
 
-        /* === Neon hover effekti === */
+     
         .metismenu a:hover {
             background: rgb(253, 249, 249);
             box-shadow: 0 0 12px rgba(0,102,255,0.35);
@@ -51,7 +51,6 @@
             color: #0066ff !important;
         }
 
-        /* === Icon ranglar === */
         .parent-icon i {
             font-size: 22px;
             margin-right: 10px;
@@ -65,7 +64,7 @@
         .metismenu li:nth-child(5) .parent-icon i { color: #e91e63; }
         .metismenu li:nth-child(6) .parent-icon i { color: #ff9800; } /* Kalendar uchun rang */
 
-        /* === Submenyular === */
+      
         .metismenu ul {
             background: rgb(245, 241, 241) !important;
             border-left: 3px solid rgba(0,102,255,0.3);
@@ -126,7 +125,6 @@
             </ul>
         </li>
 
-        <!-- Kuryer bo‘limi -->
         <li>
             <a href="javascript:;" class="has-arrow" aria-expanded="false">
                 <div class="parent-icon"><i class='bx bx-package'></i></div>
@@ -146,7 +144,7 @@
             </ul>
         </li>
 
-        <!-- Xarajatlar -->
+       
         <li>
             <a href="javascript:;" class="has-arrow" aria-expanded="false">
                 <div class="parent-icon"><i class='bx bx-money'></i></div>
@@ -159,19 +157,10 @@
         </li>
 
         <!-- 🗓 Kalendar bo‘limi -->
-        <li>
-            <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                <div class="parent-icon"><i class='bx bx-calendar'></i></div>
-                <div class="menu-title">Kalendar</div>
-            </a>
-            <ul>
-                <li><a href="{{ route('admin.calendar.index') }}"><i class='bx bx-calendar-event'></i> sanalar </a></li>
-                <li><a href="{{ route('admin.calendar.create') }}"><i class='bx bx-plus-circle'></i> Tahrirlash </a></li>
-            </ul>
-        </li>
+
         @endrole
     </ul>
-    <!--end navigation-->
+    
 </div>
 
 <script>
