@@ -46,17 +46,12 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
              
                 ->group(base_path('routes/web.php'));
-            Route::middleware(['web','auth','role:admin_manager,super_admin'])
-              
-                // ->prefix('admin') // URL prefiksi
-                // ->as('admin.') // route name prefiksi
-                ->group(base_path('routes/admin_manager/admin_manager.php'));
-            Route::middleware(['web','auth','role:admin_manager,super_admin'])
-            
-            // ->prefix('admin') // URL prefiksi
-            // ->as('admin.') // route name prefiksi
-            ->group(base_path('routes/super_admin/super_admin.php')); 
-             Route::middleware(['web','auth','role:employee'])
+                Route::middleware(['web', 'auth', 'role:admin_manager|super_admin'])
+                    ->group(base_path('routes/admin_manager/admin_manager.php'));
+
+                 Route::middleware(['web', 'auth', 'role:admin_manager|super_admin'])
+                     ->group(base_path('routes/super_admin/super_admin.php'));
+                    Route::middleware(['web','auth','role:employee'])
              
                 // ->prefix('employee') // URL prefiksi
                 // ->as('employee.') // route name prefiksi

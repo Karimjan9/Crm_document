@@ -158,7 +158,7 @@
 
         <div class="page-breadcrumb mb-3">
             <div class="breadcrumb-title">Yangi Filial Qo‘shish</div>
-            <a href="{{ route('admin.filial.index') }}" class="btn btn-outline">← Orqaga</a>
+            <a href="{{ route('superadmin.filial.index') }}" class="btn btn-outline">← Orqaga</a>
         </div>
 
         <div class="card radius-10">
@@ -183,7 +183,7 @@
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="submit" class="btn btn-custom">Saqlash</button>
-                        <a href="{{ route('admin.filial.index') }}" class="btn btn-outline">Bekor qilish</a>
+                        <a href="{{ route('superadmin.filial.index') }}" class="btn btn-outline">Bekor qilish</a>
                     </div>
                 </form>
             </div>

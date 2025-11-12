@@ -11,13 +11,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
-
+use Illuminate\Validation\Rules\In;
 
 class AdminController extends Controller
 {
    
     public function index()
     {
+        // dd('here');
         $users = User::role(['employee', 'courier'])
         ->with('roles', 'filial')
         ->orderBy('id', 'desc')
@@ -27,14 +28,30 @@ class AdminController extends Controller
         return view('admin.index',compact('users'));
     }
 
-   
-    public function create()
-    {
-        $rols=Role::where('name' , 'like', '%employee%')->orWhere('name','like','%courier%')->get();
-        // dd($rols);
-        $filials=FilialModel::get();
-        return view('admin.create',compact('rols','filials'));
+   /**
+ * @method bool hasRole(string|array $roles)
+ * @method bool hasAnyRole(array|string $roles)
+ * @method bool hasAllRoles(array|string $roles)
+ */
+   public function create()
+{
+    if (auth()->user()->hasAnyRole(['super_admin'])) {
+        $rols = Role::where('name', 'like', '%employee%')
+            ->orWhere('name', 'like', '%admin_manager%')
+            ->orWhere('name', 'like', '%admin_filial%')
+            ->orWhere('name', 'like', '%courier%')
+            ->get();
+    } else {
+        $rols = Role::where('name', 'like', '%employee%')
+            ->orWhere('name', 'like', '%admin_filial%')
+            ->orWhere('name', 'like', '%courier%')
+            ->get();
     }
+
+    $filials = FilialModel::get();
+
+    return view('admin.create', compact('rols', 'filials'));
+}
 
         public function store(StoreUserRequest $request)
     {

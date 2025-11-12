@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\DocumentController;
 
 
 
-Route::name('admin.')->prefix('admin')->group(function(){
+Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
     Route::get('/index', [AdminController::class, 'index'])->name('index');
 

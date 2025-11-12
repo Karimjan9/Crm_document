@@ -22,7 +22,7 @@ class FilialController extends Controller
    
     public function create()
     {
-        return view('admin.filial.create');
+        return view('superadmin.filial.create');
     }
 
    

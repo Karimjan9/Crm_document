@@ -97,8 +97,8 @@
                 <div class="menu-title">Crm document</div>
             </a>
             <ul>
-                <li><a href="{{ route('admin.document.statistika') }}"><i class='bx bx-map'></i> Document </a></li>
-                <li><a href="{{ route('admin.document.index') }}"><i class='bx bx-map'></i> Document work </a></li>
+                <li><a href="{{ route('superadmin.document.statistika') }}"><i class='bx bx-map'></i> Document </a></li>
+                <li><a href="{{ route('superadmin.document.index') }}"><i class='bx bx-map'></i> Document work </a></li>
             </ul>
         </li>
 
@@ -108,7 +108,7 @@
                 <div class="menu-title">Foydalanuvchilar</div>
             </a>
             <ul>
-                <li><a href="{{ route('admin.index') }}"><i class='bx bx-user'></i> Foydalanuvchilar</a></li>
+                <li><a href="{{ route('superadmin.index') }}"><i class='bx bx-user'></i> Foydalanuvchilar</a></li>
                 <li><a href="#"><i class='bx bx-buildings'></i> Bo'limlar</a></li>
                 <li><a href="#"><i class='bx bx-cog'></i> Bo'lim va Jihozlar</a></li>
             </ul>
@@ -121,7 +121,7 @@
                 <div class="menu-title">Filiallar</div>
             </a>
             <ul>
-                <li><a href="{{ route('admin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi</a></li>
+                <li><a href="{{ route('superadmin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi</a></li>
             </ul>
         </li>
 
@@ -132,12 +132,12 @@
             </a>      
             <ul>
                 <li>
-                    <a href="{{ route('admin.filial.index') }}">
+                    <a href="{{ route('superadmin.filial.index') }}">
                         <i class='bx bx-user-pin'></i> Employee
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.filial.index') }}">
+                    <a href="{{ route('superadmin.filial.index') }}">
                         <i class='bx bx-cycling'></i> Courierba
                     </a>
                 </li>
@@ -151,13 +151,13 @@
                 <div class="menu-title">Xarajatlar</div>
             </a>
             <ul>
-                <li><a href="{{ route('admin.expense.index') }}"><i class='bx bx-coin-stack'></i> Xarajatlar faoliyat </a></li>
-                <li><a href="{{ route('admin.statistika') }}"><i class='bx bx-line-chart'></i> Xarajatlar statistika </a></li>
+                <li><a href="{{ route('superadmin.expense.index') }}"><i class='bx bx-coin-stack'></i> Xarajatlar faoliyat </a></li>
+                <li><a href="{{ route('superadmin.statistika') }}"><i class='bx bx-line-chart'></i> Xarajatlar statistika </a></li>
             </ul>
         </li>
 
         <li>
-    <a href="{{ route('admin.calendar.index') }}" class="d-flex align-items-center">
+    <a href="{{ route('superadmin.calendar.index') }}" class="d-flex align-items-center">
         <i class="bx bx-calendar"></i>
         <span class="ms-2">Kalendar</span>
     </a>

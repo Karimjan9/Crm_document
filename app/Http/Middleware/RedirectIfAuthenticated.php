@@ -23,9 +23,9 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                if($request->user()->hasRole("super_admin")){
-
-                    return redirect()->route('superadmin.employees.index');
+                if($request->user()->hasRole("admin_manager") || $request->user()->hasRole("super_admin")){
+                    
+                    return redirect()->route('superadmin.index');
                 }else if($request->user()->hasRole("admin")){
         
                     return redirect()->route('admin.employees.index');

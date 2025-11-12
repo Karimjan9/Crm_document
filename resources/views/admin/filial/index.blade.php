@@ -169,7 +169,7 @@
 
         <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
             <div class="breadcrumb-title pe-3">Filiallar</div>
-            <a href="{{ route('admin.filial.create') }}" class="btn btn-custom">+ Yangi Filial</a>
+            <a href="{{ route('superadmin.filial.create') }}" class="btn btn-custom">+ Yangi Filial</a>
         </div>
 
         <div class="d-flex align-items-center mb-2">

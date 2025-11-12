@@ -9,7 +9,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+/**
+ * @method bool hasRole(string|array $roles)
+ * @method bool hasAnyRole(array|string $roles)
+ * @method bool hasAllRoles(array|string $roles)
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable,HasRoles;
@@ -49,7 +53,10 @@ class User extends Authenticatable
         return $this->belongsTo(FilialModel::class);
     }
 
-
+    // public function hasRole($role)
+    // {
+    //     return in_array($role, $this->roles->pluck('name')->toArray());
+    // }
    
 
    

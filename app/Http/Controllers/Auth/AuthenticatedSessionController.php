@@ -29,8 +29,8 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
       
         if($request->user()->hasRole("admin_manager") || $request->user()->hasRole("super_admin")){
-
-            return redirect()->route('admin.index');
+            // dd('here');
+            return redirect()->route('superadmin.index');
 
         }
         else if($request->user()->hasRole("admin_filial")){
@@ -44,6 +44,10 @@ class AuthenticatedSessionController extends Controller
         }else if($request->user()->hasRole("courier")){
 
             return redirect()->route('courier.index'); 
+        }
+        else{
+            return redirect()->route('login'); 
+
         }
         
 
@@ -60,6 +64,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect('login');
     }
 }

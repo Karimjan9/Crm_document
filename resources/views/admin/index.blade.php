@@ -160,7 +160,7 @@ tbody tr:hover {
 
         <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
             <div class="breadcrumb-title pe-3">Xodimlar</div>
-            <a href="{{ route('admin.create') }}" class="btn btn-custom">+ Yangi xodim</a>
+            <a href="{{ route('superadmin.create') }}" class="btn btn-custom">+ Yangi xodim</a>
         </div>
 
         <div class="d-flex align-items-center mb-2">
@@ -194,11 +194,11 @@ tbody tr:hover {
                                     <td>{{ $user->filial ? $user->filial->name : 'Berilmagan' }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('admin.edit', $user->id) }}" class="btn-action btn-edit">
+                                            <a href="{{ route('superadmin.edit', $user->id) }}" class="btn-action btn-edit">
                                                 <i class="bx bx-edit"></i> Tahrirlash
                                             </a>
 
-                                            <form action="{{ route('admin.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Haqiqatan o‘chirmoqchimisiz?')">
+                                            <form action="{{ route('superadmin.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Haqiqatan o‘chirmoqchimisiz?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn-action btn-delete">
