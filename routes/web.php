@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Courier\CourierController;
 use App\Http\Controllers\KalendarController;
-
+use App\Http\Controllers\HolidayController;
 
 // use dompdf;
 
@@ -53,6 +53,12 @@ Route::get('/', function () {
 
    
 });
+
+// holidays
+
+Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
+Route::post('/holidays', [HolidayController::class, 'store'])->name('holidays.store');
+Route::delete('/holidays/{date}', [HolidayController::class, 'destroy'])->name('holidays.destroy');
 
 
 
