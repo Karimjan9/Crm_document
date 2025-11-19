@@ -161,6 +161,10 @@
         <i class="bx bx-calendar"></i>
         <span class="ms-2">Kalendar</span>
     </a>
+     <a href="{{ route('superadmin.service.index') }}" class="d-flex align-items-center">
+        <i class="bx bx-calendar"></i>
+        <span class="ms-2">Xizmatlar</span>
+    </a>
         </li>
 
 

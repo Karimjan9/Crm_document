@@ -6,9 +6,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\FilialController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\DocumentController;
-
-
-
+use App\Http\Controllers\Admin\ServiceAddonController;
+use App\Http\Controllers\Admin\ServiceController;
 
 Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
@@ -36,5 +35,8 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
     Route::get('/calendar/index', [CalendarController::class, 'index'])->name('calendar.index');
 
+    Route::resource('/service',ServiceController::class)->except(['show']);
+
+    Route::resource('service/{service}/addon',ServiceAddonController::class)->except(['show', 'index']);
 });
 
