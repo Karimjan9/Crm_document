@@ -33,6 +33,10 @@ class RedirectIfAuthenticated
         
                     // return redirect()->route('user_role.employee.index', ["profile" => $request->user()->id ]);
                 }
+                else if($request->user()->hasRole("admin_filial")){
+        
+                    return redirect()->route('admin_filial.index');
+                }
             }
         }
 

@@ -18,7 +18,7 @@ return new class extends Migration
      Schema::create('clients', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('phone_number', 15)->unique(); // Telefon raqam string va unik
+            $table->string('phone_number', 15)->unique();
             $table->text('description')->nullable();
             $table->timestamps();
         });

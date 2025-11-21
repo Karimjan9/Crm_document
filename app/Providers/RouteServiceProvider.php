@@ -62,7 +62,12 @@ class RouteServiceProvider extends ServiceProvider
                
                 // ->prefix('courier') // URL prefiksi
                 // ->as('courier.') // route name prefiksi
-                ->group(base_path('routes/courier/courier.php')); // yangi faylingga yo‘l
+                ->group(base_path('routes/courier/courier.php')); 
+
+            Route::middleware(['web','auth','role:admin_filial'])
+               
+              
+                ->group(base_path('routes/admin_filial/admin_filial.php'));
         });
     }
 

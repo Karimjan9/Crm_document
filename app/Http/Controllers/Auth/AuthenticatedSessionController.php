@@ -35,18 +35,18 @@ class AuthenticatedSessionController extends Controller
         }
         else if($request->user()->hasRole("admin_filial")){
             // dd(1);
-            return redirect()->route('employee.index');
+                    return redirect()->route('admin_filial.index');
 
         }else if($request->user()->hasRole("employee")){
             // dd(1);
-            return redirect()->route('employee.index');
+                return redirect()->route('employee.index');
 
         }else if($request->user()->hasRole("courier")){
 
-            return redirect()->route('courier.index'); 
+                 return redirect()->route('courier.index'); 
         }
         else{
-            return redirect()->route('login'); 
+                 return redirect()->route('login'); 
 
         }
         

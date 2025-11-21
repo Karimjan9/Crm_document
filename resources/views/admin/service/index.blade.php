@@ -106,7 +106,7 @@
 
     .btn-danger:hover { background: var(--danger-hover); transform: translateY(-1px); }
 
-    /* Modal styles */
+   
     .modal-backdrop {
         position: fixed;
         inset: 0;

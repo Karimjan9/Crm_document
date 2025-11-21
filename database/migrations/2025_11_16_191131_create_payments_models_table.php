@@ -30,6 +30,10 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::table('payments', function (Blueprint $table) {
+            $table->dropForeign(['document_id']);
+            $table->dropForeign(['paid_by_admin_id']);
+        });
         Schema::dropIfExists('payments');
     }
 };
