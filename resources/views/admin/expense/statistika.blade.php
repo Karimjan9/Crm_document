@@ -2,83 +2,100 @@
 
 @section('style')
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-    :root {
-        --text-color: #15172a;
-        --blue-main: #1e3a8a;
-        --blue-light: #2563eb;
-        --blue-bg: #f0f6ff;
-        --white: #ffffff;
-        --border-color: #e5e7eb;
-        --green: #16a34a;
-        --red: #dc2626;
-    }
+:root {
+    --text-color: #15172a;
+    --blue-main: #1e3a8a;
+    --blue-light: #2563eb;
+    --blue-bg: #f0f6ff;
+    --white: #ffffff;
+    --border-color: #e5e7eb;
+    --green: #16a34a;
+    --red: #dc2626;
+}
 
-    body {
-        font-family: "Inter", sans-serif;
-        background: var(--blue-bg);
-        color: var(--text-color);
-    }
+body {
+    font-family: "Inter", sans-serif;
+    background: var(--blue-bg);
+    color: var(--text-color);
+}
 
-    .page-wrapper { padding: 24px; }
+.page-wrapper { padding: 24px; }
 
-    .card {
-        background: var(--white);
-        border-radius: 16px;
-        box-shadow: 0 4px 10px rgba(30, 58, 138, 0.08);
-        border: 1px solid var(--border-color);
-        transition: 0.3s;
-    }
+.card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(30, 58, 138, 0.08);
+    border: 1px solid var(--border-color);
+    transition: 0.3s;
+}
 
-    .card:hover { box-shadow: 0 6px 16px rgba(37,99,235,0.15); }
+.card:hover { box-shadow: 0 6px 16px rgba(37,99,235,0.15); }
 
-    .card-header {
-        font-weight: 600;
-        color: var(--blue-main);
-        padding: 16px 20px;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 16px;
-    }
+.card-header {
+    font-weight: 600;
+    color: var(--blue-main);
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 16px;
+}
 
-    .card-body {
-        padding: 20px;
-    }
+.card-body { padding: 20px; }
 
-    .summary-card {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: var(--white);
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        transition: 0.3s;
-    }
+.summary-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--white);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: 0.3s;
+}
 
-    .summary-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    }
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
 
-    .summary-card h5 { margin-bottom: 5px; font-size: 18px; color: var(--blue-main); }
-    .summary-card span { font-size: 14px; color: #555; }
+.summary-card h5 { margin-bottom: 5px; font-size: 18px; color: var(--blue-main); }
+.summary-card span { font-size: 14px; color: #555; }
 
-    .stat-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 16px;
-    }
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
 
-    canvas {
-        width: 100% !important;
-        height: 320px !important;
-    }
+canvas {
+    width: 100% !important;
+    height: 320px !important;
+}
 
-    h6 {
-        color: var(--blue-main);
-        font-weight: 600;
-    }
+/* Zamonaviy ko‘k rangli jadval */
+.table-modern tbody tr:nth-of-type(odd) { 
+    background-color: rgba(37, 99, 235, 0.05); 
+}
+.table-modern tbody tr:hover { 
+    background-color: rgba(37, 99, 235, 0.15); 
+    transition: 0.2s;
+    transform: translateX(2px);
+}
+.table-modern thead {
+    background-color: var(--blue-main);
+    color: var(--white);
+    font-weight: 600;
+}
+.progress-bar {
+    font-size: 12px; 
+    text-align: center; 
+    line-height: 16px; 
+    color: #fff; 
+    font-weight: 500; 
+    border-radius: 8px; 
+    background-color: var(--blue-light);
+}
 </style>
 @endsection
 
@@ -91,7 +108,6 @@
             <button class="btn btn-custom">+ Yangi xarajat</button>
         </div>
 
-        <!-- Summary section -->
         <div class="stat-grid mb-4">
             <div class="summary-card">
                 <div>
@@ -124,9 +140,7 @@
             </div>
         </div>
 
-        <!-- Charts -->
         <div class="row">
-            <!-- Oylik xarajatlar -->
             <div class="col-md-6 mb-4">
                 <div class="card">
                     <div class="card-header">📅 Oylik xarajatlar (so‘mda)</div>
@@ -136,7 +150,6 @@
                 </div>
             </div>
 
-            <!-- Filiallar kesimida taqsimot -->
             <div class="col-md-6 mb-4">
                 <div class="card">
                     <div class="card-header">🏢 Filiallar bo‘yicha xarajat taqsimoti</div>
@@ -147,12 +160,11 @@
             </div>
         </div>
 
-        <!-- Jadval misoli -->
         <div class="card mt-4">
             <div class="card-header">📋 Filiallar kesimida batafsil statistik jadval</div>
             <div class="card-body table-responsive">
-                <table class="table table-bordered align-middle">
-                    <thead class="table-primary">
+                <table class="table table-bordered align-middle table-modern">
+                    <thead>
                         <tr>
                             <th>#</th>
                             <th>Filial nomi</th>
@@ -162,10 +174,50 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>1</td><td>Toshkent</td><td>29 000 000</td><td>34%</td><td>Ofis jihozlari</td></tr>
-                        <tr><td>2</td><td>Samarqand</td><td>22 000 000</td><td>26%</td><td>Reklama</td></tr>
-                        <tr><td>3</td><td>Andijon</td><td>18 000 000</td><td>21%</td><td>Transport</td></tr>
-                        <tr><td>4</td><td>Farg‘ona</td><td>15 000 000</td><td>19%</td><td>Kommunal</td></tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Toshkent</td>
+                            <td>29 000 000</td>
+                            <td style="min-width:150px;">
+                                <div class="progress" style="height:16px; border-radius:8px; background:#dbeafe;">
+                                    <div class="progress-bar" role="progressbar" style="width: 34%; background: var(--blue-main);">34%</div>
+                                </div>
+                            </td>
+                            <td>Ofis jihozlari</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Samarqand</td>
+                            <td>22 000 000</td>
+                            <td>
+                                <div class="progress" style="height:16px; border-radius:8px; background:#dbeafe;">
+                                    <div class="progress-bar" role="progressbar" style="width: 26%; background: var(--blue-main);">26%</div>
+                                </div>
+                            </td>
+                            <td>Reklama</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Andijon</td>
+                            <td>18 000 000</td>
+                            <td>
+                                <div class="progress" style="height:16px; border-radius:8px; background:#dbeafe;">
+                                    <div class="progress-bar" role="progressbar" style="width: 21%; background: var(--blue-main);">21%</div>
+                                </div>
+                            </td>
+                            <td>Transport</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Farg‘ona</td>
+                            <td>15 000 000</td>
+                            <td>
+                                <div class="progress" style="height:16px; border-radius:8px; background:#dbeafe;">
+                                    <div class="progress-bar" role="progressbar" style="width: 19%; background: var(--blue-main);">19%</div>
+                                </div>
+                            </td>
+                            <td>Kommunal</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -180,7 +232,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // 📅 Oylik xarajatlar (Line Chart)
     const ctx1 = document.getElementById('monthlyChart');
     new Chart(ctx1, {
         type: 'line',
@@ -203,7 +254,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 🏢 Filiallar kesimida taqsimot (Doughnut Chart)
     const ctx2 = document.getElementById('branchChart');
     new Chart(ctx2, {
         type: 'doughnut',

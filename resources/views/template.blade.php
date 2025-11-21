@@ -60,7 +60,7 @@
 		<!--Start Back To Top Button--> <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
 		<!--End Back To Top Button-->
 	<footer class="page-footer">
-    <style>
+    {{-- <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
         @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
@@ -81,7 +81,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, rgba(0,123,255,0.3), rgb(27, 70, 151), rgba(255,0,150,0.3));
+            background: linear-gradient(45deg, rgba(0,123,255,0.3), rgb(192, 192, 192), rgba(255,0,150,0.3));
             animation: rotate 10s linear infinite;
             z-index: 0;
         }
@@ -111,7 +111,7 @@
             0%, 100% { transform: scale(1); color: #00ffc3; }
             50% { transform: scale(1.2); color: #ff4d6d; }
         }
-    </style>
+    </style> --}}
 
     <div class="footer-content">
         <p class="footer-copy">Copyright © <span>2024</span>. All rights reserved.</p>

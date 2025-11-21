@@ -2,162 +2,140 @@
 
 @section('style')
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-            .addons-box {
-            padding: 15px;
-            background: #f9fbff;
-            border-top: 1px solid #dbeafe;
-            animation: slideDown 0.3s ease;
-        }
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-        @keyframes slideDown {
-            0% { opacity: 0; transform: translateY(-10px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-    :root {
-        --text-color: #15172a;
-        --blue-main: #1e3a8a;
-        --blue-light: #2563eb;
-        --blue-bg: #f0f6ff;
-        --white: #ffffff;
-        --border-color: #e5e7eb;
-        --danger-color: #dc3545;
-        --danger-hover: #b52b3a;
-    }
+:root {
+    --blue-main: #244b8a;
+    --blue-hover: #2563eb;
+    --white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(200,200,200,0.4);
+    --text-dark: #0f172a;
+    --green: #16a34a;
+    --red: #dc2626;
+}
 
-    body {
-        font-family: "Inter", "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans", "sans-serif";
-        background: var(--blue-bg);
-        color: var(--text-color);
-        margin: 0;
-        padding: 0;
-    }
+/* ===== BODY ===== */
+body {
+    background: #f5f5f5; /* oq fon */
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-dark);
+}
 
-    .page-wrapper { padding: 24px; }
+/* ===== PAGE WRAPPER ===== */
+.page-wrapper {
+    padding: 25px;
+    max-width: 100%;
+    overflow-x: hidden;
+}
 
-    .page-breadcrumb {
-        background: var(--white);
-        border-radius: 12px;
-        padding: 12px 20px;
-        box-shadow: 0 2px 8px rgba(30, 58, 138, 0.08);
-    }
+/* ===== BREADCRUMB ===== */
+.page-breadcrumb {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    background: var(--glass-bg);
+    border-radius: 12px;
+    padding: 12px 20px;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+}
+.breadcrumb-title { font-weight: 600; color: var(--text-dark); }
 
-    .breadcrumb-title { font-weight: 600; color: var(--text-color); }
+/* ===== BUTTONS ===== */
+.btn-custom {
+    background: var(--blue-main);
+    color: var(--white);
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.btn-custom::after {
+    content: '';
+    position: absolute;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(18, 52, 126, 0.2);
+    opacity: 0;
+    transition: 0.3s ease;
+    border-radius: 10px;
+}
+.btn-custom:hover::after { opacity: 1; }
+.btn-custom:hover { background: var(--blue-hover); transform: translateY(-2px); }
 
-    .card {
-        background: var(--white);
-        border-radius: 16px;
-        box-shadow: 0 4px 10px rgba(30, 58, 138, 0.08);
-        transition: all 0.3s ease;
-        border: 1px solid var(--border-color);
-    }
+/* ===== CARDS ===== */
+.card, .summary-card {
+    background: var(--glass-bg);
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    padding: 18px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    transition: 0.3s ease;
+    backdrop-filter: blur(12px);
+}
+.card:hover, .summary-card:hover { transform: translateY(-3px); }
 
-    .card:hover { box-shadow: 0 6px 16px rgba(37, 99, 235, 0.15); }
+/* ===== TABLE ===== */
+.table-wrapper { margin-top: 20px; }
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    transition: 0.3s ease;
+}
+.table th {
+    background: var(--blue-main);
+    color: var(--white);
+    font-weight: 500;
+    padding: 12px;
+    text-align: left;
+}
+.table td {
+    background: rgba(255,255,255,0.8);
+    color: var(--text-dark);
+    padding: 10px;
+    transition: 0.3s ease;
+}
+.table tbody tr:hover { background: rgba(12, 57, 155, 0.15); }
 
-    .card-body { padding: 25px; }
+/* ===== FILTER BOX ===== */
+.filter-box {
+    background: var(--glass-bg);
+    padding: 18px;
+    border-radius: 14px;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    margin-bottom: 20px;
+}
+.filter-box select, .filter-box input {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+}
 
-    h6 { color: var(--blue-main); font-weight: 600; letter-spacing: 0.5px; }
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+    .page-breadcrumb { flex-direction: column; gap:10px; align-items:flex-start; }
+    .card, .summary-card { padding: 14px; }
+}
 
-    table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        border-radius: 12px;
-        overflow: hidden;
-        font-size: 14px;
-    }
+/* ===== MODAL ===== */
+.modal-backdrop { background: rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; position:fixed; inset:0; z-index:1000; }
+.modal-backdrop.active { display:flex; }
+.modal-content-custom { background: var(--white); padding: 20px 25px; border-radius:12px; max-width:400px; width:100%; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,0.15); animation: fadeInScale 0.3s ease forwards; }
+@keyframes fadeInScale { 0%{opacity:0;transform:scale(0.8);} 100%{opacity:1;transform:scale(1);} }
 
-    thead { background: var(--blue-main); color: var(--white); }
-
-    th, td { text-align: center; vertical-align: middle; padding: 12px 8px; }
-
-    tbody tr { background-color: var(--white); transition: background 0.25s ease; }
-    tbody tr:hover { background-color: #e0edff; }
-
-    .fixed_header2 { position: sticky; top: 0; background: var(--blue-main); color: white; z-index: 10; }
-
-    /* Custom button */
-    .btn-custom {
-        background: var(--blue-light);
-        border: none;
-        color: white;
-        padding: 10px 18px;
-        border-radius: 8px;
-        font-weight: 500;
-        font-size: 14px;
-        transition: 0.3s;
-    }
-
-    .btn-custom:hover {
-        background: var(--blue-main);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(30, 58, 138, 0.25);
-    }
-
-    .btn-danger {
-        background: var(--danger-color);
-        border: none;
-        color: white;
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 13px;
-        transition: 0.2s;
-    }
-
-    .btn-danger:hover { background: var(--danger-hover); transform: translateY(-1px); }
-
-    /* Modal styles */
-    .modal-backdrop {
-        position: fixed;
-        inset: 0;
-        background-color: rgba(0,0,0,0.5);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-
-    .modal-backdrop.active { display: flex; }
-
-    .modal-content-custom {
-        background: var(--white);
-        padding: 20px 25px;
-        border-radius: 12px;
-        max-width: 400px;
-        width: 100%;
-        box-shadow: 0 6px 18px rgba(30,58,138,0.25);
-        text-align: center;
-        animation: fadeInScale 0.3s ease forwards;
-    }
-
-    .modal-content-custom h5 { margin-bottom: 15px; font-weight: 600; color: var(--text-color); }
-    .modal-content-custom p { font-size: 14px; color: #555; margin-bottom: 20px; }
-
-    .modal-actions button {
-        min-width: 100px;
-        padding: 8px 15px;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: 500;
-        margin: 0 5px;
-        border: none;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .modal-actions .btn-cancel { background: #6c757d; color: white; }
-    .modal-actions .btn-cancel:hover { background: #5a6268; transform: translateY(-1px); }
-
-    .modal-actions .btn-confirm { background: var(--danger-color); color: white; }
-    .modal-actions .btn-confirm:hover { background: var(--danger-hover); transform: translateY(-1px); }
-
-    @keyframes fadeInScale {
-        0% { opacity: 0; transform: scale(0.8); }
-        100% { opacity: 1; transform: scale(1); }
-        
-    }
 </style>
 @endsection
+
 
 @section('body')
 <div class="page-wrapper">

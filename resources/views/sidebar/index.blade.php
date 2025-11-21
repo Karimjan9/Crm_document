@@ -156,16 +156,21 @@
             </ul>
         </li>
 
-        <li>
+ <li>
     <a href="{{ route('superadmin.calendar.index') }}" class="d-flex align-items-center">
-        <i class="bx bx-calendar"></i>
-        <span class="ms-2">Kalendar</span>
+        <div class="parent-icon" style="color:#ff9800;"><i class='bx bx-calendar'></i></div>
+        <div class="menu-title">Kalendar</div>
     </a>
-     <a href="{{ route('superadmin.service.index') }}" class="d-flex align-items-center">
-        <i class="bx bx-calendar"></i>
-        <span class="ms-2">Xizmatlar</span>
+</li>
+
+<li>
+    <a href="{{ route('superadmin.service.index') }}" class="d-flex align-items-center">
+        <div class="parent-icon" style="color:#00aaff;"><i class='bx bx-conversation'></i></div>
+        <div class="menu-title">Xizmatlar</div>
     </a>
-        </li>
+</li>
+
+
 
 
 

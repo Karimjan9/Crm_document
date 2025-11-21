@@ -5,8 +5,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
 :root {
-  --text-color: #1e293b;
-  --blue-main: #1d4ed8;
+  --text-color: #0a0f16;
+  --blue-main: #244b8a;
   --blue-hover: #1e40af;
   --blue-bg: #f3f6fc;
   --white: #ffffff;

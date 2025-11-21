@@ -25,6 +25,7 @@ body {
 
 .page-wrapper { padding: 24px; }
 
+/* CARD STYLE */
 .card {
   background: var(--white);
   border-radius: 14px;
@@ -34,19 +35,22 @@ body {
 }
 .card:hover { transform: translateY(-3px); }
 
+/* CARD HEADER */
 .card-header {
   font-weight: 600;
   font-size: 16px;
-  color: var(--blue);
+  color: var(--white);
   padding: 14px 18px;
   border-bottom: 1px solid var(--border);
-  background: #f9fafb;
+  background: var(--blue);
   border-top-left-radius: 14px;
   border-top-right-radius: 14px;
 }
 
+/* CARD BODY */
 .card-body { padding: 18px; }
 
+/* FILTER BOX */
 .filter-box select,
 .filter-box input {
   border-radius: 8px;
@@ -55,7 +59,6 @@ body {
   width: 100%;
   font-size: 14px;
 }
-
 .filter-box button {
   border: none;
   background: var(--blue-light);
@@ -68,6 +71,7 @@ body {
 }
 .filter-box button:hover { background: var(--blue); }
 
+/* SUMMARY CARD */
 .summary-card {
   background: var(--white);
   padding: 18px;
@@ -80,19 +84,42 @@ body {
 .summary-card h5 { color: var(--blue); margin-bottom: 6px; font-size: 15px; }
 .summary-card h3 { margin: 0; font-size: 22px; font-weight: 600; }
 
+/* TABLES - KO'K RANG SARRALAVIHA & HOVER */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+}
 table th {
-  background: var(--blue-light);
+  background: var(--blue);
   color: white;
   text-align: center;
   vertical-align: middle;
   font-weight: 500;
+  padding: 12px;
 }
 table td {
   text-align: center;
   vertical-align: middle;
   font-size: 14px;
   background: #fff;
+  border: 1px solid var(--border);
+  padding: 10px;
+  transition: background 0.2s;
 }
+table tbody tr:hover { 
+  background-color: rgba(37, 99, 235, 0.1);
+}
+
+/* Jadval burchaklarini yumaloqlash */
+table th:first-child { border-top-left-radius: 12px; }
+table th:last-child  { border-top-right-radius: 12px; }
+table tr:last-child td:first-child { border-bottom-left-radius: 12px; }
+table tr:last-child td:last-child  { border-bottom-right-radius: 12px; }
+
+/* BADGES */
 .badge {
   padding: 6px 10px;
   border-radius: 8px;
@@ -102,6 +129,7 @@ table td {
 .bg-warning { background: var(--orange); color: #fff; }
 .bg-danger  { background: var(--red); color: #fff; }
 
+/* RESPONSIVE */
 @media (max-width: 768px) {
   .filter-box label { font-size: 13px; }
   .summary-card h3 { font-size: 18px; }
