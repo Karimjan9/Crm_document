@@ -21,9 +21,9 @@
         }
 
         .sidebar-wrapper {
-            background: rgb(255, 255, 255);
+            background: #15172a !important;
             backdrop-filter: blur(16px);
-            border-right: 1px solid rgba(255,255,255,0.1);
+            border-right: 1px solid rgba(233, 215, 215, 0.1); 
         }
 
         .metismenu a {
@@ -83,6 +83,8 @@
             color: #0066ff;
         }
     </style>
+    
+        <br>
 
     <div class="sidebar-header">
         <div class="logo-text">Admin Panel</div>
@@ -169,11 +171,6 @@
         <div class="menu-title">Xizmatlar</div>
     </a>
 </li>
-
-
-
-
-
 
         <!-- 🗓 Kalendar bo‘limi -->
 
