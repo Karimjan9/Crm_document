@@ -13,13 +13,25 @@ return new class extends Migration
      */
     public function up()
     {
+        
         Schema::create('document_addons', function (Blueprint $table) {
+              Schema::dropIfExists('document_addons');
         $table->id();
-        $table->foreignId('document_id')->constrained('documents')->onDelete('cascade');
-        $table->foreignId('service_addon_id')->constrained('service_addons');
-        $table->decimal('addon_price',10,2);
-        $table->integer('addon_deadline')->default(0);
+
+        // Pivot FK-lar
+        $table->unsignedBigInteger('document_id');
+        $table->unsignedBigInteger('addon_id');
+
+        // Qo‘shimcha ma’lumotlar
+        $table->decimal('addon_price', 10, 2)->nullable();
+        $table->integer('addon_deadline')->nullable();
+
         $table->timestamps();
+
+        // Foreign keys
+        $table->foreign('document_id')->references('id')->on('documents');
+        $table->foreign('addon_id')->references('id')->on('service_addons');
+
     });
     }
 
@@ -30,6 +42,14 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('document_addons');
+     
+        Schema::table('document_addons', function (Blueprint $table) {
+            $table->dropForeign(['document_id']);
+            $table->dropForeign(['addon_id']);
+          
+        });
+         Schema::dropIfExists('document_addons');
+       
+    
     }
 };

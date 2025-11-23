@@ -8,6 +8,7 @@
 	<!--favicon-->
 	{{-- <link rel="icon" href="{{ url('logo.png') }}" type="image/png" /> --}}
 	<!--plugins-->
+	{{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> --}}
 	<link href="{{ url('assets/plugins/notifications/css/lobibox.min.css') }}" rel="stylesheet"/>
 	<link href="{{ url('assets/plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet"/>
 	<link href="{{ url('assets/plugins/simplebar/css/simplebar.css') }}" rel="stylesheet" />
@@ -140,8 +141,8 @@
 	<script src="{{ url('assets/js/index3.js') }}"></script>
 	<!--app JS-->
 	<script src="{{ url('assets/js/app.js') }}"></script>
-	@stack('scripte_include_end_body')
-	@yield('scripte_include_end_body')
+	@stack('script_include_end_body')
+	@yield('script_include_end_body')
 </body>
 
 </html>

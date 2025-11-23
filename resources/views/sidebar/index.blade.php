@@ -175,6 +175,29 @@
         <!-- 🗓 Kalendar bo‘limi -->
 
         @endrole
+        @hasanyrole('admin_filial')
+             <li>
+            <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
+                <div class="menu-title">Filial Xodimlar</div>
+            </a>
+            <ul>
+                <li><a href="{{ route('admin_filial.index') }}"><i class='bx bx-map'></i> Xodimlar </a></li>
+                <li><a href="{{ route('admin_filial.index') }}"><i class='bx bx-map'></i> Statistika </a></li>
+            </ul>
+        </li>
+          <li>
+            <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
+                <div class="menu-title">Documents</div>
+            </a>
+            <ul>
+                <li><a href="{{ route('admin_filial.document.index') }}"><i class='bx bx-map'></i> Documents </a></li>
+                <li><a href="{{ route('admin_filial.index') }}"><i class='bx bx-map'></i> Deadlines </a></li>
+            </ul>
+        </li>
+        @endrole
+
     </ul>
     
 </div>

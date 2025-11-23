@@ -40,6 +40,7 @@ class UserSeeder extends Seeder
                 'phone' => '1234567899',
                 'password' => Hash::make('super123'),
                 'role' => 'super_admin',
+                'filial_id' => 1,
             ],
             [
                 'name' => 'Admin Manager',
@@ -47,6 +48,7 @@ class UserSeeder extends Seeder
                 'phone' => '1234567898',
                 'password' => Hash::make('manager123'),
                 'role' => 'admin_manager',
+                'filial_id' => 1,
             ],
             [
                 'name' => 'Admin Filial',
@@ -54,6 +56,8 @@ class UserSeeder extends Seeder
                 'phone' => '1234567897',
                 'password' => Hash::make('filial123'),
                 'role' => 'admin_filial',
+                'filial_id' => 1,
+
             ],
             [
                 'name' => 'Employee',
@@ -61,6 +65,7 @@ class UserSeeder extends Seeder
                 'phone' => '1234567891',
                 'password' => Hash::make('employee123'),
                 'role' => 'employee',
+                'filial_id' => 1,
             ],
             [
                 'name' => 'User',
@@ -68,6 +73,7 @@ class UserSeeder extends Seeder
                 'phone' => '1234567892',
                 'password' => Hash::make('user123'),
                 'role' => 'user',
+                'filial_id' => 1,
             ],
             [
                 'name' => 'Courier',
@@ -75,6 +81,7 @@ class UserSeeder extends Seeder
                 'phone' => '1234567893',
                 'password' => Hash::make('courier123'),
                 'role' => 'courier',
+                
             ],
         ];
 

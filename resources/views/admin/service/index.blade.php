@@ -133,6 +133,97 @@ body {
 .modal-content-custom { background: var(--white); padding: 20px 25px; border-radius:12px; max-width:400px; width:100%; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,0.15); animation: fadeInScale 0.3s ease forwards; }
 @keyframes fadeInScale { 0%{opacity:0;transform:scale(0.8);} 100%{opacity:1;transform:scale(1);} }
 
+
+    thead { background: var(--blue-main); color: var(--white); }
+
+    th, td { text-align: center; vertical-align: middle; padding: 12px 8px; }
+
+    tbody tr { background-color: var(--white); transition: background 0.25s ease; }
+    tbody tr:hover { background-color: #e0edff; }
+
+    .fixed_header2 { position: sticky; top: 0; background: var(--blue-main); color: white; z-index: 10; }
+
+    /* Custom button */
+    .btn-custom {
+        background: var(--blue-light);
+        border: none;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 14px;
+        transition: 0.3s;
+    }
+
+    .btn-custom:hover {
+        background: var(--blue-main);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(30, 58, 138, 0.25);
+    }
+
+    .btn-danger {
+        background: var(--danger-color);
+        border: none;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        transition: 0.2s;
+    }
+
+    .btn-danger:hover { background: var(--danger-hover); transform: translateY(-1px); }
+
+   
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0,0,0,0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-backdrop.active { display: flex; }
+
+    .modal-content-custom {
+        background: var(--white);
+        padding: 20px 25px;
+        border-radius: 12px;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 6px 18px rgba(30,58,138,0.25);
+        text-align: center;
+        animation: fadeInScale 0.3s ease forwards;
+    }
+
+    .modal-content-custom h5 { margin-bottom: 15px; font-weight: 600; color: var(--text-color); }
+    .modal-content-custom p { font-size: 14px; color: #555; margin-bottom: 20px; }
+
+    .modal-actions button {
+        min-width: 100px;
+        padding: 8px 15px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        margin: 0 5px;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .modal-actions .btn-cancel { background: #6c757d; color: white; }
+    .modal-actions .btn-cancel:hover { background: #5a6268; transform: translateY(-1px); }
+
+    .modal-actions .btn-confirm { background: var(--danger-color); color: white; }
+    .modal-actions .btn-confirm:hover { background: var(--danger-hover); transform: translateY(-1px); }
+
+    @keyframes fadeInScale {
+        0% { opacity: 0; transform: scale(0.8); }
+        100% { opacity: 1; transform: scale(1); }
+        
+    }
+
 </style>
 @endsection
 

@@ -14,4 +14,14 @@ class ServicesAddonsModel extends Model
     public function service() {
         return $this->belongsTo(ServicesModel::class);
     }
+
+    public function documents()
+{
+    return $this->belongsToMany(
+        DocumentsModel::class,
+        'document_addons',
+        'addon_id',
+        'document_id'
+    );
+}
 }
