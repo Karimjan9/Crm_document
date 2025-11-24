@@ -191,7 +191,7 @@
             </a>
             <ul>
                 <li><a href="{{ route('admin_filial.document.index') }}"><i class='bx bx-map'></i> Documents </a></li>
-                <li><a href="{{ route('admin_filial.index') }}"><i class='bx bx-map'></i> Deadlines </a></li>
+                <li><a href="{{ route('admin_filial.doc_summary') }}"><i class='bx bx-map'></i> Document Hisobot </a></li>
             </ul>
         </li>
         @endrole

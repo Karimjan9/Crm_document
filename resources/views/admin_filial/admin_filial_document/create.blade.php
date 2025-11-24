@@ -5,17 +5,13 @@
 <style>
 body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
 .page-wrapper { padding: 24px; }
-
 .card { border-radius: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; margin-bottom: 20px; }
 .card-body { padding: 28px; }
-
 .form-control, .form-select { border-radius: 10px; }
 .addon-badge { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 10px; padding: 12px; display: inline-flex; flex-direction: column; gap: 4px; transition: all 0.2s ease; cursor: pointer; }
 .addon-badge:hover { background: #e9f2ff; transform: translateY(-2px); box-shadow: 0 3px 8px rgba(0,0,0,0.12); }
-
 .btn-primary { background: linear-gradient(135deg,#2563eb,#3b82f6); border:none; }
 .btn-primary:hover { opacity:0.9; }
-
 #phoneSearchResults .result-item:hover { background: #f0f0f0; cursor:pointer; }
 .new-client-btn { cursor:pointer; color: #2563eb; font-weight: 600; }
 </style>
@@ -26,86 +22,99 @@ body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
     <form action="{{ route('admin_filial.document.store') }}" method="POST">
         @csrf
 
+        {{-- GLOBAL ERROR LIST --}}
+        @if ($errors->any())
+            <div class="alert alert-danger mb-3">
+                <strong>Xatoliklar mavjud!</strong>
+                <ul class="mb-0 mt-2">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         {{-- CLIENT SEARCH --}}
         <div class="card">
             <div class="card-body">
                 <h4 class="mb-3">Mijoz tanlash</h4>
+
                 <div class="mb-3 position-relative">
                     <label class="form-label">Telefon raqamdan qidirish</label>
-                    <input type="text" id="clientPhone" class="form-control" placeholder="99890...">
+                    <input type="text" id="clientPhone" class="form-control @error('client_id') is-invalid @enderror" placeholder="998..." value="{{ old('client_phone_search') }}">
                     <div id="phoneSearchResults" class="border bg-white rounded shadow-sm" style="display:none; position:absolute; width:100%; z-index:999;"></div>
+                    @error('client_id')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
                 </div>
-                <div id="newClientForm" class="mt-3" style="display:none;">
+
+                {{-- SELECTED CLIENT --}}
+                <div id="selectedClient" class="mt-3" style="display:none;">
                     <label class="form-label">Ism</label>
-                    <input type="text" class="form-control mb-2" id="newClientName" name="new_client_name">
+                    <input type="text" class="form-control mb-2" id="selectedClientName" readonly>
                     <label class="form-label">Telefon raqam</label>
-                    <input type="text" class="form-control mb-2" id="newClientPhone" name="new_client_phone">
+                    <input type="text" class="form-control mb-2" id="selectedClientPhone" readonly>
+                    <input type="hidden" id="clientId" name="client_id" value="{{ old('client_id') }}">
+                </div>
+
+                {{-- NEW CLIENT FORM --}}
+                <div id="newClientForm" class="mt-3" style="display:{{ old('new_client_name') ? 'block':'none' }}">
+                    <label class="form-label">Ism</label>
+                    <input type="text" class="form-control mb-2 @error('new_client_name') is-invalid @enderror"
+                           id="newClientName" name="new_client_name" value="{{ old('new_client_name') }}">
+                    @error('new_client_name')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+
+                    <label class="form-label">Telefon raqam</label>
+                    <input type="text" class="form-control mb-2 @error('new_client_phone') is-invalid @enderror"
+                           id="newClientPhone" name="new_client_phone" value="{{ old('new_client_phone') }}">
+                    @error('new_client_phone')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+
                     <label class="form-label">Izoh</label>
-                    <textarea class="form-control mb-2" id="newClientDesc" name="new_client_desc" rows="2"></textarea>
+                    <textarea class="form-control mb-2 @error('new_client_desc') is-invalid @enderror"
+                              id="newClientDesc" name="new_client_desc" rows="2">{{ old('new_client_desc') }}</textarea>
+                    @error('new_client_desc')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+
                     <button type="button" class="btn btn-success btn-sm" id="lockClientFormBtn">Mijozni saqlash</button>
                 </div>
-                <input type="hidden" id="clientId" name="client_id">
             </div>
         </div>
 
-        {{-- SERVICE --}}
-        <div class="card">
-            <div class="card-body">
-                <h4 class="mb-3">Xizmat</h4>
-                <select class="form-select mb-2" id="serviceSelect" name="service_id">
-                    <option value="">Tanlang...</option>
-                    @foreach($services as $service)
-                        <option value="{{ $service->id }}" data-price="{{ $service->price }}">{{ $service->name }}</option>
-                    @endforeach
-                </select>
-                <input type="text" id="servicePrice" class="form-control" placeholder="Xizmat narxi" readonly>
-            </div>
-        </div>
-
-        {{-- ADDONS --}}
-        <div class="card" id="addonsContainer" style="display:none;">
-            <div class="card-body">
-                <h4 class="mb-3">Qo'shimcha xizmatlar</h4>
-                <div id="addonsList" class="d-flex flex-wrap gap-2"></div>
-            </div>
-        </div>
-
-        {{-- DISCOUNT & FINAL PRICE --}}
-        <div class="card">
-            <div class="card-body">
-                <label class="form-label">Diskont (%)</label>
-                <input type="number" class="form-control mb-2" id="discount" name="discount" value="0">
-                <label class="form-label">Final Narx</label>
-                <input type="text" class="form-control" id="finalPrice" name="final_price" readonly>
-            </div>
-        </div>
+        {{-- SERVICE + ADDONS + DISCOUNT + FINAL PRICE + PAYMENT --}}
+        @include('admin.document.partials.service_addons_payment')
 
         {{-- DESCRIPTION --}}
         <div class="card">
             <div class="card-body">
                 <label class="form-label">Izoh</label>
-                <textarea class="form-control" name="description" rows="3"></textarea>
+                <textarea class="form-control @error('description') is-invalid @enderror" name="description" rows="3">{{ old('description') }}</textarea>
+                @error('description')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
             </div>
         </div>
 
-        {{-- SUBMIT --}}
         <button class="btn btn-primary w-100 py-3 mt-3" id="mainSaveBtn">Hujjatni saqlash</button>
-
     </form>
 </div>
 @endsection
 
 @section('script_include_end_body')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
 $(document).ready(function(){
-
-    // CLIENT SEARCH – avvalgi kod o‘zgarmaydi
     let $input = $('#clientPhone'), $results = $('#phoneSearchResults'), timer = null;
 
     $input.on('input', function(){
         let q = $(this).val().trim(); clearTimeout(timer);
         if(q.length < 3){ $results.hide().html(''); return; }
+
         timer = setTimeout(() => {
             $.get("{{ route('admin_filial.clients.search') }}", {q:q}, function(res){
                 let html = '';
@@ -113,7 +122,7 @@ $(document).ready(function(){
                     html = '<div class="p-2 text-muted">Topilmadi</div><div class="p-2 new-client-btn">➕ Yangi mijoz yaratish</div>';
                 } else {
                     res.forEach(item => {
-                        html += `<div class="p-2 result-item" data-id="${item.id}" data-phone="${item.phone_number}">📞 ${item.phone_number} — ${item.name}</div>`;
+                        html += `<div class="p-2 result-item" data-id="${item.id}" data-phone="${item.phone_number}" data-name="${item.name}">📞 ${item.phone_number} — ${item.name}</div>`;
                     });
                     html += '<div class="p-2 new-client-btn mt-1">➕ Yangi mijoz yaratish</div>';
                 }
@@ -123,98 +132,36 @@ $(document).ready(function(){
     });
 
     $(document).on('click', '.result-item', function(){
-        $input.val($(this).data('phone'));
-        $('#clientId').val($(this).data('id'));
+        let name = $(this).data('name');
+        let phone = $(this).data('phone');
+        let id = $(this).data('id');
+
+        $('#selectedClientName').val(name);
+        $('#selectedClientPhone').val(phone);
+        $('#clientId').val(id);
+
+        $('#selectedClient').slideDown();
         $('#newClientForm').slideUp();
         $results.hide();
+        $input.val('');
     });
 
     $(document).on('click', '.new-client-btn', function(){
         $('#clientId').val('');
         $('#newClientPhone').val($('#clientPhone').val());
         $('#newClientForm').slideDown();
+        $('#selectedClient').slideUp();
         $results.hide();
     });
 
     $('#lockClientFormBtn').on('click', function(){
-        $('#newClientName, #newClientPhone, #newClientDesc').prop('disabled', true);
+        $('#newClientName, #newClientPhone, #newClientDesc').prop('readonly', true);
         $(this).removeClass('btn-success').addClass('btn-secondary').text('Saqlandi ✓').prop('disabled', true);
     });
 
-    // ==============================
-    // SERVICE + ADDONS + DISCOUNT
-    // ==============================
-    let servicePrice = 0;
-    let addons = {}; // {addonId: price}
-    let addonsChecked = {}; // {addonId: true/false}
-    let discount = 0;
-
-    $('#serviceSelect').on('change', function(){
-        let $option = $(this).find('option:selected');
-        servicePrice = parseFloat($option.data('price')) || 0;
-        $('#servicePrice').val(servicePrice);
-
-        let serviceId = $(this).val();
-        if(!serviceId){
-            addons = {}; addonsChecked = {};
-            $('#addonsList').html(''); $('#addonsContainer').slideUp();
-            updateFinalPrice(); return;
-        }
-
-        $.get("/admin_filial/service/"+serviceId+"/addons", function(res){
-            addons = {}; addonsChecked = {};
-            let html = '';
-            res.forEach(a => {
-                addons[a.id] = parseFloat(a.price);
-                addonsChecked[a.id] = false;
-                html += `<div class="addon-badge">
-                            <label>
-                                <input type="checkbox" class="addon-checkbox" data-id="${a.id}"> ${a.name}
-                                <small class="text-primary d-block">Narx: ${a.price}</small>
-                            </label>
-                         </div>`;
-            });
-            $('#addonsList').html(html);
-            if(res.length) $('#addonsContainer').slideDown(); else $('#addonsContainer').slideUp();
-            updateFinalPrice();
-        });
-    });
-
-    // checkbox event
-    $(document).on('change', '.addon-checkbox', function(){
-        let id = $(this).data('id');
-        addonsChecked[id] = $(this).is(':checked');
-        updateFinalPrice();
-    });
-
-    // discount input
-    $('#discount').on('input', function(){
-        discount = parseFloat($(this).val()) || 0;
-        updateFinalPrice();
-    });
-
-    // ==============================
-    // CALCULATE FINAL PRICE
-    // ==============================
-    function updateFinalPrice(){
-        let total = servicePrice;
-        for(let id in addons){
-            if(addonsChecked[id]) total += addons[id];
-        }
-        let final = total - (total*(discount/100));
-        final = Math.max(final,0);
-        $('#finalPrice').val(final.toFixed(2));
-    }
-
-    // FORM SUBMIT
-    $('#mainSaveBtn').on('click', function(){
-        $(this).prop('disabled', true).text('Saqlanmoqda...');
-        $('input, textarea, button, select').not(this).prop('disabled', true);
-        $(this).closest('form').submit();
-    });
-
+    @if($errors->any() && old('new_client_name'))
+        $('#newClientForm').show();
+    @endif
 });
 </script>
-
-
 @endsection

@@ -20,6 +20,10 @@
 
         Route::get('/clients/map', [AdminClientDocumentController::class, 'mapData'])->name('clients.map');
     
-        Route::get('/service/{service}/addons', [AdminFilialDocumentController::class, 'getServiceAddons']);
+        Route::get('/service/{service}/addons', [AdminFilialDocumentController::class, 'getServiceAddons'])->name('get_service_addons');
+
+        Route::get(  '/admin/filial/get-service-addons/{service}',  [AdminFilialDocumentController::class, 'getServiceAddons'])->name('admin_filial.get_service_addons');
+
+        Route::get('/doc_summary', [AdminFilialDocumentController::class, 'doc_summary'])->name('doc_summary');
     });
 
