@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Courier\CourierController;
 use App\Http\Controllers\KalendarController;
 use App\Http\Controllers\HolidayController;
+use App\Http\Controllers\Admin\AdminFilialDocumentController;
 
 // use dompdf;
 
@@ -72,6 +73,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         return view('admin.calendar.create');
     })->name('calendar.create');
 });
+
+
+
+// Route::prefix('admin')->group(function () {
+//     Route::get('/filial/{filial}/employees-stat', [AdminFilialDocumentController::class, 'employeesStat'])
+//         ->name('admin.filial.employees.stat');
+
+//     Route::get('/service/{service}/addons', [AdminFilialDocumentController::class, 'getServiceAddons'])
+//         ->name('admin.service.addons');
+// });
+
+
+
 
 
 Route::get('/courier', [CourierController::class, 'index'])->name('courier.index');
