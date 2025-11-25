@@ -1,16 +1,17 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
-use App\Models\ClientsModel;
-use App\Models\ServicesModel;
-use App\Models\DocumentsModel;
-use App\Models\ServiceAddonModel;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Admin\DocumentCreateRequest;
 use App\Http\Requests\Admin\DocumentUpdateRequest;
-use Dom\Document;
+use App\Models\ClientsModel;
+use App\Models\DocumentsModel;
+use App\Models\PaymentsModel;
+use App\Models\ServiceAddonModel;
+use App\Models\ServicesModel;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AdminFilialDocumentController extends Controller
 {
@@ -65,162 +66,207 @@ class AdminFilialDocumentController extends Controller
     // -------------------------------
     // STORE: Ma’lumotni saqlash
     // -------------------------------
-   public function store(DocumentCreateRequest $request)
-{
-    // Client yaratish yoki mavjud clientni olish
-    $clientId = $request->client_id ?: null;
-    if (!$clientId) {
-        $client = ClientsModel::create([
-            'name'         => $request->new_client_name,
-            'phone_number' => $request->new_client_phone,
-            'description'  => $request->new_client_desc,
-        ]);
-        $clientId = $client->id;
-    }
-
-    // Service va addons
-    $service      = ServicesModel::findOrFail($request->service_id);
-    $servicePrice = $service->price;
-    $deadlineTime = $service->deadline;
-    // dd( $deadlineTime);
-    $addons_total = 0;
-    $addonsData   = [];
-    if ($request->addons) {
-        $addons = DB::table('service_addons')->whereIn('id', $request->addons)->get();
-        foreach ($addons as $addon) {
-            $addons_total += $addon->price;
-            $deadlineTime += $addon->deadline;
-            $addonsData[$addon->id] = [
-                'addon_price'    => $addon->price,
-                'addon_deadline' => $addon->deadline,
-            ];
+    public function store(DocumentCreateRequest $request)
+    {
+        // Client yaratish yoki mavjud clientni olish
+        $clientId = $request->client_id ?: null;
+        if (! $clientId) {
+            $client = ClientsModel::create([
+                'name'         => $request->new_client_name,
+                'phone_number' => $request->new_client_phone,
+                'description'  => $request->new_client_desc,
+            ]);
+            $clientId = $client->id;
         }
-    }
-    // dd( $deadlineTime);
-    $discount   = $request->discount ?? 0;
-    $totalPrice = $servicePrice + $addons_total;
-    $finalPrice = $totalPrice - ($totalPrice * ($discount / 100));
 
-    // Document yaratish
-    $code = Auth::user()->filial->code;
-    $last = DocumentsModel::latest()->first();
-    $number = ($last ? $last->id : 0) + 1 + 1000000;
-    $documentCode = $code . '-' . $number;
-
-    $document = DocumentsModel::create([
-        'client_id'          => $clientId,
-        'service_id'         => $request->service_id,
-        'service_price'      => $servicePrice,
-        'addons_total_price' => $addons_total,
-        'deadline_time'      => $deadlineTime,
-        'final_price'        => $finalPrice,
-        'paid_amount'        => $request->paid_amount ?? 0,
-        'discount'           => $discount,
-        'user_id'            => auth()->id(),
-        'description'        => $request->description,
-        'filial_id'          => auth()->user()->filial_id,
-        'document_code'      => $documentCode,
-    ]);
-
-    // Addons attach qilish
-    if (!empty($addonsData)) {
-        $document->addons()->attach($addonsData);
-    }
-
-    // Agar paid_amount va payment_type mavjud bo‘lsa, Payment yaratish
-    if ($request->paid_amount && $request->payment_type) {
-        \App\Models\PaymentsModel::create([
-            'document_id'      => $document->id,
-            'amount'           => $request->paid_amount,
-            'payment_type'     => $request->payment_type,
-            'paid_by_admin_id' => auth()->id(),
-        ]);
-    }
-
-    return redirect()->route('admin_filial.document.index')
-        ->with('success', 'Hujjat muvaffaqiyatli yaratildi!');
-}
-
-public function edit($id)
-{
-    $document = DocumentsModel::with(['addons'])->findOrFail($id);
-    $services = ServicesModel::all();
-    $addons   = ServiceAddonModel::all();
-
-    return view('admin_filial.admin_filial_document.edit', compact('document', 'services', 'addons'));
-}
-
-public function update(DocumentUpdateRequest $request, $id)
-{
-    $document = DocumentsModel::with(['addons'])->findOrFail($id);
-
-    // Client o'zgarmaydi
-
-    // Service va addons
-    $service      = ServicesModel::findOrFail($request->service_id);
-    $servicePrice = $service->price;
-    $deadlineTime = $service->deadline;
-
-    $addons_total = 0;
-    $addonsData   = [];
-    if ($request->addons) {
-        $addons = DB::table('service_addons')->whereIn('id', $request->addons)->get();
-        foreach ($addons as $addon) {
-            $addons_total += $addon->price;
-            $deadlineTime += $addon->deadline;
-            $addonsData[$addon->id] = [
-                'addon_price'    => $addon->price,
-                'addon_deadline' => $addon->deadline,
-            ];
+        // Service va addons
+        $service      = ServicesModel::findOrFail($request->service_id);
+        $servicePrice = $service->price;
+        $deadlineTime = $service->deadline;
+        // dd( $deadlineTime);
+        $addons_total = 0;
+        $addonsData   = [];
+        if ($request->addons) {
+            $addons = DB::table('service_addons')->whereIn('id', $request->addons)->get();
+            foreach ($addons as $addon) {
+                $addons_total += $addon->price;
+                $deadlineTime += $addon->deadline;
+                $addonsData[$addon->id] = [
+                    'addon_price'    => $addon->price,
+                    'addon_deadline' => $addon->deadline,
+                ];
+            }
         }
-    }
+        // dd( $deadlineTime);
+        $discount   = $request->discount ?? 0;
+        $totalPrice = $servicePrice + $addons_total;
+        $finalPrice = $totalPrice - ($totalPrice * ($discount / 100));
 
-    $discount   = $request->discount ?? 0;
-    $totalPrice = $servicePrice + $addons_total;
-    $finalPrice = $totalPrice - ($totalPrice * ($discount / 100));
+        // Document yaratish
+        $code         = Auth::user()->filial->code;
+        $last         = DocumentsModel::latest()->first();
+        $number       = ($last ? $last->id : 0) + 1 + 1000000;
+        $documentCode = $code . '-' . $number;
 
-    // Document update
-    $document->update([
-        'service_id'         => $request->service_id,
-        'service_price'      => $servicePrice,
-        'addons_total_price' => $addons_total,
-        'deadline_time'      => $deadlineTime,
-        'final_price'        => $finalPrice,
-        'paid_amount'        => $request->paid_amount ?? 0,
-        'discount'           => $discount,
-        'description'        => $request->description,
-    ]);
+        $document = DocumentsModel::create([
+            'client_id'          => $clientId,
+            'service_id'         => $request->service_id,
+            'service_price'      => $servicePrice,
+            'addons_total_price' => $addons_total,
+            'deadline_time'      => $deadlineTime,
+            'final_price'        => $finalPrice,
+            'paid_amount'        => $request->paid_amount ?? 0,
+            'discount'           => $discount,
+            'user_id'            => auth()->id(),
+            'description'        => $request->description,
+            'filial_id'          => auth()->user()->filial_id,
+            'document_code'      => $documentCode,
+        ]);
 
-    // Addons update
-    $document->addons()->sync($addonsData);
+        // Addons attach qilish
+        if (! empty($addonsData)) {
+            $document->addons()->attach($addonsData);
+        }
 
-    // Payment update yoki create
-    if ($request->paid_amount && $request->payment_type) {
-        \App\Models\PaymentsModel::updateOrCreate(
-            ['document_id' => $document->id],
-            [
+        // Agar paid_amount va payment_type mavjud bo‘lsa, Payment yaratish
+        if ($request->paid_amount && $request->payment_type) {
+            \App\Models\PaymentsModel::create([
+                'document_id'      => $document->id,
                 'amount'           => $request->paid_amount,
                 'payment_type'     => $request->payment_type,
                 'paid_by_admin_id' => auth()->id(),
-            ]
-        );
+            ]);
+        }
+
+        return redirect()->route('admin_filial.document.index')
+            ->with('success', 'Hujjat muvaffaqiyatli yaratildi!');
     }
 
-    return redirect()->route('admin_filial.document.index')
-        ->with('success', 'Hujjat muvaffaqiyatli yangilandi!');
-}
+    public function edit($id)
+    {
+        $document = DocumentsModel::with(['addons'])->findOrFail($id);
+        $services = ServicesModel::all();
+        $addons   = ServiceAddonModel::all();
 
-public function doc_summary()
-{
-    $userFilialId = auth()->user()->filial_id;
+        return view('admin_filial.admin_filial_document.edit', compact('document', 'services', 'addons'));
+    }
 
-    $documents = DocumentsModel::with(['client', 'service', 'addons', 'payments', 'user'])
-        ->whereHas('user', function ($q) use ($userFilialId) {
-            $q->where('filial_id', $userFilialId);
-        })
-        ->orderBy('id', 'DESC')
-        ->get();
+    public function update(DocumentUpdateRequest $request, $id)
+    {
+        $document = DocumentsModel::with(['addons'])->findOrFail($id);
 
-    return view('admin_filial.summary_doc.index', compact('documents'));
-}
+        // Client o'zgarmaydi
+
+        // Service va addons
+        $service      = ServicesModel::findOrFail($request->service_id);
+        $servicePrice = $service->price;
+        $deadlineTime = $service->deadline;
+
+        $addons_total = 0;
+        $addonsData   = [];
+        if ($request->addons) {
+            $addons = DB::table('service_addons')->whereIn('id', $request->addons)->get();
+            foreach ($addons as $addon) {
+                $addons_total += $addon->price;
+                $deadlineTime += $addon->deadline;
+                $addonsData[$addon->id] = [
+                    'addon_price'    => $addon->price,
+                    'addon_deadline' => $addon->deadline,
+                ];
+            }
+        }
+
+        $discount   = $request->discount ?? 0;
+        $totalPrice = $servicePrice + $addons_total;
+        $finalPrice = $totalPrice - ($totalPrice * ($discount / 100));
+
+        // Document update
+        $document->update([
+            'service_id'         => $request->service_id,
+            'service_price'      => $servicePrice,
+            'addons_total_price' => $addons_total,
+            'deadline_time'      => $deadlineTime,
+            'final_price'        => $finalPrice,
+            'paid_amount'        => $request->paid_amount ?? 0,
+            'discount'           => $discount,
+            'description'        => $request->description,
+        ]);
+
+        // Addons update
+        $document->addons()->sync($addonsData);
+
+        // Payment update yoki create
+        if ($request->paid_amount && $request->payment_type) {
+            \App\Models\PaymentsModel::updateOrCreate(
+                ['document_id' => $document->id],
+                [
+                    'amount'           => $request->paid_amount,
+                    'payment_type'     => $request->payment_type,
+                    'paid_by_admin_id' => auth()->id(),
+                ]
+            );
+        }
+
+        return redirect()->route('admin_filial.document.index')
+            ->with('success', 'Hujjat muvaffaqiyatli yangilandi!');
+    }
+
+    public function doc_summary()
+    {
+        $userFilialId = auth()->user()->filial_id;
+
+        $documents = DocumentsModel::with(['client', 'service', 'addons', 'payments', 'user'])
+            ->whereHas('user', function ($q) use ($userFilialId) {
+                $q->where('filial_id', $userFilialId);
+            })
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        return view('admin_filial.summary_doc.index', compact('documents'));
+    }
+
+    public function add_payment(Request $request)
+    {
+        $request->validate([
+            'document_id'  => 'required|exists:documents,id',
+            'amount'       => 'required|numeric|min:1000',
+            'payment_type' => 'required|string',
+        ]);
+
+        $doc = DocumentsModel::find($request->document_id);
+
+        $balance = $doc->final_price - $doc->paid_amount;
+
+        // >>> BACKEND CHEK: to‘lov qoldiqdan oshmasin!
+        if ($request->amount > $balance) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => "To'lov summasi qoldiqdan oshmasligi kerak!",
+            ], 422);
+        }
+
+        PaymentsModel::create([
+            'document_id'      => $request->document_id,
+            'amount'           => $request->amount,
+            'payment_type'     => $request->payment_type,
+            'paid_by_admin_id' => auth()->id(),
+        ]);
+
+        $doc->paid_amount += $request->amount;
+        $doc->save();
+
+        return response()->json(['status' => 'success']);
+    }
+
+     public function paymentHistory(DocumentsModel $document)
+    {
+        $payments = PaymentsModel::where('document_id', $document->id)
+            ->orderBy('created_at', 'desc')
+            ->get(['amount', 'payment_type', 'paid_by_admin_id', 'created_at']);
+
+          
+          
+        return response()->json($payments);
+    }
+
 }
