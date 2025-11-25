@@ -198,10 +198,10 @@
                                 <td>{{ $filial->code }}</td>
                                 <td>{{ $filial->description }}</td>
                                 <td>
-                                    <a class="btn btn-warning" href="{{ route('admin.filial.edit',['filial'=>$filial->id]) }}">O'zgartirish</a>
+                                    <a class="btn btn-warning" href="{{ route('superadmin.filial.edit',['filial'=>$filial->id]) }}">O'zgartirish</a>
 
                                     <!-- Delete Form -->
-                                    <form action="{{ route('admin.filial.destroy',['filial'=>$filial->id]) }}" method="POST" class="d-inline delete-form">
+                                    <form action="{{ route('superadmin.filial.destroy',['filial'=>$filial->id]) }}" method="POST" class="d-inline delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" class="btn btn-danger btn-delete" data-name="{{ $filial->name }}">O'chirish</button>

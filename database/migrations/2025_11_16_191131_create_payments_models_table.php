@@ -17,7 +17,8 @@ return new class extends Migration
         $table->id();
         $table->foreignId('document_id')->constrained('documents')->onDelete('cascade');
         $table->decimal('amount',10,2);
-        $table->string('payment_type')->default('admin_entry'); // cash, card, online, admin_entry
+        $table->enum('payment_type', ['cash', 'card', 'online', 'admin_entry'])
+                  ->default('admin_entry'); // cash, card, online, admin_entry
         $table->foreignId('paid_by_admin_id')->nullable()->constrained('users');
         $table->timestamps();
     });

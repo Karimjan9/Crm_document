@@ -49,7 +49,7 @@ class AuthenticatedSessionController extends Controller
                  return redirect()->route('login'); 
 
         }
-        
+      
 
     }
 

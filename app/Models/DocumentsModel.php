@@ -3,10 +3,11 @@
 namespace App\Models;
 
 
+use Carbon\Carbon;
 use App\Models\ClientsModel;
 use App\Models\PaymentsModel;
 use App\Models\ServicesModel;
-use App\Models\ServicesAddonsModel;
+use App\Models\ServiceAddonModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -26,7 +27,8 @@ class DocumentsModel extends Model
         'discount',
         'user_id',
         'description',
-        'filial_id'
+        'filial_id',
+        'document_code'
     ];
 
     public function client() {
@@ -40,7 +42,7 @@ class DocumentsModel extends Model
    public function addons()
 {
     return $this->belongsToMany(
-        ServicesAddonsModel::class,
+        ServiceAddonModel::class,
         'document_addons',
         'document_id',
         'addon_id'
@@ -48,9 +50,34 @@ class DocumentsModel extends Model
 }
 
     public function payments() {
-        return $this->hasMany(PaymentsModel::class);
+        return $this->hasMany(PaymentsModel::class,'document_id','id');
     }
     public function user() {
         return $this->belongsTo(User::class);
     }
+
+
+
+public function getDeadlineRemainingAttribute()
+{
+    // Deadline kunlarda berilgan + 2 soat qo‘shish
+    $deadline = $this->created_at->copy()->addDays($this->deadline_time)->addHours(2);
+    $now = Carbon::now();
+
+    if ($now->greaterThanOrEqualTo($deadline)) {
+        return '0 kun';
+    }
+
+    $diffInSeconds = $deadline->diffInSeconds($now);
+
+    $days = floor($diffInSeconds / 86400);      // 1 kun = 86400 sekund
+    $hours = floor($diffInSeconds / 3600);      // qolgan vaqt soatlarda
+
+    if ($diffInSeconds >= 86400) {
+        return $days . '-kun';
+    }
+
+    return $hours . ' soat';
+}
+
 }
