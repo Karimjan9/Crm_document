@@ -1,36 +1,29 @@
-    <?php
+<?php
 
-    use App\Http\Controllers\Admin\AdminClientDocumentController;
-    use Illuminate\Support\Facades\Route;
-    use App\Http\Controllers\Admin\AdminFilialController;
-    use App\Http\Controllers\Admin\AdminFilialDocumentController;
+use App\Http\Controllers\Admin\AdminClientDocumentController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AdminFilialController;
+use App\Http\Controllers\Admin\AdminFilialDocumentController;
 
+Route::name('admin_filial.')->prefix('admin_filial')->group(function () {
 
-    Route::name('admin_filial.')->prefix('admin_filial')->group(function(){
+    // Filial index
+    Route::get('/index', [AdminFilialController::class, 'index'])->name('index');
 
-        Route::get('/index', [AdminFilialController::class, 'index'])->name('index');
+    // Filial documents resource
+    Route::resource('document', AdminFilialDocumentController::class);
 
-        Route::resource('document', AdminFilialDocumentController::class);
+    // Clients
+    Route::get('/clients/search', [AdminClientDocumentController::class, 'search'])->name('clients.search');
+    Route::get('/clients/map', [AdminClientDocumentController::class, 'mapData'])->name('clients.map');
 
-        Route::get('/clients/search', [AdminClientDocumentController::class, 'search'])->name('clients.search');
+    // Service addons
+    Route::get('/service/{service}/addons', [AdminFilialDocumentController::class, 'getServiceAddons'])->name('get_service_addons');
 
-        Route::get('/clients/map', [AdminClientDocumentController::class, 'mapData'])->name('clients.map');
-    
+    // Doc summary
+    Route::get('/doc_summary', [AdminFilialDocumentController::class, 'doc_summary'])->name('doc_summary');
 
-        Route::get('/service/{service}/addons', [AdminFilialDocumentController::class, 'getServiceAddons']);
-        
-        Route::name('admin_filial.')->prefix('admin_filial')->group(function(){
-
-            
-        Route::get('/service/{service}/addons', [AdminFilialDocumentController::class, 'getServiceAddons'])->name('get_service_addons');
-
-        Route::get(  '/admin/filial/get-service-addons/{service}',  [AdminFilialDocumentController::class, 'getServiceAddons'])->name('admin_filial.get_service_addons');
-
-        Route::get('/doc_summary', [AdminFilialDocumentController::class, 'doc_summary'])->name('doc_summary');
-
-    });
-
-    });
+});
 
 //     // Dashboard
 //     Route::get('/index', [AdminFilialController::class, 'index'])

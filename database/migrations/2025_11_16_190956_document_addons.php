@@ -15,7 +15,7 @@ return new class extends Migration
     {
         
         Schema::create('document_addons', function (Blueprint $table) {
-              Schema::dropIfExists('document_addons');
+            //    Schema::dropIfExists('document_addons');
         $table->id();
 
         // Pivot FK-lar

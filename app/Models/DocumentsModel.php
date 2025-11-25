@@ -53,7 +53,7 @@ class DocumentsModel extends Model
         return $this->hasMany(PaymentsModel::class,'document_id','id');
     }
     public function user() {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'user_id','id');
     }
 
 
