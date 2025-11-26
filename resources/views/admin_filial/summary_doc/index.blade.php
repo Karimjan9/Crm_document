@@ -1,7 +1,8 @@
 @extends('template')
 
 @section('style')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
     .table-hover tbody tr:hover {
         background-color: #f5f5f5;
@@ -61,6 +62,7 @@
     }
 </style>
 @endsection
+
 
 @section('body')
 <div class="page-wrapper">
@@ -157,7 +159,9 @@
                         </div>
                     </div>
                 </div>
+
             </div>
+
         </div>
     </div>
 </div>
@@ -275,10 +279,11 @@ $(document).ready(function () {
                 valA = parseFloat(valA);
                 valB = parseFloat(valB);
             } else {
-                valA = valA.toString().toLowerCase();
-                valB = valB.toString().toLowerCase();
+                A = A.toString().toLowerCase();
+                B = B.toString().toLowerCase();
             }
-            return asc ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
+
+            return asc ? A > B : A < B;
         });
 
         tbody.append(rows);

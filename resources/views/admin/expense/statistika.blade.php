@@ -2,232 +2,231 @@
 
 @section('style')
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-    :root {
-        --text-color: #15172a;
-        --blue-main: #1e3a8a;
-        --blue-light: #2563eb;
-        --blue-bg: #f0f6ff;
-        --white: #ffffff;
-        --border-color: #e5e7eb;
-        --green: #16a34a;
-        --red: #dc2626;
-    }
+:root {
+  --blue-main: #244b8a;
+  --blue-hover: #2563eb;
+  --white: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(200, 200, 200, 0.4);
+  --text-dark: #0f172a;
+  --green: #16a34a;
+  --red: #dc2626;
+}
 
-    body {
-        font-family: "Inter", sans-serif;
-        background: var(--blue-bg);
-        color: var(--text-color);
-    }
+/* Page background */
+body { background: #e3e5ee; font-family: 'Poppins', sans-serif; }
 
-    .page-wrapper { padding: 24px; }
+/* Page wrapper */
+.page-wrapper { padding: 25px; max-width: 100%; overflow-x: hidden; }
 
-    .card {
-        background: var(--white);
-        border-radius: 16px;
-        box-shadow: 0 4px 10px rgba(30, 58, 138, 0.08);
-        border: 1px solid var(--border-color);
-        transition: 0.3s;
-    }
+/* Breadcrumb */
+.page-breadcrumb { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.breadcrumb-title { font-size: 22px; font-weight: 600; color: #111827; }
 
-    .card:hover { box-shadow: 0 6px 16px rgba(37,99,235,0.15); }
+/* Buttons */
+.btn-custom {
+  background: var(--blue-main);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  transition: 0.3s;
+}
+.btn-custom::after {
+  content: '';
+  position: absolute;
+  top:0; left:0; right:0; bottom:0;
+  background: rgba(37,99,235,0.2);
+  opacity: 0;
+  transition: 0.3s ease;
+  border-radius: 10px;
+}
+.btn-custom:hover::after { opacity: 1; }
+.btn-custom:hover { background: var(--blue-hover); }
 
-    .card-header {
-        font-weight: 600;
-        color: var(--blue-main);
-        padding: 16px 20px;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 16px;
-    }
+/* Filter Box */
+.filter-box {
+  background: var(--glass-bg);
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  margin-bottom: 20px;
+}
+.filter-box select, .filter-box input { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #cbd5e1; }
 
-    .card-body {
-        padding: 20px;
-    }
+/* Cards */
+.card { background: var(--glass-bg); border-radius: 16px; border: 1px solid var(--glass-border); padding: 18px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); transition: 0.3s ease; backdrop-filter: blur(12px); }
+.card:hover { transform: translateY(-3px); }
 
-    .summary-card {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: var(--white);
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        transition: 0.3s;
-    }
+/* Summary Cards */
+.summary-card { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 16px 18px; border-radius: 14px; min-height: 120px; backdrop-filter: blur(12px); }
+.summary-card h5 { margin: 0; font-size: 16px; }
+.summary-card span { font-size: 13px; color: #334155; }
 
-    .summary-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    }
+/* Table */
+.table-wrapper { margin-top: 20px; }
+.table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 14px; overflow: hidden; background: var(--glass-bg); backdrop-filter: blur(10px); transition: 0.3s ease; }
+.table th { background: var(--blue-main); color: white; font-weight: 500; padding: 12px; text-align: left; }
+.table td { background: rgba(255, 255, 255, 0.8); color: var(--text-dark); padding: 10px; font-weight: 500; transition: 0.3s ease; }
+.table tbody tr:hover { background: rgba(37,99,235,0.15); }
 
-    .summary-card h5 { margin-bottom: 5px; font-size: 18px; color: var(--blue-main); }
-    .summary-card span { font-size: 14px; color: #555; }
-
-    .stat-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 16px;
-    }
-
-    canvas {
-        width: 100% !important;
-        height: 320px !important;
-    }
-
-    h6 {
-        color: var(--blue-main);
-        font-weight: 600;
-    }
+/* Responsive */
+@media(max-width: 768px){
+  .page-breadcrumb { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .summary-card { min-height: 100px; }
+  .card { padding: 14px; }
+}
 </style>
+
+<link href="https://cdn.jsdelivr.net/npm/jvectormap@2.0.5/jquery-jvectormap.css" rel="stylesheet">
 @endsection
 
 @section('body')
 <div class="page-wrapper">
     <div class="page-content">
 
-        <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
-            <div class="breadcrumb-title pe-3">📊 Xarajatlar statistikasi</div>
-            <button class="btn btn-custom">+ Yangi xarajat</button>
+        <div class="page-breadcrumb">
+            <div class="breadcrumb-title">📊 Filial va foydalanuvchilar statistikasi</div>
+            <button class="btn-custom">+ Yangi foydalanuvchi</button>
         </div>
 
-        <!-- Summary section -->
-        <div class="stat-grid mb-4">
-            <div class="summary-card">
-                <div>
-                    <h5>Joriy oy xarajatlari</h5>
-                    <span>O‘tgan oyga nisbatan +12%</span>
+        {{-- FILTER --}}
+        <div class="filter-box">
+            <div class="row g-3">
+                <div class="col-md-3"><label>Filial</label>
+                    <select>
+                        <option value="">Barchasi</option>
+                        <option>Toshkent</option>
+                        <option>Samarqand</option>
+                        <option>Andijon</option>
+                        <option>Farg'ona</option>
+                    </select>
                 </div>
-                <div class="text-end">
-                    <h3 style="color: var(--red);">12 500 000 so‘m</h3>
+                <div class="col-md-3"><label>Foydalanuvchi</label>
+                    <select>
+                        <option value="">Barchasi</option>
+                        <option>Ali Karimov</option>
+                        <option>Dilnoza Nur</option>
+                        <option>Aziz Rustamov</option>
+                    </select>
                 </div>
-            </div>
-
-            <div class="summary-card">
-                <div>
-                    <h5>Yillik jami</h5>
-                    <span>2025 yil uchun</span>
-                </div>
-                <div class="text-end">
-                    <h3 style="color: var(--blue-main);">85 400 000 so‘m</h3>
-                </div>
-            </div>
-
-            <div class="summary-card">
-                <div>
-                    <h5>Eng ko‘p xarajat filial</h5>
-                    <span>Toshkent filiali</span>
-                </div>
-                <div class="text-end">
-                    <h3 style="color: var(--green);">34%</h3>
-                </div>
+                <div class="col-md-2"><label>Dan</label><input type="date"></div>
+                <div class="col-md-2"><label>Gacha</label><input type="date"></div>
+                <div class="col-md-2"><button class="btn-custom w-100">Filtrlash</button></div>
             </div>
         </div>
 
-        <!-- Charts -->
-        <div class="row">
-            <!-- Oylik xarajatlar -->
+        {{-- SUMMARY --}}
+        <div class="row mb-4">
+            <div class="col-md-4"><div class="summary-card"><h5>Umumiy foydalanuvchilar</h5><span>Faol holatda</span><h3 style="color:#667eea;">84</h3></div></div>
+            <div class="col-md-4"><div class="summary-card"><h5>Umumiy filiallar</h5><span>Respublika bo'yicha</span><h3 style="color:var(--green);">12</h3></div></div>
+            <div class="col-md-4"><div class="summary-card"><h5>So‘nggi oydagi o‘sish</h5><span>Yangi foydalanuvchilar</span><h3 style="color:var(--red);">+18%</h3></div></div>
+        </div>
+
+        {{-- CHARTS --}}
+        <div class="row mb-4">
             <div class="col-md-6 mb-4">
                 <div class="card">
-                    <div class="card-header">📅 Oylik xarajatlar (so‘mda)</div>
-                    <div class="card-body">
-                        <canvas id="monthlyChart"></canvas>
-                    </div>
+                    <div class="card-header">📈 Filiallar bo‘yicha foydalanuvchilar soni</div>
+                    <div class="card-body"><canvas id="branchChart" height="180"></canvas></div>
                 </div>
             </div>
-
-            <!-- Filiallar kesimida taqsimot -->
             <div class="col-md-6 mb-4">
                 <div class="card">
-                    <div class="card-header">🏢 Filiallar bo‘yicha xarajat taqsimoti</div>
-                    <div class="card-body">
-                        <canvas id="branchChart"></canvas>
-                    </div>
+                    <div class="card-header">👥 Foydalanuvchi faoliyati</div>
+                    <div class="card-body"><canvas id="userActivityChart" height="180"></canvas></div>
                 </div>
             </div>
         </div>
 
-        <!-- Jadval misoli -->
-        <div class="card mt-4">
-            <div class="card-header">📋 Filiallar kesimida batafsil statistik jadval</div>
-            <div class="card-body table-responsive">
-                <table class="table table-bordered align-middle">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>#</th>
-                            <th>Filial nomi</th>
-                            <th>Jami xarajat (so‘m)</th>
-                            <th>Ulushi (%)</th>
-                            <th>Eng ko‘p sarf yo‘nalishi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>1</td><td>Toshkent</td><td>29 000 000</td><td>34%</td><td>Ofis jihozlari</td></tr>
-                        <tr><td>2</td><td>Samarqand</td><td>22 000 000</td><td>26%</td><td>Reklama</td></tr>
-                        <tr><td>3</td><td>Andijon</td><td>18 000 000</td><td>21%</td><td>Transport</td></tr>
-                        <tr><td>4</td><td>Farg‘ona</td><td>15 000 000</td><td>19%</td><td>Kommunal</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        {{-- MAP --}}
+
+
+        {{-- TABLE --}}
+        <div class="table-wrapper">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>#</th><th>Filial nomi</th><th>Foydalanuvchi</th><th>Xizmatlar soni</th><th>Umumiy xarajat</th><th>Oxirgi faoliyat</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>Toshkent</td><td>Ali Karimov</td><td>5</td><td>1 250 000</td><td>2025-10-18</td></tr>
+                    <tr><td>2</td><td>Samarqand</td><td>Dilnoza Nur</td><td>3</td><td>850 000</td><td>2025-10-19</td></tr>
+                    <tr><td>3</td><td>Andijon</td><td>Aziz Rustamov</td><td>8</td><td>2 100 000</td><td>2025-10-17</td></tr>
+                    <tr><td>4</td><td>Farg'ona</td><td>Madina Jo‘raeva</td><td>4</td><td>1 050 000</td><td>2025-10-15</td></tr>
+                </tbody>
+            </table>
         </div>
 
     </div>
 </div>
 @endsection
 
-@section('scripte_include_end_body')
+@section('script')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jvectormap@2.0.5/jquery-jvectormap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jvectormap@2.0.5/jquery-jvectormap-world-mill.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // 📅 Oylik xarajatlar (Line Chart)
-    const ctx1 = document.getElementById('monthlyChart');
-    new Chart(ctx1, {
-        type: 'line',
+    const chartOptions = { responsive: true, maintainAspectRatio: false };
+
+    // Branch chart
+    new Chart(document.getElementById('branchChart'), {
+        type: 'bar',
         data: {
-            labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun', 'Iyul', 'Avg', 'Sen', 'Okt'],
+            labels: ['Toshkent','Samarqand','Andijon','Farg‘ona','Namangan'],
             datasets: [{
-                label: 'Xarajatlar (so‘m)',
-                data: [9500000, 10200000, 8600000, 11500000, 9800000, 12500000, 13400000, 11000000, 9000000, 12500000],
-                borderColor: '#2563eb',
-                backgroundColor: 'rgba(37,99,235,0.2)',
-                fill: true,
-                tension: 0.3
+                label: 'Foydalanuvchilar soni',
+                data: [25,18,15,12,14],
+                backgroundColor: ['#667eea','#764ba2','#f093fb','#4facfe','#00f2fe'],
+                borderRadius: 10
             }]
         },
-        options: {
-            plugins: { legend: { display: false }},
-            scales: {
-                y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() + ' so‘m' }}
-            }
-        }
+        options: chartOptions
     });
 
-    // 🏢 Filiallar kesimida taqsimot (Doughnut Chart)
-    const ctx2 = document.getElementById('branchChart');
-    new Chart(ctx2, {
-        type: 'doughnut',
+    // User activity chart
+    new Chart(document.getElementById('userActivityChart'), {
+        type: 'line',
         data: {
-            labels: ['Toshkent', 'Samarqand', 'Andijon', 'Farg‘ona'],
+            labels: ['Yan','Fev','Mar','Apr','May','Iyun','Iyul','Avg','Sen','Okt'],
             datasets: [{
-                data: [34, 26, 21, 19],
-                backgroundColor: ['#2563eb', '#16a34a', '#f59e0b', '#dc2626'],
-                borderWidth: 1
+                label: 'Faol foydalanuvchilar',
+                data: [35,40,38,45,50,47,54,60,62,68],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102,126,234,0.1)',
+                fill: true,
+                tension: 0.4
             }]
         },
-        options: {
-            plugins: {
-                legend: { position: 'bottom' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.label + ': ' + context.parsed + '% ulush';
-                        }
-                    }
-                }
-            }
-        }
+        options: chartOptions
     });
+
+    // jVectorMap
+    if ($('#branchMap').width() > 0 && $('#branchMap').height() > 0) {
+        $('#branchMap').vectorMap({
+            map: 'world_mill',
+            backgroundColor: '#f3f3f3',
+            markers: [
+                {latLng: [41.3111, 69.2797], name: 'Toshkent'},
+                {latLng: [39.6542, 66.9597], name: 'Samarqand'},
+                {latLng: [40.7824, 72.3442], name: 'Andijon'},
+                {latLng: [40.3884, 71.7841], name: 'Farg‘ona'}
+            ],
+            markerStyle: {
+                initial: { fill: '#ff5722', stroke: '#fff', r: 6 }
+            }
+        });
+    }
 
 });
 </script>

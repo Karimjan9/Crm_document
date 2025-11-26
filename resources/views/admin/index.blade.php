@@ -6,8 +6,8 @@
 
 :root {
   --text-color: #1e293b;
-  --blue-main: #2563eb;
-  --blue-dark: #1e3a8a;
+  --blue-main: #244b8a;
+  --blue-dark: #244b8a;
   --blue-light: #3b82f6;
   --bg: #f8fafc;
   --white: #ffffff;

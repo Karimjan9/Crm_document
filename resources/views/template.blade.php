@@ -54,14 +54,71 @@
 		<!--start page wrapper -->
 		@yield('body')
 		<!--end page wrapper -->
+		 @yield('script')
 		<!--start overlay-->
 		<div class="overlay toggle-icon"></div>
 		<!--end overlay-->
 		<!--Start Back To Top Button--> <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
 		<!--End Back To Top Button-->
-		<footer class="page-footer">
-			<p class="mb-0">Copyright © 2024.</p>
-		</footer>
+	<footer class="page-footer">
+    {{-- <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+        .page-footer {
+            background-color: #1e1e2f; /* sidebar rangiga o'xshash */
+            color: #fff;
+            padding: 5px 6px;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .page-footer::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(0,123,255,0.3), rgb(192, 192, 192), rgba(255,0,150,0.3));
+            animation: rotate 10s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-copy {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .footer-copy span {
+            font-weight: 600;
+            color: #00ffc3; /* animatsiya bilan mos rang */
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); color: #00ffc3; }
+            50% { transform: scale(1.2); color: #ff4d6d; }
+        }
+    </style> --}}
+
+    <div class="footer-content">
+        <p class="footer-copy">Copyright © <span>2024</span>. All rights reserved.</p>
+    </div>
+</footer>
+
 	</div>
 	<!--end wrapper-->
 	<!--start switcher-->

@@ -12,9 +12,12 @@ return new class extends Migration
      * @return void
      */
     public function up()
+
     {
-        Schema::table('documents', function (Blueprint $table) {
-            $table->string('document_code')->nullable()->after('id');
+        Schema::create('holidays', function (Blueprint $table) {
+            $table->id();
+            $table->date('date')->unique();
+            $table->timestamps();
         });
     }
 
@@ -25,8 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('documents', function (Blueprint $table) {
-            $table->dropColumn('document_code');
-        });
+        Schema::dropIfExists('holidays');
     }
 };
