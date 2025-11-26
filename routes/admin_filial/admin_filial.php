@@ -29,7 +29,7 @@ Route::name('admin_filial.')->prefix('admin_filial')->group(function () {
     // Doc summary
     Route::get('/doc_summary', [AdminFilialDocumentController::class, 'doc_summary'])->name('doc_summary');
 
-});
+// });
 
 //     // Dashboard
 //     Route::get('/index', [AdminFilialController::class, 'index'])
