@@ -7,6 +7,6 @@ use App\Http\Controllers\Courier\CourierController;
 
 Route::name('courier.')->prefix('courier')->group(function(){
     
-    Route::get('/courier', [CourierController::class, 'index'])->name('index');
+    Route::get('/courier_part', [CourierController::class, 'index'])->name('index');
     // Add more courier routes here
 });
