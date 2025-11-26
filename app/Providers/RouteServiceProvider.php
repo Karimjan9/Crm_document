@@ -68,7 +68,13 @@ class RouteServiceProvider extends ServiceProvider
                
               
                 ->group(base_path('routes/admin_filial/admin_filial.php'));
+
+             Route::middleware(['web','auth','role:courier'])
+               
+              
+                ->group(base_path('routes/courier/courier.php'));
         });
+        
     }
 
     /**
