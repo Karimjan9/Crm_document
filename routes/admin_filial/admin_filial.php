@@ -1,15 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\Admin\AdminClientDocumentController;
 use App\Http\Controllers\Admin\AdminFilialController;
 use App\Http\Controllers\Admin\AdminFilialDocumentController;
-use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\FilialController;
-use App\Http\Controllers\Admin\ExpenseController;
-use App\Http\Controllers\Admin\CalendarController;
-use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\ExpenseAdminController;
 
 Route::name('admin_filial.')->prefix('admin_filial')->group(function () {
@@ -24,14 +18,10 @@ Route::name('admin_filial.')->prefix('admin_filial')->group(function () {
     Route::get('/service/{service}/addons', [AdminFilialDocumentController::class, 'getServiceAddons'])->name('get_service_addons');
 
     Route::get('/doc_summary', [AdminFilialDocumentController::class, 'doc_summary'])->name('doc_summary');
+
+    Route::post('/payment/add', [AdminFilialDocumentController::class, 'add_payment'])->name('add_payment');
+    Route::get('/payments/{document}', [AdminFilialDocumentController::class, 'paymentHistory']);
+
+    Route::resource('expense_admin', ExpenseAdminController::class);
+    Route::get('/expense/statistika', [ExpenseAdminController::class, 'statistika'])->name('expense.statistika');
 });
-
-Route::get('/doc_summary', [AdminFilialDocumentController::class, 'doc_summary'])->name('doc_summary');
-
-Route::post('/admin/filial/payment/add', [AdminFilialDocumentController::class, 'add_payment'])->name('add_payment');
-
-Route::get('/payments/{document}', [AdminFilialDocumentController::class, 'paymentHistory']);
-
-Route::resource('expense_admin', ExpenseAdminController::class);
-
-Route::get('/expense/statistika', [ExpenseAdminController::class, 'statistika'])->name('expense.statistika');

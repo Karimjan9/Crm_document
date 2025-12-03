@@ -2,23 +2,28 @@
 
 @section('style')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-body { font-family: 'Inter', sans-serif; background: #eef1f4; }
+body {
+    font-family: 'Inter', sans-serif;
+    background: #eef1f4;
+}
 .page-wrapper { padding: 28px; }
 
 /* Glass Card */
 .card {
-    border: none; border-radius: 18px;
+    border: none;
+    border-radius: 18px;
     background: rgba(255,255,255,0.85);
     backdrop-filter: blur(12px);
     box-shadow: 0 8px 24px rgba(0,0,0,0.06);
 }
 .card-header {
     background: linear-gradient(135deg, #3b82f6, #1e3a8a);
-    padding: 20px 28px; border-bottom: none;
+    padding: 20px 28px;
+    border-bottom: none;
+    color: #fff;
 }
 .card-header h4 { font-weight: 600; letter-spacing: -0.5px; }
 
@@ -31,14 +36,21 @@ body { font-family: 'Inter', sans-serif; background: #eef1f4; }
 
 /* Sort Icons */
 th.sortable { cursor: pointer; position: relative; font-weight: 600; color: #334155; }
-th.sortable:after { content: "\f0dc"; font-family: "Font Awesome 6 Free"; font-weight: 900; margin-left: 8px; font-size: 0.75em; opacity: 0.5; }
+th.sortable:after {
+    content: "\f0dc";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-left: 8px;
+    font-size: 0.75em;
+    opacity: 0.5;
+}
 th.sortable.asc:after { content: "\f0de"; opacity: 1; color: #2563eb; }
 th.sortable.desc:after { content: "\f0dd"; opacity: 1; color: #2563eb; }
 
 /* Badges */
 .badge { border-radius: 10px; padding: 6px 10px; }
-.balance-positive { color: #10b981; font-weight: 600; }
-.balance-negative { color: #ef4444; font-weight: 600; }
+.balance-positive { color: #28a745; font-weight: bold; }
+.balance-negative { color: #dc3545; font-weight: bold; }
 
 /* Payment Details Box */
 .payment-details {
@@ -49,7 +61,10 @@ th.sortable.desc:after { content: "\f0dd"; opacity: 1; color: #2563eb; }
     backdrop-filter: blur(10px);
     animation: fadeIn 0.35s ease;
 }
-@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+}
 .payment-details table { border-radius: 12px; overflow: hidden; }
 .payment-details-row td { padding: 0 !important; }
 
@@ -60,9 +75,9 @@ th.sortable.desc:after { content: "\f0dd"; opacity: 1; color: #2563eb; }
 @section('body')
 <div class="page-wrapper">
     <div class="page-content">
-        <div class="container-fluid">
+        <div class="container-fluid py-4">
 
-            {{-- Flash Message --}}
+            {{-- Flash message --}}
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
@@ -72,7 +87,7 @@ th.sortable.desc:after { content: "\f0dd"; opacity: 1; color: #2563eb; }
 
             {{-- Documents Table --}}
             <div class="card mb-4">
-                <div class="card-header text-white d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="mb-0"><i class="fas fa-layer-group me-2"></i>Hujjatlar Ro'yxati</h4>
                     <span class="badge bg-light text-dark px-3 py-2 shadow-sm">
                         Jami: {{ $documents->count() }} ta hujjat
@@ -102,15 +117,13 @@ th.sortable.desc:after { content: "\f0dd"; opacity: 1; color: #2563eb; }
                                     $status = $balance <= 0 ? "To‘langan" : ($doc->paid_amount > 0 ? "Qisman" : "Qarzdor");
                                     $badge = $balance <= 0 ? "success" : ($doc->paid_amount > 0 ? "warning" : "danger");
                                 @endphp
-
                                 <tr class="document-row"
                                     data-document-id="{{ $doc->id }}"
                                     data-id="{{ $doc->id }}"
                                     data-document_code="{{ $doc->document_code }}"
                                     data-final_price="{{ $doc->final_price }}"
                                     data-paid_amount="{{ $doc->paid_amount }}"
-                                    data-balance="{{ $balance }}"
-                                >
+                                    data-balance="{{ $balance }}">
                                     <td>#{{ $doc->id }}</td>
                                     <td><span class="badge bg-info text-dark">{{ $doc->document_code }}</span></td>
                                     <td><b>{{ number_format($doc->final_price) }} so‘m</b></td>
@@ -127,7 +140,6 @@ th.sortable.desc:after { content: "\f0dd"; opacity: 1; color: #2563eb; }
                                             <span class="text-muted">—</span>
                                         @endif
                                     </td>
-                                    
                                     <td>
                                         @if($doc->description)
                                             <button class="btn btn-sm btn-info description-btn" data-description="{{ $doc->description }}">Ko'rish</button>
@@ -149,8 +161,6 @@ th.sortable.desc:after { content: "\f0dd"; opacity: 1; color: #2563eb; }
                                         </button>
                                     </td>
                                 </tr>
-
-                            
                                 <tr class="payment-details-row" id="payment-details-{{ $doc->id }}" style="display:none;">
                                     <td colspan="10">
                                         <div class="payment-details">
@@ -186,18 +196,15 @@ th.sortable.desc:after { content: "\f0dd"; opacity: 1; color: #2563eb; }
                                         </div>
                                     </td>
                                 </tr>
-
                             @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
-{{-- Modallar (payment, description, history) --}}
 @include('partials.payment_modal')
 @include('partials.description_modal')
 @include('partials.history_modal')
@@ -238,7 +245,6 @@ $(document).ready(function(){
                 valA = valA.toString().toLowerCase();
                 valB = valB.toString().toLowerCase();
             }
-
             return asc ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
         });
 
@@ -247,7 +253,7 @@ $(document).ready(function(){
         $(this).addClass(asc ? 'asc' : 'desc');
     });
 
-    // Payment modal open
+    // Payment modal
     $('.make-payment-btn').click(function(e){
         e.stopPropagation();
         let id = $(this).data('document-id');
