@@ -158,32 +158,29 @@
 
         <div class="page-breadcrumb mb-3">
             <div class="breadcrumb-title">Yangi Filial Qo‘shish</div>
-            <a href="{{ route('superadmin.filial.index') }}" class="btn btn-outline">← Orqaga</a>
+            <a href="{{ route('superadmin.direction_type.index') }}" class="btn btn-outline">← Orqaga</a>
         </div>
 
         <div class="card radius-10">
             <div class="card-body">
-                <form action="{{ route('superadmin.filial.store') }}" method="POST">
+                <form action="{{ route('superadmin.direction_type.store') }}" method="POST">
                     @csrf
 
                     <div class="mb-3">
-                        <label for="filial_nomi">Filial nomi</label>
-                        <input type="text" id="filial_nomi" name="name" class="form-control" placeholder="Masalan: Toshkent markaziy filial" required>
+                        <label for="filial_nomi">Hujjat yo'nalishi</label>
+                        <input type="text" id="filial_nomi" name="name" class="form-control" placeholder="Ta'lim oliy" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="filial_kodi">Filial kodi</label>
-                        <input type="text" id="filial_kodi" name="code" class="form-control" placeholder="Masalan: TSH001" required>
-                    </div>
+               
 
                     <div class="mb-3">
                         <label for="description">Filial izoh</label>
-                        <textarea id="description" name="description" rows="4" class="form-control" placeholder="Filial haqida qisqacha ma’lumot..."></textarea>
+                        <textarea id="description" name="description" rows="4" class="form-control" placeholder="Yo'nalish haqida qisqacha ma’lumot..."></textarea>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="submit" class="btn btn-custom">Saqlash</button>
-                        <a href="{{ route('superadmin.filial.index') }}" class="btn btn-outline">Bekor qilish</a>
+                        <a href="{{ route('superadmin.direction_type.index') }}" class="btn btn-outline">Bekor qilish</a>
                     </div>
                 </form>
             </div>

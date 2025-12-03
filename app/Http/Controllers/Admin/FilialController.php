@@ -22,7 +22,7 @@ class FilialController extends Controller
    
     public function create()
     {
-        return view('superadmin.filial.create');
+        return view('admin.filial.create');
     }
 
    
@@ -34,7 +34,7 @@ class FilialController extends Controller
             $filial->code=$request->code;
             $filial->description=$request->description;
             $filial->save();
-            return redirect()->route('admin.filial.index')->with('success','Filial muvaffaqiyatli yaratildi');
+            return redirect()->route('superadmin.filial.index')->with('success','Filial muvaffaqiyatli yaratildi');
         } catch (Exception $exception) {
             Log::info($exception);
         }

@@ -143,33 +143,30 @@
     <div class="page-content">
 
         <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
-            <div class="breadcrumb-title pe-3">Filial tahrirlash formasi</div>
-            <a href="{{ route('superadmin.filial.index') }}" class="btn btn-outline">← Orqaga</a>
+            <div class="breadcrumb-title pe-3">Konsullik tahrirlash formasi</div>
+            <a href="{{ route('superadmin.consulation.index') }}" class="btn btn-outline">← Orqaga</a>
         </div>
 
         <div class="card radius-10">
             <div class="card-body">
-                <form action="{{ route('superadmin.filial.update',['filial'=>$filial->id]) }}" method="POST">
+                <form action="{{ route('superadmin.consulation.update',['consulation'=>$consulationType->id]) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
-                        <label for="filial_nomi">Filial nomi</label>
-                        <input type="text" id="filial_nomi" value="{{ $filial->name }}" name="name" class="form-control" placeholder="Masalan: Toshkent markaziy filial" required>
+                        <label for="filial_nomi">Konsullik nomi</label>
+                        <input type="text" id="filial_nomi" value="{{ $directionType->name }}" name="name" class="form-control" placeholder="Masalan: Toshkent markaziy filial" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="filial_kodi">Filial kodi</label>
-                        <input type="text" id="filial_kodi" name="code" value="{{ $filial->code }}" class="form-control" placeholder="Masalan: TSH001" required>
-                    </div>
+                  
 
                     <div class="mb-3">
-                        <label for="description">Filial izoh</label>
-                        <textarea id="description" name="description" rows="4" class="form-control" placeholder="Filial haqida qisqacha ma’lumot...">{{ $filial->description }}</textarea>
+                        <label for="description">Konsullik izoh</label>
+                        <textarea id="description" name="description" rows="4" class="form-control" placeholder="Konsullik haqida qisqacha ma’lumot...">{{ $consulationType->description }}</textarea>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="submit" class="btn btn-custom">Saqlash</button>
-                        <a href="{{ route('superadmin.filial.index') }}" class="btn btn-outline">Bekor qilish</a>
+                        <a href="{{ route('superadmin.consulation.index') }}" class="btn btn-outline">Bekor qilish</a>
                     </div>
 
                 </form>
