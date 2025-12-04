@@ -3,9 +3,12 @@
 use App\Http\Controllers\Admin\CalendarController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ConsulationTypeController;
+use App\Http\Controllers\Admin\DirectionTypeController;
 use App\Http\Controllers\Admin\FilialController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\DocumentController;
+use App\Http\Controllers\Admin\DocumentTypeController;
 use App\Http\Controllers\Admin\ServiceAddonController;
 use App\Http\Controllers\Admin\ServiceController;
 
@@ -38,5 +41,12 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
     Route::resource('/service',ServiceController::class)->except(['show']);
 
     Route::resource('service/{service}/addon',ServiceAddonController::class)->except(['show', 'index']);
+
+    Route::resource('/document_type',DocumentTypeController::class)->except(['show']);
+
+    Route::resource('/direction_type',DirectionTypeController::class)->except(['show']);
+
+    Route::resource('/consulation',ConsulationTypeController::class)->except(['show']);
+
 });
 

@@ -7,6 +7,7 @@ use Database\Seeders\OrderSeeder;
 use Database\Seeders\CareerSeeder;
 use Database\Seeders\DepartementsSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use PhpParser\Comment\Doc;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,6 +23,9 @@ class DatabaseSeeder extends Seeder
     
             UserSeeder::class,
             FilialSeeder::class,
+            ConsulationTypeSeeder::class,
+            DirectionTypeSeeder::class,
+            DocumentTypeSeeder::class,
           
         ]);
     }

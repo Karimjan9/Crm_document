@@ -81,7 +81,7 @@
 {{-- Add Expense Modal --}}
 <div class="modal fade" id="addExpenseModal" tabindex="-1">
     <div class="modal-dialog">
-        <form action="{{ route('admin_filial.expense.store') }}" method="POST" id="addExpenseForm">
+        <form action="{{ route('admin_filial.expense_admin.store') }}" method="POST" id="addExpenseForm">
             @csrf
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">

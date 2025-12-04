@@ -273,7 +273,7 @@
                                   <th>F.I.O / Nomi</th>
                                   <th>Telefon</th>
                                   <th>Status</th>
-                                  <th>Amallar</th>
+                                
                               </tr>
                           </thead>
                           <tbody id="data_list">
@@ -284,10 +284,10 @@
                                       <td>{{ $user->name }}</td>
                                       <td>+998 {{ $user->phone }}</td>
                                       <td><span class="badge bg-success">Faol</span></td>
-                                      <td>
+                                      {{-- <td>
                                           <button class="btn btn-sm btn-primary">✏️ Tahrirlash</button>
                                           <button class="btn btn-sm btn-danger">🗑️ O'chirish</button>
-                                      </td>
+                                      </td> --}}
                                   </tr>
                               @endforeach
                           </tbody>
