@@ -35,7 +35,7 @@ body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
             </div>
         @endif
 
-        {{-- CLIENT (o'zgarmaydi) --}}
+        {{-- CLIENT --}}
         <div class="card">
             <div class="card-body">
                 <h5 class="mb-2">Mijoz</h5>
@@ -60,6 +60,54 @@ body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
             </div>
         </div>
 
+        {{-- DOCUMENT TYPE --}}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mb-2">Hujjat turi</h5>
+                <select name="document_type_id" class="form-control select2 @error('document_type_id') is-invalid @enderror">
+                    <option value="">— Tanlang —</option>
+                    @foreach($documentTypes as $dt)
+                        <option value="{{ $dt->id }}" {{ (old('document_type_id', $document->document_type_id) == $dt->id) ? 'selected' : '' }}>
+                            {{ $dt->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('document_type_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+            </div>
+        </div>
+
+        {{-- DIRECTION --}}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mb-2">Yo'nalish</h5>
+                <select name="direction_type_id" class="form-control select2 @error('direction_type_id') is-invalid @enderror">
+                    <option value="">— Tanlang —</option>
+                    @foreach($directions as $d)
+                        <option value="{{ $d->id }}" {{ (old('direction_type_id', $document->direction_type_id) == $d->id) ? 'selected' : '' }}>
+                            {{ $d->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('direction_type_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+            </div>
+        </div>
+
+        {{-- CONSULATE --}}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mb-2">Konsullik</h5>
+                <select name="consulate_type_id" class="form-control select2 @error('consulate_type_id') is-invalid @enderror">
+                    <option value="">— Tanlang —</option>
+                    @foreach($consulates as $c)
+                        <option value="{{ $c->id }}" {{ (old('consulate_type_id', $document->consulate_type_id) == $c->id) ? 'selected' : '' }}>
+                            {{ $c->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('consulate_type_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+            </div>
+        </div>
+
         {{-- ADDONS --}}
         <div class="card" id="addonsCard" style="display:none">
             <div class="card-body">
@@ -78,12 +126,10 @@ body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
                         <input type="number" name="discount" id="discount" class="form-control" value="{{ old('discount', $document->discount ?? 0) }}">
                         @error('discount') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                     </div>
-
                     <div class="col-md-4">
                         <label class="form-label">Hisoblangan summa</label>
                         <input type="text" id="calculatedPrice" class="form-control" disabled>
                     </div>
-
                     <div class="col-md-4">
                         <label class="form-label">Final price (so'm)</label>
                         <input type="number" name="final_price" id="finalPrice" class="form-control" value="{{ old('final_price', $document->final_price) }}" required>
@@ -93,7 +139,7 @@ body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
             </div>
         </div>
 
-        {{-- PAYMENTS (existing + add new) --}}
+        {{-- PAYMENTS --}}
         <div class="card">
             <div class="card-body">
                 <h5 class="mb-2">To‘lovlar (mavjud)</h5>
@@ -104,9 +150,6 @@ body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
                             <div>
                                 <div><b>{{ number_format($p->amount) }} so'm</b></div>
                                 <div class="text-muted">{{ $p->payment_type }} • {{ $p->created_at->format('Y-m-d H:i') }}</div>
-                            </div>
-                            <div>
-                                {{-- Optionally show ID or a delete button later --}}
                             </div>
                         </div>
                     @endforeach
@@ -152,13 +195,10 @@ body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
 $(function(){
     if ($.fn.select2) $('.select2').select2({ width: '100%' });
 
-    // oldindan tanlangan addon id-lari
     let selectedAddons = @json($document->addons->pluck('id')) || [];
     selectedAddons = selectedAddons.map(x => String(x));
+    const addonsBaseTemplate = "{{ route('admin_filial.get_service_addons', ['service' => ':id']) }}";
 
-    const addonsBaseUrl = "{{ url('admin_filial/admin/filial/get-service-addons') }}";
-
-    // Debounce helper
     function debounce(fn, wait) {
         let t;
         return function(...args) {
@@ -167,21 +207,21 @@ $(function(){
         };
     }
 
-    // ---- Load addons (o'zgarmadi - faqat name="addons[]" borligiga e'tibor) ----
     function loadAddons(serviceId, preSelected){
         if(!serviceId) {
             $('#addonsList').html('');
             $('#addonsCard').hide();
             return;
         }
-        $.get(addonsBaseUrl + '/' + serviceId, function(data){
+        const url = addonsBaseTemplate.replace(':id', serviceId);
+        $.get(url, function(data){
             let html = '';
             data.forEach(function(a){
                 let checked = preSelected.includes(String(a.id)) ? 'checked' : '';
                 html += `<label class="addon-box">
                             <div>
                                 <b>${a.name}</b><br>
-                                <small class="text-muted">${a.price.toLocaleString()} so'm</small>
+                                <small class="text-muted">${Number(a.price).toLocaleString()} so'm</small>
                             </div>
                             <input
                                 type="checkbox"
@@ -195,45 +235,35 @@ $(function(){
             });
             $('#addonsList').html(html);
             $('#addonsCard').show();
-            // initial calculate after DOM injection
             debouncedCalculate();
-        }).fail(function(){
+        }).fail(function(jqXHR){
+            console.error('Addons load failed', jqXHR);
             $('#addonsList').html('<div class="text-danger">Qoʻshimcha xizmatlarni yuklashda xato</div>');
             $('#addonsCard').show();
         });
     }
 
-    // ---- Fast calculation: vanilla DOM loops, Intl.NumberFormat only for display ----
-    const nf = new Intl.NumberFormat(); // for thousand separators
+    const nf = new Intl.NumberFormat();
     function calculateFast() {
-        // service price (cached per call)
         const sel = document.getElementById('serviceSelect');
         const servicePrice = parseInt(sel.options[sel.selectedIndex]?.dataset.price) || 0;
-
-        // sum checked addons — use native querySelectorAll (faster than jQuery .each on large sets)
         const checked = document.querySelectorAll('.addonCheckbox:checked');
         let addonsTotal = 0;
         for (let i = 0; i < checked.length; i++) {
             const p = checked[i].dataset.price;
             addonsTotal += p ? parseInt(p) : 0;
         }
-
         const total = servicePrice + addonsTotal;
         const discountVal = parseInt(document.getElementById('discount').value) || 0;
         const final = Math.round(total - (total * discountVal / 100));
-
-        // update DOM once
         document.getElementById('calculatedPrice').value = nf.format(total);
         document.getElementById('finalPrice').value = final;
     }
 
-    // debounce calculate to avoid rapid repeated runs (e.g., user typing discount)
     const debouncedCalculate = debounce(calculateFast, 120);
 
-    // bind events (use delegated for addon checkboxes because they are injected)
     $(document).on('change', '.addonCheckbox', debouncedCalculate);
     $('#serviceSelect').on('change', function(){
-        // load addons for new service and recalc (loadAddons will call calculate when done)
         const sid = $(this).val();
         if(!sid) {
             $('#addonsList').html('');
@@ -244,13 +274,10 @@ $(function(){
         loadAddons(sid, []);
     });
 
-    // discount input: use input event and debounce (so typing is smooth)
     $('#discount').on('input', debouncedCalculate);
 
-    // initial load if service present
     const currentServiceId = $('#serviceSelect').val();
     if (currentServiceId) loadAddons(currentServiceId, selectedAddons);
-    // also initial calc if addons already in DOM
     setTimeout(debouncedCalculate, 250);
 });
 </script>

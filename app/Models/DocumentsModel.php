@@ -19,6 +19,9 @@ class DocumentsModel extends Model
     protected $fillable = [
         'client_id',
         'service_id',
+        'document_type_id',
+        'direction_type_id',
+        'consulate_type_id',
         'service_price',
         'addons_total_price',
         'deadline_time',
@@ -30,6 +33,7 @@ class DocumentsModel extends Model
         'filial_id',
         'document_code'
     ];
+
 
     public function client() {
         return $this->belongsTo(ClientsModel::class);
@@ -60,24 +64,54 @@ class DocumentsModel extends Model
 
 public function getDeadlineRemainingAttribute()
 {
-    // Deadline kunlarda berilgan + 2 soat qo‘shish
-    $deadline = $this->created_at->copy()->addDays($this->deadline_time)->addHours(2);
+    $deadline = $this->created_at
+                    ->copy()
+                    ->addDays($this->deadline_time)
+                    ->addHours(2);
+
     $now = Carbon::now();
 
-    if ($now->greaterThanOrEqualTo($deadline)) {
-        return '0 kun';
+    // Muddat O'TGAN bo'lsa
+    if ($now->greaterThan($deadline)) {
+        $diffHours = floor($deadline->diffInSeconds($now) / 3600);
+
+        // 24 soatdan kam bo'lsa -> soatlarda minus bilan
+        if ($diffHours < 24) {
+            return '-' . $diffHours . " soat o'tgan";
+        }
+
+        // 24 soatdan oshsa -> kunlarda (faqat floor)
+        $days = floor($diffHours / 24);
+        return '-' . $days . " kun o'tgan";
     }
 
-    $diffInSeconds = $deadline->diffInSeconds($now);
+    // Muddat hali kelmagan bo'lsa
+    $diffHours = floor($deadline->diffInSeconds($now) / 3600);
 
-    $days = floor($diffInSeconds / 86400);      // 1 kun = 86400 sekund
-    $hours = floor($diffInSeconds / 3600);      // qolgan vaqt soatlarda
-
-    if ($diffInSeconds >= 86400) {
-        return $days . '-kun';
+    // 24 soatdan ko'p bo'lsa -> kunlarda
+    if ($diffHours >= 24) {
+        $days = floor($diffHours / 24);
+        return $days . ' kun';
     }
 
-    return $hours . ' soat';
+    // 24 soatdan kam bo'lsa -> soatlarda
+    return $diffHours . ' soat';
 }
+
+public function documentType()
+{
+    return $this->belongsTo(DocumentTypeModel::class, 'document_type_id');
+}
+
+public function directionType()
+{
+    return $this->belongsTo(DirectionTypeModel::class, 'direction_type_id');
+}
+
+public function consulateType()
+{
+    return $this->belongsTo(ConsulationTypeModel::class, 'consulate_type_id');
+}
+
 
 }

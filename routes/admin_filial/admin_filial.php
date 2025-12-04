@@ -29,35 +29,7 @@ Route::name('admin_filial.')->prefix('admin_filial')->group(function () {
     // Doc summary
     Route::get('/doc_summary', [AdminFilialDocumentController::class, 'doc_summary'])->name('doc_summary');
 
-// });
 
-//     // Dashboard
-//     Route::get('/index', [AdminFilialController::class, 'index'])
-//         ->name('index');
-
-//     // Employees
-//     Route::get('/employees', [AdminFilialController::class, 'employees'])
-//         ->name('employees.index');
-
-//     Route::get('/employees/create', [AdminFilialController::class, 'employeeCreate'])
-//         ->name('employees.create');
-
-//     // Stats
-//     Route::get('/stats', [AdminFilialController::class, 'stats'])
-//         ->name('stats.index');
-
-//     // Documents
-//     Route::get('/documents', [AdminFilialController::class, 'documents'])
-//         ->name('documents.index');
-
-//     Route::get('/documents/create', [AdminFilialController::class, 'documentsCreate'])
-//         ->name('documents.create');
-
-//     // Deadlines
-//     Route::get('/deadlines', [AdminFilialController::class, 'deadlines'])
-//         ->name('deadlines.index');
-
-// });
 
 
 

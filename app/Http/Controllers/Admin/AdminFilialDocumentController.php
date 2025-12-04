@@ -5,7 +5,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DocumentCreateRequest;
 use App\Http\Requests\Admin\DocumentUpdateRequest;
 use App\Models\ClientsModel;
+use App\Models\ConsulationTypeModel;
+use App\Models\DirectionTypeModel;
 use App\Models\DocumentsModel;
+use App\Models\DocumentTypeModel;
 use App\Models\PaymentsModel;
 use App\Models\ServiceAddonModel;
 use App\Models\ServicesModel;
@@ -30,12 +33,14 @@ class AdminFilialDocumentController extends Controller
 //         ->get();
 // }
 
-    public function getServiceAddons($serviceId)
-    {
-        // masalan service_id bo‘yicha addonslarni olamiz
-        $addons = ServiceAddonModel::where('service_id', $serviceId)->get(['id', 'name', 'price', 'deadline']);
-        return response()->json($addons);
-    }
+   public function getServiceAddons($serviceId)
+{
+    $addons = ServiceAddonModel::where('service_id', $serviceId)
+                ->select(['id', 'name', 'price'])
+                ->get();
+
+    return response()->json($addons);
+}
     public function index()
     {
         $userFilialId = auth()->user()->filial_id;
@@ -52,15 +57,19 @@ class AdminFilialDocumentController extends Controller
 
     public function create()
     {
-        $userFilialId = auth()->user()->filial_id;
-
+        $userFilialId   = auth()->user()->filial_id;
+        $documentTypes  = DocumentTypeModel::all();
+        $directionTypes = DirectionTypeModel::all();
+        $consulateTypes = ConsulationTypeModel::all();
         // Faqat o‘z filialidagi xizmatlar
         $services = ServicesModel::all();
 
         // Faqat o‘z filialidagi qo‘shimcha xizmatlar
         $addons = ServiceAddonModel::all();
 
-        return view('admin_filial.admin_filial_document.create', compact('services', 'addons'));
+        return view('admin_filial.admin_filial_document.create',
+            compact('services', 'addons', 'documentTypes',
+                'directionTypes', 'consulateTypes'));
     }
 
     // -------------------------------
@@ -121,6 +130,9 @@ class AdminFilialDocumentController extends Controller
             'description'        => $request->description,
             'filial_id'          => auth()->user()->filial_id,
             'document_code'      => $documentCode,
+            'document_type_id'   => $request->document_type_id,
+            'direction_type_id'  => $request->direction_type_id,
+            'consulate_type_id'  => $request->consulate_type_id,
         ]);
 
         // Addons attach qilish
@@ -142,14 +154,29 @@ class AdminFilialDocumentController extends Controller
             ->with('success', 'Hujjat muvaffaqiyatli yaratildi!');
     }
 
-    public function edit($id)
-    {
-        $document = DocumentsModel::with(['addons'])->findOrFail($id);
-        $services = ServicesModel::all();
-        $addons   = ServiceAddonModel::all();
+  public function edit($id)
+{
+    $document = DocumentsModel::with(['addons', 'client', 'payments'])->findOrFail($id);
 
-        return view('admin_filial.admin_filial_document.edit', compact('document', 'services', 'addons'));
+    // 24 soatdan oshganini tekshirish
+    if ($document->created_at->diffInHours(now()) > 24) {
+        return redirect()->back()->with('error', '24 soatdan oshgan hujjatni o‘zgartirish mumkin emas.');
     }
+
+    // ro'yxatlar
+    $services      = ServicesModel::all();
+    $addons        = ServiceAddonModel::all();
+    $documentTypes = DocumentTypeModel::all();
+    $directions    = DirectionTypeModel::all();
+    $consulates    = ConsulationTypeModel::all();
+
+    return view('admin_filial.admin_filial_document.edit', compact(
+        'document', 'services', 'addons',
+        'documentTypes', 'directions', 'consulates'
+    ));
+}
+
+
 
     public function update(DocumentUpdateRequest $request, $id)
     {
@@ -190,6 +217,9 @@ class AdminFilialDocumentController extends Controller
             'paid_amount'        => $request->paid_amount ?? 0,
             'discount'           => $discount,
             'description'        => $request->description,
+            'document_type_id'   => $request->document_type_id,
+            'direction_type_id'  => $request->direction_type_id,
+            'consulate_type_id'  => $request->consulate_type_id,
         ]);
 
         // Addons update
@@ -197,7 +227,7 @@ class AdminFilialDocumentController extends Controller
 
         // Payment update yoki create
         if ($request->paid_amount && $request->payment_type) {
-            \App\Models\PaymentsModel::updateOrCreate(
+            PaymentsModel::updateOrCreate(
                 ['document_id' => $document->id],
                 [
                     'amount'           => $request->paid_amount,
@@ -258,14 +288,12 @@ class AdminFilialDocumentController extends Controller
         return response()->json(['status' => 'success']);
     }
 
-     public function paymentHistory(DocumentsModel $document)
+    public function paymentHistory(DocumentsModel $document)
     {
         $payments = PaymentsModel::where('document_id', $document->id)
             ->orderBy('created_at', 'desc')
             ->get(['amount', 'payment_type', 'paid_by_admin_id', 'created_at']);
 
-          
-          
         return response()->json($payments);
     }
 

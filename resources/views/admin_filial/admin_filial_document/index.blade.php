@@ -133,6 +133,11 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
   table { font-size: 12px; }
   .card-body { padding: 20px; }
 }
+.disabled-link {
+    pointer-events: none;  /* klik bo‘lmaydi */
+    opacity: 0.5;          /* ko‘rinishi susayadi */
+    cursor: not-allowed;
+}
 </style>
 @endsection
 
@@ -175,6 +180,7 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                 <th>Document Code</th>
                 <th>Mijoz</th>
                 <th>Xizmat</th>
+                <th>Muhlat</th>
                 <th>Deadline</th>
                 <th>Status</th>
                 <th>Harakatlar</th>
@@ -185,6 +191,8 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                 @php
                   $statusText = $doc->paid_amount >= $doc->final_price ? 'yopilgan' : 'jarayonda';
                   $editDisabled = \Carbon\Carbon::now()->diffInHours($doc->created_at) > 24 ? 'disabled' : '';
+                  $hoursDiff = \Carbon\Carbon::now()->diffInHours($doc->created_at);
+                  $editDisabled = $hoursDiff > 24;
                 @endphp
                 <tr data-status="{{ $statusText }}" data-client="{{ $doc->client->name ?? '' }}" data-service="{{ $doc->service->name ?? '' }}" data-deadline="{{ $doc->deadline_time }}">
                   <td>{{ $key+1 }}</td>
@@ -192,6 +200,7 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                   <td>{{ $doc->client->name ?? '-' }}</td>
                   <td>{{ $doc->service->name ?? '-' }}</td>
                   <td>{{ $doc->deadline_time }}-kun</td>
+                  <td>{{ $doc->deadline_remaining }}</td>
                   <td>
                     @if($doc->paid_amount >= $doc->final_price)
                       <span class="badge bg-success">Yopilgan</span>
@@ -200,7 +209,10 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                     @endif
                   </td>
                   <td>
-                    <a class="btn btn-edit" href="{{ route('admin_filial.document.edit',['document'=>$doc->id]) }}" {{ $editDisabled }}>O'zgartirish</a>
+                  <a class="btn btn-edit {{ $editDisabled ? 'disabled-link' : '' }}" 
+                    href="{{ $editDisabled ? '#' : route('admin_filial.document.edit',['document'=>$doc->id]) }}">
+                    O'zgartirish
+                  </a>
                   </td>
                 </tr>
               @endforeach
