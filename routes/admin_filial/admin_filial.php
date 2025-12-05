@@ -43,5 +43,7 @@ Route::name('admin_filial.')->prefix('admin_filial')->group(function () {
         Route::resource('expense_admin', ExpenseAdminController::class);
 
         Route::get('/expense/statistika', [ExpenseAdminController::class, 'statistika'])->name('expense.statistika');
+
+        Route::get('/document/complete/{document}', [AdminFilialDocumentController::class, 'completeDocument'])->name('document.complete');
     });
 

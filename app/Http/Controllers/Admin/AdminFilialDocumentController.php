@@ -241,19 +241,30 @@ class AdminFilialDocumentController extends Controller
             ->with('success', 'Hujjat muvaffaqiyatli yangilandi!');
     }
 
-    public function doc_summary()
+        public function doc_summary()
     {
-        $userFilialId = auth()->user()->filial_id;
+        $user = auth()->user();
+        $userFilialId = $user->filial_id;
 
-        $documents = DocumentsModel::with(['client', 'service', 'addons', 'payments', 'user'])
-            ->whereHas('user', function ($q) use ($userFilialId) {
+        $query = DocumentsModel::with(['client', 'service', 'addons', 'payments', 'user']);
+
+        // Agar admin_filial bo'lsa - filial bo'yicha filter
+        if ($user->role === 'admin_filial') {
+            $query->whereHas('user', function ($q) use ($userFilialId) {
                 $q->where('filial_id', $userFilialId);
-            })
-            ->orderBy('id', 'DESC')
-            ->get();
+            });
+        }
+
+        // Agar employee bo'lsa - faqat o'zining documentlari
+        else {
+            $query->where('user_id', $user->id);
+        }
+
+        $documents = $query->orderBy('id', 'DESC')->get();
 
         return view('admin_filial.summary_doc.index', compact('documents'));
     }
+
 
     public function add_payment(Request $request)
     {
@@ -296,5 +307,13 @@ class AdminFilialDocumentController extends Controller
 
         return response()->json($payments);
     }
+    public function completeDocument(DocumentsModel $document)
+    {
+        // Hujjatni tugallash
+        $document->status_doc = 'finish';
+        $document->save();
 
+        return redirect()->route('admin_filial.document.index')
+            ->with('success', 'Hujjat muvaffaqiyatli tugallandi!');
+    }
 }

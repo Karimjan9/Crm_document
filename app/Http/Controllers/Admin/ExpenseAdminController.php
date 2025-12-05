@@ -62,45 +62,62 @@ class ExpenseAdminController extends Controller
         //
     }
 
-    public function statistika(Request $request)
-    {
-        // dd(123);
-        $filial_id = auth()->user()->filial_id;
+  public function statistika(Request $request)
+{
+    $user = auth()->user();
+    // dd($user->hasRole('admin_filial'));
+    $user = auth()->user();
+    $filial_id = $user->filial_id;
 
-        // Filterlar
-        $user_filter = $request->input('user_id');
-        $amount_min  = $request->input('amount_min');
-        $amount_max  = $request->input('amount_max');
+    $user_filter = $request->input('user_id');
+    $month_year  = $request->input('month_year');
 
-        $query = ExpenseAdminModel::where('filial_id', $filial_id);
+    $year_filter  = null;
+    $month_filter = null;
 
-        if ($user_filter) {
+    if($month_year){
+        [$year_filter, $month_filter] = explode('-', $month_year);
+    }
+
+    $query = ExpenseAdminModel::query();
+
+    if($user->hasRole('admin_filial')){
+        $query->where('filial_id', $filial_id);
+        if($user_filter){
             $query->where('user_id', $user_filter);
         }
 
-        if ($amount_min) {
-            $query->where('amount', '>=', $amount_min);
-        }
-
-        if ($amount_max) {
-            $query->where('amount', '<=', $amount_max);
-        }
-
-        $expenses = $query->orderBy('id', 'desc')->get();
-
-    
-        $total_amount = $expenses->sum('amount');
-
- 
-       $users = \App\Models\User::where('filial_id', $filial_id)->get() ?? collect([]);
-        $users = $users ?: collect([]);
-        $chartData = $expenses->groupBy('user_id')->map(function ($items) {
-            return $items->sum('amount');
-        });
-
-        return view('admin.expense.part.statistika', compact(
-            'expenses', 'users', 'user_filter', 'amount_min', 'amount_max', 'total_amount', 'chartData'
-        ));
+        // Filialdagi faqat employee roli bo‘lgan xodimlar
+        $users = \App\Models\User::where('filial_id', $filial_id)
+                    ->whereHas('roles', function($q){
+                        $q->where('name', 'employee');
+                    })
+                    ->get();
+    } else {
+        $query->where('user_id', $user->id);
+        $users = collect([$user]);
     }
+
+    if($year_filter && $month_filter){
+        $query->whereYear('created_at', $year_filter)
+              ->whereMonth('created_at', $month_filter);
+    }
+
+    $expenses = $query->orderBy('id','desc')->get();
+    $total_amount = $expenses->sum('amount');
+
+    $chartData = $expenses->groupBy('user_id')->map(function($items){
+        return $items->sum('amount');
+    });
+    // dd($users);
+    return view('admin.expense.part.statistika', compact(
+        'expenses','users','user_filter','month_year',
+        'year_filter','month_filter','total_amount','chartData','user'
+    ));
+}
+
+
+
+
 
 }

@@ -31,7 +31,8 @@ class DocumentsModel extends Model
         'user_id',
         'description',
         'filial_id',
-        'document_code'
+        'document_code',
+        'status_doc'
     ];
 
 
