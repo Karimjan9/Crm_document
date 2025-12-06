@@ -2,23 +2,86 @@
 @extends('template')
 
 @section('style')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-    .table-hover tbody tr:hover {
-        background-color: #f5f5f5;
-        cursor: pointer;
-    }
-    .badge-expense {
-        font-size: 0.85em;
-        padding: 0.3em 0.6em;
-    }
+:root {
+    --blue-main: #3b82f6;
+    --blue-hover: #2563eb;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --light-bg: #f9fafb;
+    --card-shadow: rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--light-bg);
+}
+
+.page-wrapper {
+    padding: 2rem;
+}
+
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 10px var(--card-shadow);
+    overflow: hidden;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f5f9;
+    cursor: pointer;
+}
+
+.table thead th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+}
+
+.badge-expense {
+    font-size: 0.85em;
+    padding: 0.3em 0.6em;
+    border-radius: 8px;
+}
+
+.btn-custom {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn-success {
+    background: var(--success);
+    border: none;
+}
+
+.btn-success:hover {
+    background: #16a34a;
+}
+
+.modal-header.bg-success {
+    background: var(--success);
+}
+
+.modal-header.bg-primary {
+    background: var(--blue-main);
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.invalid-feedback {
+    display: block;
+}
 </style>
 @endsection
 
 @section('body')
 <div class="page-wrapper">
     <div class="page-content">
-        <div class="container-fluid py-4">
+        <div class="container-fluid">
 
             {{-- Flash message --}}
             @if(session('success'))
@@ -28,23 +91,22 @@
                 </div>
             @endif
 
-            <div class="d-flex justify-content-between mb-3">
-                <h4><i class="fas fa-wallet me-2"></i>Xarajatlar Ro'yxati</h4>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
-                    <i class="fas fa-plus"></i> Xarajat qo'shish
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold"><i class="fas fa-wallet me-2"></i>Xarajatlar Ro'yxati</h4>
+                <button class="btn btn-success btn-custom" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                    <i class="fas fa-plus me-1"></i> Xarajat qo'shish
                 </button>
             </div>
 
-            <div class="card shadow">
+            <div class="card mb-4 shadow-sm">
                 <div class="card-body p-0">
                     <table class="table table-hover table-striped mb-0">
-                        <thead class="table-light">
+                        <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Summa</th>
                                 <th>Filial</th>
                                 <th>Izoh</th>
-                      
                             </tr>
                         </thead>
                         <tbody>
@@ -54,19 +116,10 @@
                                     <td><strong>{{ number_format($expense->amount, 0, ',', ' ') }} so'm</strong></td>
                                     <td>{{ $expense->filial_id }}</td>
                                     <td>{{ $expense->description ?? '-' }}</td>
-                                    {{-- <td>
-                                        <button class="btn btn-sm btn-primary edit-expense-btn"
-                                            data-id="{{ $expense->id }}"
-                                            data-amount="{{ $expense->amount }}"
-                                            data-filial="{{ $expense->filial_id }}"
-                                            data-description="{{ $expense->description ?? '' }}">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </button>
-                                    </td> --}}
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center">Xarajatlar mavjud emas</td>
+                                    <td colspan="4" class="text-center text-muted py-3">Xarajatlar mavjud emas</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -90,20 +143,20 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label>Summa:</label>
+                        <label class="form-label">Summa:</label>
                         <input type="number" name="amount" class="form-control" required min="1000">
+                        @error('amount')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
                     </div>
-                   @error('amount')
-                        <span class="invalid-feedback">{{ $message }}</span>
-                    @enderror
                     <div class="mb-3">
-                        <label>Izoh:</label>
-                        <textarea name="description" class="form-control"></textarea>
+                        <label class="form-label">Izoh:</label>
+                        <textarea name="description" class="form-control" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
-                    <button type="submit" class="btn btn-success">Saqlash</button>
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Yopish</button>
+                    <button type="submit" class="btn btn-success btn-custom">Saqlash</button>
                 </div>
             </div>
         </form>
@@ -124,33 +177,29 @@
                 <div class="modal-body">
                     <input type="hidden" name="expense_id" id="edit_expense_id">
                     <div class="mb-3">
-                        <label>Summa:</label>
+                        <label class="form-label">Summa:</label>
                         <input type="number" name="amount" id="edit_amount" class="form-control" required min="1000">
                     </div>
                     <div class="mb-3">
-                        <label>Filial:</label>
+                        <label class="form-label">Filial:</label>
                         <input type="text" name="filial_id" id="edit_filial" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label>Izoh:</label>
-                        <textarea name="description" id="edit_description" class="form-control"></textarea>
+                        <label class="form-label">Izoh:</label>
+                        <textarea name="description" id="edit_description" class="form-control" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
-                    <button type="submit" class="btn btn-primary">Saqlash</button>
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Yopish</button>
+                    <button type="submit" class="btn btn-primary btn-custom">Saqlash</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
-
 @endsection
 
 @section('script_include_end_body')
-{{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script> --}}
-
 <script>
 $(document).ready(function(){
 
@@ -166,7 +215,6 @@ $(document).ready(function(){
         $('#edit_filial').val(filial);
         $('#edit_description').val(description);
 
-        // Form actionni update route ga o'rnatish
         $('#editExpenseForm').attr('action', '/admin_filial/expense/' + id);
 
         $('#editExpenseModal').modal('show');
