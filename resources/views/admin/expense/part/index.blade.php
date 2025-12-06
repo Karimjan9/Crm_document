@@ -114,7 +114,7 @@ body {
                                 <tr>
                                     <td>#{{ $expense->id }}</td>
                                     <td><strong>{{ number_format($expense->amount, 0, ',', ' ') }} so'm</strong></td>
-                                    <td>{{ $expense->filial_id }}</td>
+                                    <td>{{ $expense->filial->name }}</td>
                                     <td>{{ $expense->description ?? '-' }}</td>
                                 </tr>
                             @empty
