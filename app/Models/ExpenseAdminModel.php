@@ -20,5 +20,10 @@ class ExpenseAdminModel extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function filial()
+    {
+        return $this->belongsTo(FilialModel::class);
+    }
     
 }

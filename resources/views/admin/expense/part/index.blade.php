@@ -52,7 +52,7 @@
                                 <tr>
                                     <td>#{{ $expense->id }}</td>
                                     <td><strong>{{ number_format($expense->amount, 0, ',', ' ') }} so'm</strong></td>
-                                    <td>{{ $expense->filial_id }}</td>
+                                    <td>{{ $expense->filial->name }}</td>
                                     <td>{{ $expense->description ?? '-' }}</td>
                                     {{-- <td>
                                         <button class="btn btn-sm btn-primary edit-expense-btn"
