@@ -133,6 +133,11 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
   table { font-size: 12px; }
   .card-body { padding: 20px; }
 }
+.disabled-link {
+    pointer-events: none;  /* klik bo‘lmaydi */
+    opacity: 0.5;          /* ko‘rinishi susayadi */
+    cursor: not-allowed;
+}
 </style>
 @endsection
 
@@ -175,9 +180,12 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                 <th>Document Code</th>
                 <th>Mijoz</th>
                 <th>Xizmat</th>
+                <th>Muhlat</th>
                 <th>Deadline</th>
-                <th>Status</th>
+                <th>Status moddiy</th>
+                <th>Status hujjat</th>
                 <th>Harakatlar</th>
+                <th>Tugallash</th>
               </tr>
             </thead>
             <tbody>
@@ -185,6 +193,8 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                 @php
                   $statusText = $doc->paid_amount >= $doc->final_price ? 'yopilgan' : 'jarayonda';
                   $editDisabled = \Carbon\Carbon::now()->diffInHours($doc->created_at) > 24 ? 'disabled' : '';
+                  $hoursDiff = \Carbon\Carbon::now()->diffInHours($doc->created_at);
+                  $editDisabled = $hoursDiff > 24;
                 @endphp
                 <tr data-status="{{ $statusText }}" data-client="{{ $doc->client->name ?? '' }}" data-service="{{ $doc->service->name ?? '' }}" data-deadline="{{ $doc->deadline_time }}">
                   <td>{{ $key+1 }}</td>
@@ -192,6 +202,7 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                   <td>{{ $doc->client->name ?? '-' }}</td>
                   <td>{{ $doc->service->name ?? '-' }}</td>
                   <td>{{ $doc->deadline_time }}-kun</td>
+                  <td>{{ $doc->deadline_remaining }}</td>
                   <td>
                     @if($doc->paid_amount >= $doc->final_price)
                       <span class="badge bg-success">Yopilgan</span>
@@ -200,7 +211,35 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                     @endif
                   </td>
                   <td>
-                    <a class="btn btn-edit" href="{{ route('admin_filial.document.edit',['document'=>$doc->id]) }}" {{ $editDisabled }}>O'zgartirish</a>
+
+                     @if( $doc->status_doc == "process" )
+                      <span class="badge bg-warning"> {{  $doc->status_doc }}</span>
+                    @else
+                      <span class="badge bg-success">{{  $doc->status_doc }}</span>
+                    @endif
+                  </td>
+                  <td>
+                  <a class="btn btn-edit {{ $editDisabled ? 'disabled-link' : '' }}" 
+                    href="{{ $editDisabled ? '#' : route('admin_filial.document.edit',['document'=>$doc->id]) }}">
+                    O'zgartirish
+                  </a>
+                  </td>
+                 <td>
+                      @if($doc->status_doc === 'finish')
+
+                          <span class="badge bg-success" style="padding:8px 14px; border-radius:10px; opacity:0.7;">
+                              Tugallangan
+                          </span>
+
+                      @else
+
+                          <button class="btn btn-delete complete-btn" 
+                                  data-id="{{ $doc->id }}" 
+                                  style="color:white;">
+                              Tugallash
+                          </button>
+
+                      @endif
                   </td>
                 </tr>
               @endforeach
@@ -213,7 +252,58 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
 
   </div>
 </div>
+<div id="completeModal" 
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+  
+  <div style="background:white; padding:25px; border-radius:12px; width:350px; text-align:center;">
+      <h4>Hujjatni yakunlash</h4>
+      <p>Siz bu hujjatni tugatdingizmi?</p>
 
+      <div style="margin-top:20px; display:flex; justify-content:center; gap:15px;">
+          <button id="cancelBtn" 
+              style="padding:8px 16px; border-radius:10px; border:none; background:#64748b; color:white;">
+              Bekor qilish
+          </button>
+
+          <a id="confirmComplete" href="#" 
+             style="padding:8px 16px; border-radius:10px; border:none; background:#ef4444; color:white;">
+             Ha, tugatildi
+          </a>
+      </div>
+  </div>
+
+</div>
+@endsection
+@section("script_include_end_body")
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const modal = document.getElementById('completeModal');
+    const confirmBtn = document.getElementById('confirmComplete');
+    const cancelBtn = document.getElementById('cancelBtn');
+
+    document.querySelectorAll('.complete-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            let id = this.dataset.id;
+
+            // Modal dagi tasdiqlash linkiga route ulaymiz
+            confirmBtn.href = "/admin_filial/document/complete/" + id;
+
+            modal.style.display = "flex";
+        });
+    });
+
+    cancelBtn.addEventListener('click', function () {
+        modal.style.display = "none";
+    });
+
+    // Modalni tashqariga bosib yopish
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) modal.style.display = "none";
+    });
+});
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const table = document.getElementById('documents-table').getElementsByTagName('tbody')[0];

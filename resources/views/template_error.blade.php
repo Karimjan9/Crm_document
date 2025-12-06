@@ -48,7 +48,7 @@
 			<div class="d-flex align-items-center justify-content-between flex-wrap">
 				<ul class="list-inline mb-0">
 				</ul>
-				<p class="mb-0">Copyright © 2023.</p>
+				<p class="mb-0">Copyright © 2025.</p>
 			</div>
 		</div>
 	</div>

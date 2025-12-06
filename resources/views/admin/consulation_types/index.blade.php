@@ -169,7 +169,7 @@
 
         <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
             <div class="breadcrumb-title pe-3">Konsullik</div>
-            <a href="{{ route('superadmin.direction_type.create') }}" class="btn btn-custom">+ Yangi Konsullik+</a>
+            <a href="{{ route('superadmin.consulation.create') }}" class="btn btn-custom">+ Yangi Konsullik+</a>
         </div>
 
         <div class="d-flex align-items-center mb-2">
@@ -198,10 +198,10 @@
                                 <td>{{ $consulationType->description }}</td>
                              
                                 <td>
-                                    <a class="btn btn-warning" href="{{ route('superadmin.direction_type.edit',['consulationType'=>$consulationType->id]) }}">O'zgartirish</a>
+                                    <a class="btn btn-warning" href="{{ route('superadmin.consulation.edit',['consulation'=>$consulationType->id]) }}">O'zgartirish</a>
 
                                     <!-- Delete Form -->
-                                    <form action="{{ route('superadmin.direction_type.destroy',['consulationType'=>$consulationType->id]) }}" method="POST" class="d-inline delete-form">
+                                    <form action="{{ route('superadmin.consulation.destroy',['consulation'=>$consulationType->id]) }}" method="POST" class="d-inline delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" class="btn btn-danger btn-delete" data-name="{{ $consulationType->name }}">O'chirish</button>

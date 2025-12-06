@@ -45,13 +45,16 @@ class DocumentCreateRequest extends FormRequest
         'new_client_phone' => ['nullable','regex:/^\d{9}$/'],
         'new_client_desc'  => 'nullable|string|max:500',
         'service_id'       => 'required|exists:services,id',
-        'addons'           => 'nullable|array',
+        'addons'           => 'required|array',
         'addons.*'         => 'nullable|exists:service_addons,id',
         'discount'         => 'nullable|numeric|min:0|max:100',
         'final_price'      => 'required|numeric|min:0',
-        'paid_amount'      => 'nullable|numeric|min:0',
-        'payment_type'     => 'nullable|string|in:cash,card,online,admin_entry',
+        'paid_amount'      => 'required|numeric|min:0',
+        'payment_type'     => 'required|string|in:cash,card,online,admin_entry',
         'description'      => 'nullable|string|max:2000',
+        'document_type_id' => 'required|exists:document_type,id',
+        'direction_type_id'=> 'required|exists:direction_type,id',
+        'consulate_type_id'=> 'required|exists:consulates_type,id',
     ];
 
     // Agar client_id bo‘sh bo‘lsa, yangi mijoz uchun name va phone majburiy
@@ -80,6 +83,12 @@ class DocumentCreateRequest extends FormRequest
             'final_price.numeric'              => 'Final price raqam bo‘lishi kerak.',
             'paid_amount.numeric'              => 'Paid amount raqam bo‘lishi kerak.',
             'payment_type.in'                  => 'To‘lov turi noto‘g‘ri.',
+            'document_type_id.required'        => 'Document type tanlanishi shart.',
+            'document_type_id.exists'          => 'Tanlangan document type mavjud emas.',
+            'direction_type_id.required'       => 'Direction type tanlanishi shart.',
+            'direction_type_id.exists'         => 'Tanlangan direction type mavjud emas.',
+            'consulate_type_id.required'       => 'Consulate type tanlanishi shart.',
+            'consulate_type_id.exists'         => 'Tanlangan consulate type mavjud emas.',
         ];
     }
 }

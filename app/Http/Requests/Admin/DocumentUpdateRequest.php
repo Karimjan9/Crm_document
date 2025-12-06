@@ -36,6 +36,11 @@ class DocumentUpdateRequest extends FormRequest
             'paid_amount'      => 'nullable|numeric|min:0',
             'payment_type'     => 'nullable|string|in:cash,card,online,admin_entry',
             'description'      => 'nullable|string|max:2000',
+            'document_type_id' => 'required|exists:document_type,id',
+            'direction_type_id'=> 'required|exists:direction_type,id',
+            'consulate_type_id'=> 'required|exists:consulates_type,id',
+
+
         ];
     }
 
@@ -53,6 +58,12 @@ class DocumentUpdateRequest extends FormRequest
             'final_price.numeric'  => 'Final price raqam bo‘lishi kerak.',
             'paid_amount.numeric'  => 'Paid amount raqam bo‘lishi kerak.',
             'payment_type.in'      => 'To‘lov turi noto‘g‘ri.',
+            'document_type_id.required'        => 'Document type tanlanishi shart.',
+            'document_type_id.exists'          => 'Tanlangan document type mavjud emas.',
+            'direction_type_id.required'       => 'Direction type tanlanishi shart.',
+            'direction_type_id.exists'         => 'Tanlangan direction type mavjud emas.',
+            'consulate_type_id.required'       => 'Consulate type tanlanishi shart.',
+            'consulate_type_id.exists'         => 'Tanlangan consulate type mavjud emas.',
         ];
     }
 }

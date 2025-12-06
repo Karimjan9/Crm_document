@@ -25,7 +25,24 @@
                 <div class="invalid-feedback d-block">{{ $message }}</div>
             @enderror
         </div>
-
+           <label class="form-label mt-3">Hujjat turi</label>
+                <select name="document_type_id" class="form-control">
+            @foreach($documentTypes as $t)
+                <option value="{{ $t->id }}">{{ $t->name }}</option>
+            @endforeach
+        </select>
+        <label class="form-label mt-3">Hujjat yo'nalishi</label>
+        <select name="direction_type_id" class="form-control">
+            @foreach($directionTypes as $d)
+                <option value="{{ $d->id }}">{{ $d->name }}</option>
+            @endforeach
+        </select>
+ <label class="form-label mt-3">Konsullik</label>
+        <select name="consulate_type_id" class="form-control">
+            @foreach($consulateTypes as $c)
+                <option value="{{ $c->id }}">{{ $c->name }}</option>
+            @endforeach
+        </select>
         {{-- DISCOUNT --}}
         <label class="form-label mt-3">Diskont (%)</label>
         <input type="number"
