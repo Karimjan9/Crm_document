@@ -1,64 +1,120 @@
 @extends('template')
 
 @section('style')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet">
 
 <style>
+    :root {
+        --blue-main: #2563eb;
+        --blue-hover: #1d4ed8;
+        --danger: #dc3545;
+        --warning: #f59e0b;
+        --success: #16a34a;
+        --light-bg: #f5f7fb;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: var(--light-bg);
+    }
+
+    .page-content {
+        padding: 20px;
+    }
+
+    .card {
+        border-radius: 14px;
+        border: none;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .card-header {
+        background: var(--blue-main) !important;
+        padding: 14px 18px;
+        font-weight: 600;
+    }
+
+    table thead th {
+        background: #eef1f6 !important;
+        font-weight: 600;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
     .table-hover tbody tr:hover {
-        background-color: #f5f5f5;
-        cursor: pointer;
+        background: #e8f0ff !important;
     }
 
-    .payment-details {
-        background-color: #f8f9fa;
-        border-left: 3px solid #007bff;
-        padding: 15px;
-        animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .status-badge {
-        font-size: 0.8em;
-    }
-
-    .balance-positive {
-        color: #28a745;
-        font-weight: bold;
+    .badge {
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
     }
 
     .balance-negative {
-        color: #dc3545;
-        font-weight: bold;
+        color: var(--danger);
+        font-weight: 600;
     }
 
+    .balance-positive {
+        color: var(--success);
+        font-weight: 600;
+    }
+
+    .btn-sm {
+        border-radius: 8px;
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+
+    .btn-primary {
+        background: var(--blue-main);
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: var(--blue-hover);
+    }
+
+    .modal-content {
+        border-radius: 14px;
+    }
+
+    .modal-header {
+        border-bottom: none;
+        font-weight: 600;
+    }
+
+    .modal-footer {
+        border-top: none;
+    }
+
+    /* Sort iconlar */
     th.sortable {
         cursor: pointer;
+        position: relative;
     }
 
-    th.sortable:after {
+    th.sortable::after {
         content: "\f0dc";
         font-family: "Font Awesome 6 Free";
         font-weight: 900;
         margin-left: 6px;
-        font-size: 0.8em;
+        opacity: 0.5;
     }
 
-    th.sortable.asc:after {
+    th.sortable.asc::after {
         content: "\f0de";
+        opacity: 1;
     }
 
-    th.sortable.desc:after {
+    th.sortable.desc::after {
         content: "\f0dd";
+        opacity: 1;
     }
 </style>
 @endsection
