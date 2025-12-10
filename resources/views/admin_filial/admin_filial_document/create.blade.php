@@ -150,7 +150,7 @@ body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto; background:lin
                 </select>
             </div>
             <div class="input-row">
-                <label class="form-label">Yo'nalish</label>
+                <label class="form-label">Apostil</label>
                 <select name="direction_type_id" class="form-select" id="directionType">
                     <option value="">Tanlang...</option>
                     @foreach($directionTypes as $d)
@@ -159,7 +159,7 @@ body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto; background:lin
                 </select>
             </div>
             <div class="input-row">
-                <label class="form-label">Konsullik</label>
+                <label class="form-label">Legalizatsiya</label>
                 <div style="flex:1">
                     <label style="display:flex;align-items:center;gap:10px">
                         <input type="checkbox" id="consulateCheckbox" name="consulate_required" value="1" {{ old('consulate_required') ? 'checked' : '' }}> <span class="inline-help">Konsullik kerak</span>

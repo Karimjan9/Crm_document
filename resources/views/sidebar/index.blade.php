@@ -170,8 +170,18 @@
                 <li><a href="{{ route('superadmin.consulation.index') }}"><i class='bx bx-line-chart'></i> Konsullik </a></li>
             </ul>
         </li>
-
- <li>
+        <li>
+                    <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                        <div class="parent-icon"><i class='bx bx-money'></i></div>
+                        <div class="menu-title">SMS Xabarnoma </div>
+                    </a>
+                    <ul>
+                        <li><a href="{{ route('superadmin.sms_message_text.index') }}"><i class='bx bx-coin-stack'></i> SMS Xabarnoma hisobot </a></li>
+                        
+                        <li><a href="{{ route('superadmin.sms_message_text.index') }}"><i class='bx bx-line-chart'></i> SMS Xabarnoma sozlamalar </a></li>
+                    </ul>
+                </li>
+        <li>
     <a href="{{ route('superadmin.calendar.index') }}" class="d-flex align-items-center">
         <div class="parent-icon" style="color:#ff9800;"><i class='bx bx-calendar'></i></div>
         <div class="menu-title">Kalendar</div>
