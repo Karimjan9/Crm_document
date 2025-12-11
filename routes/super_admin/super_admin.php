@@ -1,16 +1,17 @@
 <?php
 
-use App\Http\Controllers\Admin\CalendarController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\ConsulationTypeController;
-use App\Http\Controllers\Admin\DirectionTypeController;
 use App\Http\Controllers\Admin\FilialController;
 use App\Http\Controllers\Admin\ExpenseController;
+use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\DocumentTypeController;
 use App\Http\Controllers\Admin\ServiceAddonController;
-use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\DirectionTypeController;
+use App\Http\Controllers\Admin\SMSMessageTextController;
+use App\Http\Controllers\Admin\ConsulationTypeController;
 
 Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
@@ -48,5 +49,6 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
     Route::resource('/consulation',ConsulationTypeController::class)->except(['show']);
 
+    Route::resource('/sms_message_text', SMSMessageTextController::class)->except(['show']);
 });
 
