@@ -50,5 +50,13 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
     Route::resource('/consulation',ConsulationTypeController::class)->except(['show']);
 
     Route::resource('/sms_message_text', SMSMessageTextController::class)->except(['show']);
+
+    Route::post('/store_document_additional', [DocumentTypeController::class, 'store_type_additional'])->name('store_addition');
+
+    Route::post('/store_document_direction', [DirectionTypeController::class, 'store_type_direction'])->name('store_direction_addition');
+
+    Route::delete('/delete_document_additional/{addition}', [DocumentTypeController::class, 'delete_type_additional'])->name('addition.destroy');
+
+    Route::delete('/delete_document_direction/{addition}', [DirectionTypeController::class, 'delete_type_direction'])->name('delete_direction_addition');
 });
 

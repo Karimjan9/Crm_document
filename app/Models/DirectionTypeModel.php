@@ -15,4 +15,9 @@ class DirectionTypeModel extends Model
         'name',
         'description',
     ];
+
+    public function directionAdditions()
+    {
+        return $this->hasMany(DocumentDirectionAdditionModel::class, 'document_direction_id');
+    }
 }

@@ -15,4 +15,9 @@ class DocumentTypeModel extends Model
         'name',
         'description',
     ];
+
+    public function additions()
+    {
+        return $this->hasMany(DocumentTypeAdditionModel::class, 'document_type_id');
+    }
 }

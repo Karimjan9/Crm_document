@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Models\DirectionTypeModel;
 use App\Http\Controllers\Controller;
+use App\Models\DocumentTypeAdditionModel;
+use App\Models\DocumentDirectionAdditionModel;
 
 class DirectionTypeController extends Controller
 {
@@ -73,5 +75,24 @@ class DirectionTypeController extends Controller
         $directionType->delete();
 
         return redirect()->route('superadmin.direction_type.index')->with('success', 'Direction Type deleted successfully.');
+    }
+
+   
+
+    public function store_type_direction(Request $request)
+    {
+        $request->validate([
+            'document_direction_id' => 'required|exists:direction_types,id',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        DocumentDirectionAdditionModel::create([
+            'document_direction_id' => $request->document_direction_id,
+            'name' => $request->name,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->back()->with('success', 'Document Direction Additional created successfully.');
     }
 }
