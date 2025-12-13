@@ -315,11 +315,11 @@ body.light-mode .form-control {
 				@csrf
 				<div class="mb-3">
 					<label for="inputLogin" class="form-label">Login</label>
-					<input type="text" class="form-control" id="inputLogin" name="login" placeholder="Logini kiriting">
+					<input type="text" class="form-control" id="inputLogin" name="login" placeholder="Login">
 				</div>
 				<div class="mb-3">
 					<label for="inputPassword" class="form-label">Parol</label>
-					<input type="password" class="form-control" id="inputPassword" name="password" placeholder="Parolni kiriting">
+					<input type="password" class="form-control" id="inputPassword" name="password" placeholder="Parol">
 				</div>
 				<div class="form-check mb-3">
 					<input class="form-check-input" type="checkbox" name="remember" id="remember" checked>

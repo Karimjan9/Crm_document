@@ -145,7 +145,6 @@ body {
 
     /* Custom button */
     .btn-custom {
-        background: var(--blue-light);
         border: none;
         color: white;
         padding: 10px 18px;

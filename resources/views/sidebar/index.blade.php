@@ -8,12 +8,12 @@
             padding: 16px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid rgb(238, 230, 230);
+            border-bottom: 1px solid rgb(17, 14, 53);
             backdrop-filter: blur(10px);
         }
 
         .sidebar-header .logo-text {
-            color: #fff;
+            color: #1d2b4d;
             font-weight: 600;
             font-size: 17px;
             margin-left: 10px;
@@ -66,12 +66,13 @@
 
       
         .metismenu ul {
-            background: rgb(245, 241, 241) !important;
+            background: rgb(38, 39, 66) !important;
             border-left: 3px solid rgba(0,102,255,0.3);
             border-radius: 6px;
             padding-left: 10px;
             margin: 4px 0;
         }
+        
 
         .metismenu ul li a {
             color: #0f172a;
@@ -170,7 +171,8 @@
                 <li><a href="{{ route('superadmin.consulation.index') }}"><i class='bx bx-line-chart'></i> Konsullik </a></li>
             </ul>
         </li>
-        <li>
+
+            <li>
                     <a href="javascript:;" class="has-arrow" aria-expanded="false">
                         <div class="parent-icon"><i class='bx bx-money'></i></div>
                         <div class="menu-title">SMS Xabarnoma </div>
@@ -180,7 +182,8 @@
                         
                         <li><a href="{{ route('superadmin.sms_message_text.index') }}"><i class='bx bx-line-chart'></i> SMS Xabarnoma sozlamalar </a></li>
                     </ul>
-                </li>
+            </li>
+
         <li>
     <a href="{{ route('superadmin.calendar.index') }}" class="d-flex align-items-center">
         <div class="parent-icon" style="color:#ff9800;"><i class='bx bx-calendar'></i></div>

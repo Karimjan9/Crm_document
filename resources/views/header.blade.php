@@ -14,7 +14,7 @@
     top: 0 !important;
     left:0 !important;
     z-index: 1000 !important;
-    border-bottom: 1px solid #00d1ff33 !important;
+    border-bottom: 1px solid #0c0f0f33 !important;
     flex-wrap: wrap !important;
   }
 
