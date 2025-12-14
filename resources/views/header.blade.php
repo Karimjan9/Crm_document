@@ -20,7 +20,13 @@
 
   .navbar { display: flex !important; align-items: flex-end !important; justify-content: space-between !important; width: 100% !important; }
 
-  .brand-animated { font-family: 'Poppins', sans-serif !important; font-size: 30px !important; font-weight: 700 !important; color: #00d1ff !important; transition: opacity 0.6s ease-in-out !important; }
+  .brand-animated {
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 30px !important;
+    font-weight: 700 !important;
+    color: #00d1ff !important;
+    transition: color 0.5s ease !important; /* faqat rang o‘zgarishi */
+  }
 
   .weather-date { position: absolute !important; left: 50% !important; transform: translateX(-50%) !important; display: flex !important; align-items: center !important; gap: 20px !important; color: #fff !important; font-size: 18px !important; font-weight: 600 !important; }
 
@@ -90,45 +96,55 @@
       const snowflakes = document.querySelectorAll('.snowflake');
       snowflakes.forEach(s => s.style.left = Math.random() * window.innerWidth + 'px');
   });
+
+  // ===================== Brand rang o'zgarishi =====================
+  document.addEventListener('DOMContentLoaded', () => {
+    const brand = document.getElementById('brandName');
+    const colors = ['#00d1ff', '#ff9800', '#28a745', '#e91e63', '#6f42c1', '#007bff'];
+    let index = 0;
+
+    setInterval(() => {
+      brand.style.setProperty('color', colors[index], 'important'); // !important bilan
+      index = (index + 1) % colors.length;
+    }, 5000); // har 5 sekund
+  });
 </script>
 
+<div class="topbar">
+  <nav class="navbar navbar-expand">
+    <div class="brand-animated" id="brandName">Global Voice</div>
 
-  <div class="topbar">
-    <nav class="navbar navbar-expand">
-      <div class="brand-animated" id="brandName">Global Voice</div>
+    <div class="weather-date" id="weatherDate">
+      <div class="weather"><i class='bx bx-cloud'></i><span id="weatherInfo">Yuklanmoqda...</span></div>
+      <div class="date"><i class='bx bx-calendar'></i><span id="dateInfo"></span></div>
+    </div>
 
-      <div class="weather-date" id="weatherDate">
-        <div class="weather"><i class='bx bx-cloud'></i><span id="weatherInfo">Yuklanmoqda...</span></div>
-        <div class="date"><i class='bx bx-calendar'></i><span id="dateInfo"></span></div>
-      </div>
-
-      <div class="user-box" id="openProfile">
-        <img src="{{ url('avatar-4.png') }}" alt="user avatar">
-        <div class="user-info">
-          <p class="user-name mb-0">{{ auth()->user()->name }}</p>
-        </div>
-      </div>
-    </nav>
-  </div>
-
-  <!-- ✅ MODAL -->
-  <div class="profile-modal" id="profileModal">
-    <div class="profile-content">
-      <img src="{{ url('avatar-4.png') }}" alt="User">      
-      {{-- <h3>{{ auth()->user()->name }}</h3> --}}
-      <p>Shaxsiy kabinet</p>
-
-      <div class="modal-grid">
-        <a href="#" class="modal-btn"><i class='bx bx-user'></i> Profil</a>
-        <a href="#" class="modal-btn"><i class='bx bx-lock-alt'></i> Parolni o‘zgartirish</a>
-        <a href="#" class="modal-btn"><i class='bx bx-cog'></i> Sozlamalar</a>
-        <a href="{{ route('destroy') }}" class="modal-btn"><i class='bx bx-log-out-circle'></i> Chiqish</a>
+    <div class="user-box" id="openProfile">
+      <img src="{{ url('avatar-4.png') }}" alt="user avatar">
+      <div class="user-info">
+        <p class="user-name mb-0">{{ auth()->user()->name }}</p>
       </div>
     </div>
-  </div>
+  </nav>
+</div>
 
-  <script>
- function updateDate() {
+<!-- ✅ MODAL -->
+<div class="profile-modal" id="profileModal">
+  <div class="profile-content">
+    <img src="{{ url('avatar-4.png') }}" alt="User">      
+    <p>Shaxsiy kabinet</p>
+
+    <div class="modal-grid">
+      <a href="#" class="modal-btn"><i class='bx bx-user'></i> Profil</a>
+      <a href="#" class="modal-btn"><i class='bx bx-lock-alt'></i> Parolni o‘zgartirish</a>
+      <a href="#" class="modal-btn"><i class='bx bx-cog'></i> Sozlamalar</a>
+      <a href="{{ route('destroy') }}" class="modal-btn"><i class='bx bx-log-out-circle'></i> Chiqish</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function updateDate() {
   const now = new Date();
   const days = ['Yakshanba','Dushanba','Seshanba','Chorshanba','Payshanba','Juma','Shanba'];
   const months = ['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentyabr','oktyabr','noyabr','dekabr'];
@@ -149,7 +165,6 @@ async function getWeather() {
       const temp = Math.round(data.main.temp);
       let desc = data.weather[0].description;
 
-      // 🌤 100% o‘zbekcha tarjima lug‘ati
       const translate = {
         "clear sky": "Osmon tiniq",
         "few clouds": "Kam bulutli",
@@ -202,9 +217,8 @@ profileModal.addEventListener("click", (e) => {
 });
 
 getWeather();
+</script>
 
-  </script>
-
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
 </header>

@@ -207,7 +207,7 @@ body.light-mode .form-control {
 
 .welcome-text .fade {
     opacity: 0;
-    animation: fadeIn 1.5s forwards;
+    animation: fadeIn 1.0s forwards;
 }
 
 .welcome-text .fade:nth-child(1) {
@@ -215,7 +215,7 @@ body.light-mode .form-control {
 }
 
 .welcome-text .fade:nth-child(3) {
-    animation-delay: 2.0s;
+    animation-delay: 1.3s;
 }
 
 #typing-text {
