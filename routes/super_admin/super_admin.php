@@ -58,5 +58,12 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
     Route::delete('/delete_document_additional/{addition}', [DocumentTypeController::class, 'delete_type_additional'])->name('addition.destroy');
 
     Route::delete('/delete_document_direction/{addition}', [DirectionTypeController::class, 'delete_type_direction'])->name('delete_direction_addition');
+
+    // Direction Type Comment Routes
+    // Route::post('/superadmin/store-comment', [DocumentTypeController::class, 'store_direction_type_comment'])->name('superadmin.store_comment');
+
+    // Route::put('/superadmin/comment/{id}', [DocumentTypeController::class, 'update_direction_type_comment'])->name('superadmin.update_comment');
+
+    // Route::delete('/superadmin/direction_type_comment/{comment}', [DocumentTypeController::class, 'destroy_direction_type_comment'])->name('superadmin.direction_type_comment.destroy');
 });
 

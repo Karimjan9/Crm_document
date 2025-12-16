@@ -184,15 +184,15 @@
                             <thead>
                                 <tr>
                                     <th class="fixed_header2 align-middle">#</th>
-                                    <th class="fixed_header2 align-middle">SMS nomi</th>
-                                    <th class="fixed_header2 align-middle">SMS text 1</th>
+                                    <th class="fixed_header2 align-middle">Xabar nomi</th>
+                                    <th class="fixed_header2 align-middle">Xabar matni 1</th>
                             
-                                    <th class="fixed_header2 align-middle">SMS text 2</th>
-                                    <th class="fixed_header2 align-middle">SMS text 3</th>
-                                    <th class="fixed_header2 align-middle">SMS type</th>
-                                    <th class="fixed_header2 align-middle">Ko'rish</th>
+                                    <th class="fixed_header2 align-middle">Xabar matni 2</th>
+                                    <th class="fixed_header2 align-middle">Xabar matni 3</th>
+                                    <th class="fixed_header2 align-middle">Xabar turi</th>
+                                    <th class="fixed_header2 align-middle">Batafsil </th>
                                     
-                                    <th class="fixed_header2 align-middle">Harakatlar</th>
+                                    <th class="fixed_header2 align-middle">Tahrirlash</th>
                                 </tr>
                             </thead>
                             <tbody id="data_list">
