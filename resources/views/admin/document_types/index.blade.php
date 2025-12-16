@@ -390,10 +390,10 @@
                                         <td>{{ $documentType->name }}</td>
                                         <td>{{ $documentType->description }}</td>
                                         <td>
-                                            <button class="btn btn-info btn-addition" data-id="{{ $documentType->id }}"
-                                                data-name="{{ $documentType->name }}">
-                                                Qo‘shish
-                                            </button>
+                                            <a href="{{ route('superadmin.type_addition.index', ['document_type' => $documentType->id]) }}" class="btn btn-info " 
+                                               >
+                                                Qo‘shimcha turlar
+                                            </a>
                                         </td>
                                         <td>
                                             <a class="btn btn-warning"
@@ -412,38 +412,7 @@
                                     </tr>
 
                                     {{-- Additions --}}
-                                    @if($documentType->additions->count() > 0)
-                                        @foreach($documentType->additions as $addition)
-                                            <tr class="addition-row" style="background-color: #f9f9f9;">
-                                                <td></td>
-                                                <td colspan="2">
-                                                    <strong>{{ $addition->name }}</strong><br>
-                                                    <small>{{ $addition->description }}</small>
-                                                </td>
-                                                <td>
-                                                    <a href="javascript:void(0);" class="btn btn-warning btn-sm btn-edit-addition"
-                                                        data-id="{{ $addition->id }}" data-name="{{ $addition->name }}"
-                                                        data-description="{{ $addition->description }}">
-                                                        O'zgartirish
-                                                    </a>
-                                                    <form
-                                                        action="{{ route('superadmin.addition.destroy', ['addition' => $addition->id]) }}"
-                                                        method="POST" class="d-inline delete-addition-form">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="button" class="btn btn-danger btn-sm btn-delete-addition"
-                                                            data-name="{{ $addition->name }}">O'chirish</button>
-                                                    </form>
-                                                </td>
-                                                <td></td>
-                                            </tr>
-                                        @endforeach
-                                    @else
-                                        <tr class="addition-row" style="background-color: #f9f9f9;">
-                                            <td></td>
-                                            <td colspan="4" class="text-center">Qo‘shimchalar mavjud emas</td>
-                                        </tr>
-                                    @endif
+                                   
                                 @endforeach
                             </tbody>
                         </table>
@@ -465,7 +434,7 @@
         </div>
     </div>
 
-    <div class="modal-addition" id="additionModal">
+    {{-- <div class="modal-addition" id="additionModal">
         <div class="modal-content-custom">
             <h5>Qo‘shimcha qo‘shish</h5>
             <form id="additionForm" method="POST" action="{{ route('superadmin.store_addition') }}">
@@ -516,7 +485,7 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> --}}
 @endsection
 
 @section('script_include_end_body')
@@ -546,73 +515,15 @@
                 if (currentForm) currentForm.submit();
             });
 
-            // Addition modal
-            const additionModal = document.getElementById('additionModal');
-            const cancelAdditionBtn = document.getElementById('cancelAdditionBtn');
-
-            document.querySelectorAll('.btn-addition').forEach(button => {
-                button.addEventListener('click', function () {
-                    const id = this.getAttribute('data-id');
-                    document.getElementById('documentTypeId').value = id;
-                    document.getElementById('additionName').value = '';
-                    document.getElementById('additionDescription').value = '';
-                    additionModal.classList.add('active');
-                });
-            });
-
-            cancelAdditionBtn.addEventListener('click', function () {
-                additionModal.classList.remove('active');
-            });
-
             // ESC tugmasi bilan yopish
             window.addEventListener('keydown', function (e) {
                 if (e.key === "Escape") {
                     deleteModal.classList.remove('active');
-                    additionModal.classList.remove('active');
                 }
             });
         });
 
-        document.querySelectorAll('.btn-delete-addition').forEach(button => {
-            button.addEventListener('click', function () {
-                const name = this.getAttribute('data-name');
-                document.getElementById('modal-text').textContent = `"${name}" qo‘shimchani o'chirishni tasdiqlaysizmi?`;
-                deleteModal.classList.add('active');
-                currentForm = this.closest('form');
-            });
-        });
-        const editAdditionModal = document.getElementById('editAdditionModal');
-        const cancelEditAdditionBtn = document.getElementById('cancelEditAdditionBtn');
-        const editAdditionForm = document.getElementById('editAdditionForm');
-
-        document.querySelectorAll('.btn-edit-addition').forEach(button => {
-            button.addEventListener('click', function () {
-                const id = this.getAttribute('data-id');
-                const name = this.getAttribute('data-name');
-                const description = this.getAttribute('data-description');
-
-                // Form maydonlarini to'ldirish
-                document.getElementById('editAdditionId').value = id;
-                document.getElementById('editAdditionName').value = name;
-                document.getElementById('editAdditionDescription').value = description;
-
-                // Form actionni dinamik o'rnatish (Laravel route)
-                editAdditionForm.action = `/superadmin/addition/${id}`; // update route
-
-                editAdditionModal.classList.add('active');
-            });
-        });
-
-        cancelEditAdditionBtn.addEventListener('click', function () {
-            editAdditionModal.classList.remove('active');
-        });
-
-        // ESC tugmasi bilan yopish
-        window.addEventListener('keydown', function (e) {
-            if (e.key === "Escape") {
-                editAdditionModal.classList.remove('active');
-            }
-        });
+       
 
     </script>
 @endsection

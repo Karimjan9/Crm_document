@@ -79,20 +79,5 @@ class DirectionTypeController extends Controller
 
    
 
-    public function store_type_direction(Request $request)
-    {
-        $request->validate([
-            'document_direction_id' => 'required|exists:direction_types,id',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        DocumentDirectionAdditionModel::create([
-            'document_direction_id' => $request->document_direction_id,
-            'name' => $request->name,
-            'description' => $request->description,
-        ]);
-
-        return redirect()->back()->with('success', 'Document Direction Additional created successfully.');
-    }
+   
 }

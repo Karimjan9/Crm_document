@@ -3,10 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\FilialController;
+use App\Http\Controllers\TypeAdditionController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\DocumentController;
+use App\Http\Controllers\DirectionAdditionController;
 use App\Http\Controllers\Admin\DocumentTypeController;
 use App\Http\Controllers\Admin\ServiceAddonController;
 use App\Http\Controllers\Admin\DirectionTypeController;
@@ -51,7 +53,7 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
     Route::resource('/sms_message_text', SMSMessageTextController::class)->except(['show']);
 
-    Route::post('/store_document_additional', [DocumentTypeController::class, 'store_type_additional'])->name('store_addition');
+    Route::resource('document_type/{document_type}/type_addition',TypeAdditionController::class)->except(['show']);
 
     Route::post('/store_document_direction', [DirectionTypeController::class, 'store_type_direction'])->name('store_direction_addition');
 
@@ -65,5 +67,9 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
     // Route::put('/superadmin/comment/{id}', [DocumentTypeController::class, 'update_direction_type_comment'])->name('superadmin.update_comment');
 
     // Route::delete('/superadmin/direction_type_comment/{comment}', [DocumentTypeController::class, 'destroy_direction_type_comment'])->name('superadmin.direction_type_comment.destroy');
+
+    Route::resource('direction_type/{direction_type}/direction_addition',DirectionAdditionController::class)->except(['show']);
+
 });
+
 

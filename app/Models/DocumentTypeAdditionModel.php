@@ -14,6 +14,7 @@ class DocumentTypeAdditionModel extends Model
         'document_type_id',
         'name',
         'description',
+        'amount',
     ];  
     public function documentType()
     {

@@ -13,10 +13,14 @@ class DocumentDirectionAdditionModel extends Model
         'document_direction_id',
         'name',
         'description',
+        'amount',
     ];
+
 
     public function directionType()
     {
         return $this->belongsTo(DirectionTypeModel::class, 'document_direction_id');
     }
+
+
 }
