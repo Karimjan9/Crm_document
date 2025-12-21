@@ -38,7 +38,10 @@ Route::middleware(['auth'])->group(function () {
 
    
 Route::get('/', function () {
-    return redirect('https://sites.google.com/view/tarjimalarmarkazi'); 
+    return redirect()->away(
+        'https://sites.google.com/view/tarjimalarmarkazi',
+        301
+    );
 });
 
 
