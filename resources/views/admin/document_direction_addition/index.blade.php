@@ -193,8 +193,8 @@
         <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
             <div class="breadcrumb-title pe-3">Konsullik</div>
             <div class="d-flex gap-2">
-            <a href="{{ route('superadmin.document_type.index') }}" class="btn btn-outline">← Orqaga</a>
-            <a href="{{ route('superadmin.type_addition.create',['document_type' => $id]) }}" class="btn btn-custom">+ Hujjat turi qo'shimcha+</a>
+            <a href="{{ route('superadmin.direction_type.index') }}" class="btn btn-outline">← Orqaga</a>
+            <a href="{{ route('superadmin.direction_addition.create',['direction_type' => $id]) }}" class="btn btn-custom">+ Hujjat turi qo'shimcha+</a>
             </div>
         </div>
 
@@ -217,28 +217,28 @@
                             </tr>
                         </thead>
                         <tbody id="data_list">
-                            @foreach ($documentTypes as $key=>$documentType)
+                            @foreach ($directionTypes as $key=>$directionType)
                             <tr>
                                 <td>{{ $key+1 }}</td>
-                                <td>{{ $documentType->name }}</td>
-                                  <td>{{ $documentType->amount }}</td>
-                                <td>{{ $documentType->description }}</td>
+                                <td>{{ $directionType->name }}</td>
+                                  <td>{{ $directionType->amount }}</td>
+                                <td>{{ $directionType->description }}</td>
                              
                                 <td>
-                                    <a class="btn btn-warning" href="{{ route('superadmin.type_addition.edit',['document_type'=>$id,'type_addition'=>$documentType->id]) }}">O'zgartirish</a>
+                                    <a class="btn btn-warning" href="{{ route('superadmin.direction_type.edit',['direction_type'=>$id,'direction_addition'=>$directionType->id]) }}">O'zgartirish</a>
 
                                     <!-- Delete Form -->
-                                    <form action="{{ route('superadmin.type_addition.destroy',['document_type'=>$id,'type_addition'=>$documentType->id]) }}" method="POST" class="d-inline delete-form">
+                                    <form action="{{ route('superadmin.type_addition.destroy',['direction_type'=>$id,'direction_addition'=>$directionType->id]) }}" method="POST" class="d-inline delete-form">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="button" class="btn btn-danger btn-delete" data-name="{{ $documentType->name }}">O'chirish</button>
+                                        <button type="button" class="btn btn-danger btn-delete" data-name="{{ $directionType->name }}">O'chirish</button>
                                     </form>
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    {{ $documentTypes->links() }}
+                    {{ $directionTypes->links() }}
                 </div>
             </div>
         </div>

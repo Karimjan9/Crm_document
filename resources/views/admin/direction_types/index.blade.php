@@ -187,6 +187,7 @@
                                 <th class="fixed_header2 align-middle">Hujjat yo'nalishi nomi</th>
                            
                                 <th class="fixed_header2 align-middle">Hujjat yo'nalishi  izoh</th>
+                                 <th class="fixed_header2 align-middle">Qo‘shimcha</th>
                                 <th class="fixed_header2 align-middle">Harakatlar</th>
                             </tr>
                         </thead>
@@ -196,7 +197,12 @@
                                 <td>{{ $key+1 }}</td>
                                 <td>{{ $documentType->name }}</td>
                                 <td>{{ $documentType->description }}</td>
-                             
+                              <td>
+                                            <a href="{{ route('superadmin.direction_addition.index', ['direction_type' => $documentType->id]) }}" class="btn btn-info " 
+                                               >
+                                                Qo‘shimcha turlar
+                                            </a>
+                                        </td>
                                 <td>
                                     <a class="btn btn-warning" href="{{ route('superadmin.direction_type.edit',['direction_type'=>$documentType->id]) }}">O'zgartirish</a>
 
