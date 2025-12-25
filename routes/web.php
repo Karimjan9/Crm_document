@@ -27,32 +27,14 @@ use App\Http\Controllers\Admin\AdminFilialDocumentController;
 */
 
 
-
-
-Route::middleware(['auth'])->group(function () {
-
-
-       
-
-
-
-   
 Route::get('/', function () {
-    return redirect()->route('login'); 
+    return redirect()->away(
+        'https://sites.google.com/view/tarjimalarmarkazi',
+        301
+    );
 });
 
-
-
-   
-
-   
- 
-
-
-
-
-
-   
+Route::middleware(['auth'])->group(function () {
 });
 
 // holidays
