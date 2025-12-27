@@ -6,6 +6,7 @@
 	<!-- Required meta tags -->
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 	<!--favicon-->
 	{{-- <link rel="icon" href="{{ url('logo.png') }}" type="image/png" /> --}}
 	<!--plugins-->
@@ -28,7 +29,7 @@
 	<link href="{{ url('assets/css/bootstrap.min.css') }}" rel="stylesheet">
 	<link href="{{ url('assets/css/bootstrap-extended.css') }}" rel="stylesheet">
 	<link href="{{ url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap') }}" rel="stylesheet">
-	<link href="{{ url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap') }}" rel="stylesheet"> 
+	<link href="{{ url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap') }}" rel="stylesheet">
 	<link href="{{ url('assets/css/app.css') }}" rel="stylesheet">
 	<link href="{{ url('assets/css/icons.css') }}" rel="stylesheet">
 	<!-- Theme Style CSS -->

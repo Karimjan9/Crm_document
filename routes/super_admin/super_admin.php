@@ -14,8 +14,39 @@ use App\Http\Controllers\Admin\ServiceAddonController;
 use App\Http\Controllers\Admin\DirectionTypeController;
 use App\Http\Controllers\Admin\SMSMessageTextController;
 use App\Http\Controllers\Admin\ConsulationTypeController;
+use App\Http\Controllers\Admin\FCalendar\HolidayController;
+use App\Http\Controllers\Admin\FCalendar\CalendarController as FCalendarController;
 
 Route::name('superadmin.')->prefix('superadmin')->group(function(){
+
+    Route::prefix('fl')->group(function () {
+
+        Route::get('calendar',  function () {
+            return view('calendar/fl/index');
+        });
+
+        // Календарь
+        Route::prefix('calendar')->group(function () {
+            Route::get('/data', [FCalendarController::class, 'getCalendarData']);
+            Route::post('/check-date', [FCalendarController::class, 'checkDateAvailability']);
+        });
+
+        // Праздники (CRUD)
+        Route::prefix('holidays')->group(function () {
+            Route::get('/', [HolidayController::class, 'index']);
+            Route::get('/upcoming', [HolidayController::class, 'upcoming']);
+            Route::get('/stats', [HolidayController::class, 'stats']);
+            Route::get('/{id}', [HolidayController::class, 'show']);
+            Route::get('/{id}/edit', [HolidayController::class, 'edit']);
+            Route::post('/', [HolidayController::class, 'store']);
+            Route::put('/{id}', [HolidayController::class, 'update']);
+            Route::delete('/{id}', [HolidayController::class, 'destroy']);
+            Route::post('/{id}/copy', [HolidayController::class, 'copy']);
+            Route::post('/bulk-import', [HolidayController::class, 'bulkImport']);
+            Route::get('/export/csv', [HolidayController::class, 'exportCsv']);
+        });
+    });
+
 
     Route::get('/index', [AdminController::class, 'index'])->name('index');
 
