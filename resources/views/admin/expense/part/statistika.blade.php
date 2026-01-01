@@ -4,22 +4,95 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
-.page-wrapper { padding: 24px; }
-.stat-card { border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 20px; margin-bottom: 20px; background: #fff; }
-.filter-card { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background: #fff; }
-.filter-card select, .filter-card input { padding: 8px 12px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 14px; }
-.filter-card button { border-radius: 10px; border: none; background: linear-gradient(135deg,#2563eb,#3b82f6); color: #fff; padding: 8px 16px; cursor: pointer; transition: all 0.3s; }
-.filter-card button:hover { opacity: 0.9; }
-.table-hover tbody tr:hover { background-color: #eef4ff; transform: translateX(2px); transition: all 0.2s ease; }
-.badge { padding: 5px 10px; border-radius: 10px; font-size: 13px; font-weight: 500; }
-.bg-success { background-color: #22c55e; color: #fff; }
-.bg-warning { background-color: #facc15; color: #1e293b; }
-@media(max-width:768px){ .filter-card{ flex-direction: column; } }
+body { 
+    font-family: 'Poppins', sans-serif; 
+    background: #f8fafc; 
+    color: #1e293b; 
+}
+
+.page-wrapper { 
+    padding: 24px; 
+}
+
+.stat-card { 
+    border-radius: 12px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+    padding: 20px; 
+    margin-bottom: 20px; 
+    background: #fff; 
+    font-family: 'Poppins', sans-serif;
+}
+
+.filter-card { 
+    display: flex; 
+    gap: 12px; 
+    flex-wrap: wrap; 
+    margin-bottom: 20px; 
+    padding: 20px; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+    background: #fff; 
+    font-family: 'Poppins', sans-serif;
+}
+
+.filter-card select, .filter-card input { 
+    padding: 8px 12px; 
+    border-radius: 10px; 
+    border: 1px solid #d1d5db; 
+    font-size: 14px; 
+    font-family: 'Poppins', sans-serif;
+}
+
+.filter-card button { 
+    border-radius: 10px; 
+    border: none; 
+    background: linear-gradient(135deg,#2563eb,#3b82f6); 
+    color: #fff; 
+    padding: 8px 16px; 
+    cursor: pointer; 
+    transition: all 0.3s; 
+    font-family: 'Poppins', sans-serif;
+}
+
+.filter-card button:hover { 
+    opacity: 0.9; 
+}
+
+.table-hover tbody tr:hover { 
+    background-color: #eef4ff; 
+    transform: translateX(2px); 
+    transition: all 0.2s ease; 
+}
+
+.badge { 
+    padding: 5px 10px; 
+    border-radius: 10px; 
+    font-size: 13px; 
+    font-weight: 500; 
+    font-family: 'Poppins', sans-serif;
+}
+
+.bg-success { 
+    background-color: #22c55e; 
+    color: #fff; 
+    font-family: 'Poppins', sans-serif;
+}
+
+.bg-warning { 
+    background-color: #facc15; 
+    color: #1e293b; 
+    font-family: 'Poppins', sans-serif;
+}
+
+@media(max-width:768px){ 
+    .filter-card{ flex-direction: column; } 
+}
 </style>
 @endsection
+
 
 @section('body')
 <div class="page-wrapper">
