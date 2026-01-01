@@ -124,7 +124,7 @@
     <div class="sidebar-header">
         <div class="logo-text">Admin Panel</div>
     </div>
-    
+
     <!--navigation-->
     <ul class="metismenu" id="menu">
        @hasanyrole('super_admin|admin_manager')
@@ -157,9 +157,9 @@
                 <div class="menu-title">Foydalanuvchilar</div>
             </a>
             <ul>
-                <li><a href="{{ route('superadmin.index') }}"><i class='bx bx-user'></i> Foydalanuvchilar</a></li>
-                <li><a href="#"><i class='bx bx-buildings'></i> Bo'limlar</a></li>
-                <li><a href="#"><i class='bx bx-cog'></i> Bo'lim va Jihozlar</a></li>
+                <li><a href="{{ route('superadmin.index') }}"><div class="mm-active-gray"><i class='bx bx-user'></i> Foydalanuvchilar</div></a></li>
+                <li><a href="#"><div class="mm-active-gray"><i class='bx bx-buildings'></i> Bo'limlar</div></a></li>
+                <li><a href="#"><div class="mm-active-gray"><i class='bx bx-cog'></i> Bo'lim va Jihozlar</div></a></li>
             </ul>
         </li>
 
@@ -170,7 +170,7 @@
                 <div class="menu-title">Filiallar</div>
             </a>
             <ul>
-                <li><a href="{{ route('superadmin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi</a></li>
+                <li><a href="{{ route('superadmin.filial.index') }}"><div class="mm-active-gray"><i class='bx bx-map'></i> Filial qismi</div></a></li>
             </ul>
         </li>
 
@@ -178,16 +178,20 @@
             <a href="javascript:;" class="has-arrow" aria-expanded="false">
                 <div class="parent-icon"><i class='bx bx-package'></i></div>
                 <div class="menu-title">Kuryer</div>
-            </a>      
+            </a>
             <ul>
                 <li>
                     <a href="{{ route('superadmin.filial.index') }}">
-                        <i class='bx bx-user-pin'></i> Employee
+                        <div class="mm-active-gray">
+                            <i class='bx bx-user-pin'></i> Employee
+                        </div>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('superadmin.filial.index') }}">
-                        <i class='bx bx-cycling'></i> Courierba
+                        <div class="mm-active-gray">
+                            <i class='bx bx-cycling'></i> Courierba
+                        </div>
                     </a>
                 </li>
             </ul>
@@ -316,7 +320,7 @@
         </li>
         @endrole
            @hasanyrole('employee')
-            
+
           <li>
             <a href="javascript:;" class="has-arrow" aria-expanded="false">
                 <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
@@ -340,7 +344,7 @@
         @endrole
 
     </ul>
-    
+
 </div>
 
 <script>
