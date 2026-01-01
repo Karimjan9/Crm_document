@@ -1,74 +1,121 @@
 @extends('template')
 
 @section('style')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet">
 
 <style>
-body {
-    font-family: 'Inter', sans-serif;
-    background: #eef1f4;
-}
-.page-wrapper { padding: 28px; }
+    :root {
+        --blue-main: #2563eb;
+        --blue-hover: #1d4ed8;
+        --danger: #dc3545;
+        --warning: #f59e0b;
+        --success: #16a34a;
+        --light-bg: #f5f7fb;
+    }
 
-/* Glass Card */
-.card {
-    border: none;
-    border-radius: 18px;
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-}
-.card-header {
-    background: linear-gradient(135deg, #3b82f6, #1e3a8a);
-    padding: 20px 28px;
-    border-bottom: none;
-    color: #fff;
-}
-.card-header h4 { font-weight: 600; letter-spacing: -0.5px; }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: var(--light-bg);
+    }
 
-/* Table Modern */
-.table { font-size: 15px; }
-.table thead { background: #f8fafc; }
-.table-hover tbody tr { transition: 0.15s ease; }
-.table-hover tbody tr:hover { background: #eff6ff; transform: scale(1.002); cursor: pointer; }
-.table td, .table th { padding: 16px 20px !important; vertical-align: middle; }
+    .page-content {
+        padding: 20px;
+    }
 
-/* Sort Icons */
-th.sortable { cursor: pointer; position: relative; font-weight: 600; color: #334155; }
-th.sortable:after {
-    content: "\f0dc";
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    margin-left: 8px;
-    font-size: 0.75em;
-    opacity: 0.5;
-}
-th.sortable.asc:after { content: "\f0de"; opacity: 1; color: #2563eb; }
-th.sortable.desc:after { content: "\f0dd"; opacity: 1; color: #2563eb; }
+    .card {
+        border-radius: 14px;
+        border: none;
+        overflow: hidden;
+        background: #fff;
+    }
 
-/* Badges */
-.badge { border-radius: 10px; padding: 6px 10px; }
-.balance-positive { color: #28a745; font-weight: bold; }
-.balance-negative { color: #dc3545; font-weight: bold; }
+    .card-header {
+        background: var(--blue-main) !important;
+        padding: 14px 18px;
+        font-weight: 600;
+    }
 
-/* Payment Details Box */
-.payment-details {
-    background: rgba(248,250,252,0.85);
-    border-left: 4px solid #2563eb;
-    padding: 22px 26px;
-    border-radius: 0 18px 18px 0;
-    backdrop-filter: blur(10px);
-    animation: fadeIn 0.35s ease;
-}
-@keyframes fadeIn {
-    from { opacity:0; transform:translateY(8px); }
-    to { opacity:1; transform:translateY(0); }
-}
-.payment-details table { border-radius: 12px; overflow: hidden; }
-.payment-details-row td { padding: 0 !important; }
+    table thead th {
+        background: #eef1f6 !important;
+        font-weight: 600;
+        font-size: 14px;
+        white-space: nowrap;
+    }
 
-.status-badge { font-size: 0.8em; }
+    .table-hover tbody tr:hover {
+        background: #e8f0ff !important;
+    }
+
+    .badge {
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+    }
+
+    .balance-negative {
+        color: var(--danger);
+        font-weight: 600;
+    }
+
+    .balance-positive {
+        color: var(--success);
+        font-weight: 600;
+    }
+
+    .btn-sm {
+        border-radius: 8px;
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+
+    .btn-primary {
+        background: var(--blue-main);
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: var(--blue-hover);
+    }
+
+    .modal-content {
+        border-radius: 14px;
+    }
+
+    .modal-header {
+        border-bottom: none;
+        font-weight: 600;
+    }
+
+    .modal-footer {
+        border-top: none;
+    }
+
+    /* Sort iconlar */
+    th.sortable {
+        cursor: pointer;
+        position: relative;
+    }
+
+    th.sortable::after {
+        content: "\f0dc";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        margin-left: 6px;
+        opacity: 0.5;
+    }
+
+    th.sortable.asc::after {
+        content: "\f0de";
+        opacity: 1;
+    }
+
+    th.sortable.desc::after {
+        content: "\f0dd";
+        opacity: 1;
+    }
 </style>
 @endsection
 
