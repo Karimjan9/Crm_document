@@ -6,16 +6,18 @@
 
     :root {
         --text-color: #1e293b;
-        --blue-main: #1d4ed8; /* biroz to'yinganroq */
+        --blue-main: #1d4ed8;
         --blue-hover: #1e40af;
         --blue-gradient: linear-gradient(135deg, #2563eb, #1d4ed8);
         --blue-bg: #f3f6fc;
         --white: #ffffff;
         --border-color: #e2e8f0;
+        --input-bg: #f9fafb;
+        --card-radius: 18px;
     }
 
     body {
-        font-family: "Poppins", "Inter", sans-serif;
+        font-family: "Poppins", sans-serif;
         background: var(--blue-bg);
         color: var(--text-color);
         margin: 0;
@@ -24,29 +26,32 @@
     }
 
     .page-wrapper {
-        padding: 40px;
+        padding: 40px 20px;
+        max-width: 1000px;
+        margin: auto;
     }
 
     .page-breadcrumb {
         background: var(--white);
-        border-radius: 14px;
+        border-radius: var(--card-radius);
         padding: 16px 24px;
         box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
         display: flex;
         align-items: center;
         justify-content: space-between;
+        margin-bottom: 30px;
     }
 
     .breadcrumb-title {
         font-weight: 600;
-        font-size: 19px;
+        font-size: 20px;
         color: var(--blue-main);
-        letter-spacing: 0.9px;
+        letter-spacing: 0.5px;
     }
 
     .card {
         background: var(--white);
-        border-radius: 18px;
+        border-radius: var(--card-radius);
         box-shadow: 0 5px 15px rgba(37, 99, 235, 0.1);
         border: 1px solid var(--border-color);
         transition: all 0.3s ease;
@@ -54,7 +59,7 @@
 
     .card:hover {
         box-shadow: 0 8px 22px rgba(37, 99, 235, 0.18);
-        transform: translateY(-2px);
+        transform: translateY(-3px);
     }
 
     .card-body {
@@ -64,33 +69,43 @@
     label {
         font-weight: 500;
         color: var(--blue-main);
-        margin-bottom: 6px;
+        margin-bottom: 8px;
         display: block;
         font-size: 15px;
     }
 
     .form-control {
         width: 100%;
-        padding: 12px 14px;
+        padding: 12px 16px;
         border: 1px solid var(--border-color);
         border-radius: 10px;
         font-size: 14px;
-        background-color: #f9fafb;
+        background-color: var(--input-bg);
         transition: all 0.25s ease;
     }
 
     .form-control:focus {
         outline: none;
         border-color: var(--blue-main);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         background-color: var(--white);
+    }
+
+    select.form-control {
+        background-color: var(--input-bg);
+        cursor: pointer;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 100px;
     }
 
     .btn-custom {
         background: var(--blue-gradient);
         border: none;
         color: var(--white);
-        padding: 11px 26px;
+        padding: 12px 28px;
         border-radius: 10px;
         font-weight: 500;
         font-size: 15px;
@@ -101,29 +116,24 @@
     .btn-custom:hover {
         background: linear-gradient(135deg, #0a2366, #1e40af);
         transform: translateY(-2px);
-        box-shadow: 0 6px 14px rgba(37, 99, 235, 0.25);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
     }
 
     .btn-outline {
         background: var(--white);
         color: var(--blue-main);
         border: 1px solid var(--blue-main);
-        padding: 11px 24px;
+        padding: 12px 26px;
         border-radius: 10px;
         font-weight: 500;
         font-size: 15px;
-        transition: 0.3s;
+        transition: all 0.3s ease;
     }
 
     .btn-outline:hover {
         background: var(--blue-main);
         color: var(--white);
-        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
-    }
-
-    textarea {
-        resize: vertical;
-        min-height: 100px;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
 
     .alert {
@@ -149,6 +159,23 @@
     ::placeholder {
         color: #9ca3af;
     }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .page-wrapper {
+            padding: 20px 10px;
+        }
+
+        .btn-custom, .btn-outline {
+            width: 100%;
+            text-align: center;
+        }
+
+        .d-flex.justify-content-end {
+            flex-direction: column;
+            gap: 12px;
+        }
+    }
 </style>
 @endsection
 
@@ -156,12 +183,12 @@
 <div class="page-wrapper">
     <div class="page-content">
 
-        <div class="page-breadcrumb mb-3">
+        <div class="page-breadcrumb">
             <div class="breadcrumb-title">Yangi Filial Qo‘shish</div>
             <a href="{{ route('superadmin.sms_message_text.index') }}" class="btn btn-outline">← Orqaga</a>
         </div>
 
-        <div class="card radius-10">
+        <div class="card">
             <div class="card-body">
                 <form action="{{ route('superadmin.sms_message_text.update',['sms_message_text'=>$smsMessage->id]) }}" method="POST">
                     @csrf
@@ -170,40 +197,34 @@
                         <label for="filial_nomi">SMS nomi</label>
                         <input type="text" id="filial_nomi" name="name" value="{{ $smsMessage->name }}" class="form-control" placeholder="Masalan: Toshkent markaziy filial" required>
                     </div>
-                     <div class="mb-3">
-                        <label for="filial_kodi">SMS type</label>
-                        <select name="type" id="">
-                            <option value="xabarnoma" 
-                            @if ($smsMessage->type=="xabarnoma")
-                                selected
-                            @endif
-                            >Xabarnoma</option>
-                            <option value="ogohlantirish"
-                              @if ($smsMessage->type=="ogohlantirish")
-                                selected
-                            @endif>Ogohlantirish</option>
-                            <option value="boshqa"
-                              @if ($smsMessage->type=="boshqa")
-                                selected
-                            @endif>Boshqa</option>
+
+                    <div class="mb-3">
+                        <label for="sms_type">SMS type</label>
+                        <select name="type" id="sms_type" class="form-control">
+                            <option value="xabarnoma" @if ($smsMessage->type=="xabarnoma") selected @endif>Xabarnoma</option>
+                            <option value="ogohlantirish" @if ($smsMessage->type=="ogohlantirish") selected @endif>Ogohlantirish</option>
+                            <option value="boshqa" @if ($smsMessage->type=="boshqa") selected @endif>Boshqa</option>
                         </select>
                     </div>
+
                     <div class="mb-3">
-                        <label for="filial_kodi">SMS text1</label>
-                        <input type="text" id="filial_kodi" value="{{ $smsMessage->message_text1 }}" name="message_text1" class="form-control" placeholder="Masalan: TSH001" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="filial_kodi">SMS text2</label>
-                        <input type="text" id="filial_kodi" value="{{ $smsMessage->message_text2 }}" name="message_text2" class="form-control" placeholder="Masalan: TSH001" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="filial_kodi">SMS text3</label>
-                        <input type="text" id="filial_kodi" value="{{ $smsMessage->message_text3 }}" name="message_text3" class="form-control" placeholder="Masalan: TSH001" required>
+                        <label for="message_text1">SMS text1</label>
+                        <input type="text" id="message_text1" value="{{ $smsMessage->message_text1 }}" name="message_text1" class="form-control" placeholder="Masalan: TSH001" required>
                     </div>
 
-                      <div class="mb-3">
+                    <div class="mb-3">
+                        <label for="message_text2">SMS text2</label>
+                        <input type="text" id="message_text2" value="{{ $smsMessage->message_text2 }}" name="message_text2" class="form-control" placeholder="Masalan: TSH001" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="message_text3">SMS text3</label>
+                        <input type="text" id="message_text3" value="{{ $smsMessage->message_text3 }}" name="message_text3" class="form-control" placeholder="Masalan: TSH001" required>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="description">SMS izoh</label>
-                        <textarea id="description" name="description" rows="4" class="form-control" placeholder="Filial haqida qisqacha ma’lumot...">{{ $smsMessage->description }}</textarea>
+                        <textarea id="description" name="description" class="form-control" placeholder="Filial haqida qisqacha ma’lumot...">{{ $smsMessage->description }}</textarea>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
