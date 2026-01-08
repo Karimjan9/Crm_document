@@ -88,7 +88,7 @@
       snow.style.opacity = Math.random();
       snow.style.animationDuration = (Math.random()*5 + 5) + 's';
       snow.style.animationDelay = Math.random() * 5 + 's';
-      document.body.appendChild(snow);
+    //   document.body.appendChild(snow);
   }
 
   // Window resize uchun snowflake larni qayta joylash
@@ -131,7 +131,7 @@
 <!-- ✅ MODAL -->
 <div class="profile-modal" id="profileModal">
   <div class="profile-content">
-    <img src="{{ url('avatar-4.png') }}" alt="User">      
+    <img src="{{ url('avatar-4.png') }}" alt="User">
     <p>Shaxsiy kabinet</p>
 
     <div class="modal-grid">
