@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        
+
         Schema::create('document_addons', function (Blueprint $table) {
             //    Schema::dropIfExists('document_addons');
         $table->id();
@@ -42,14 +42,14 @@ return new class extends Migration
      */
     public function down()
     {
-     
+
         Schema::table('document_addons', function (Blueprint $table) {
             $table->dropForeign(['document_id']);
             $table->dropForeign(['addon_id']);
-          
+
         });
          Schema::dropIfExists('document_addons');
-       
-    
+
+
     }
 };

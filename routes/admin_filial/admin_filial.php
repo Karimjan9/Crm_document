@@ -10,8 +10,19 @@
     use App\Http\Controllers\Admin\AdminFilialController;
     use App\Http\Controllers\Admin\AdminFilialDocumentController;
     use App\Http\Controllers\Admin\ExpenseAdminController;
+    use App\Http\Controllers\Admin\Api\ClientController;
+    use App\Http\Controllers\Admin\Api\DocumentController as ApiDocumentController;
 
 Route::name('admin_filial.')->prefix('admin_filial')->group(function () {
+
+    Route::prefix('api')->group(function () {
+        Route::post('/document', [ApiDocumentController::class, 'store']);
+
+        Route::get('/clients/search', [ClientController::class, 'search']);
+        Route::apiResource('/clients', ClientController::class);
+        Route::post('/document/save-all', [ApiDocumentController::class, 'storeAll']);
+        Route::get('/get-addons/{type}/{id}', [ApiDocumentController::class, 'getAddons']);
+    });
 
     // Filial index
     Route::get('/index', [AdminFilialController::class, 'index'])->name('index');
@@ -35,9 +46,9 @@ Route::name('admin_filial.')->prefix('admin_filial')->group(function () {
 
 
         Route::get('/doc_summary', [AdminFilialDocumentController::class, 'doc_summary'])->name('doc_summary');
-    
+
         Route::post('/admin/filial/payment/add', [AdminFilialDocumentController::class, 'add_payment'])->name('add_payment');
-        
+
         Route::get('/payments/{document}', [AdminFilialDocumentController::class, 'paymentHistory']);
 
         Route::resource('expense_admin', ExpenseAdminController::class);

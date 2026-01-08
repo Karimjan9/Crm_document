@@ -34,13 +34,14 @@ class AdminFilialDocumentController extends Controller
 // }
 
    public function getServiceAddons($serviceId)
-{
-    $addons = ServiceAddonModel::where('service_id', $serviceId)
-                ->select(['id', 'name', 'price'])
-                ->get();
+    {
+        $addons = ServiceAddonModel::where('service_id', $serviceId)
+                    ->select(['id', 'name', 'price'])
+                    ->get();
 
-    return response()->json($addons);
-}
+        return response()->json($addons);
+    }
+
     public function index()
     {
         $userFilialId = auth()->user()->filial_id;
@@ -67,9 +68,15 @@ class AdminFilialDocumentController extends Controller
         // Faqat o‘z filialidagi qo‘shimcha xizmatlar
         $addons = ServiceAddonModel::all();
 
-        return view('admin_filial.admin_filial_document.create',
+        // return view('admin_filial.admin_filial_document.create',
+        //     compact('services', 'addons', 'documentTypes',
+        //         'directionTypes', 'consulateTypes'));
+
+        $consul_price = 1000;
+
+        return view('admin_filial.admin_filial_document.refactor.create',
             compact('services', 'addons', 'documentTypes',
-                'directionTypes', 'consulateTypes'));
+                'directionTypes', 'consulateTypes', 'consul_price'));
     }
 
     // -------------------------------
@@ -77,16 +84,16 @@ class AdminFilialDocumentController extends Controller
     // -------------------------------
     public function store(DocumentCreateRequest $request)
     {
-        // Client yaratish yoki mavjud clientni olish
-        $clientId = $request->client_id ?: null;
-        if (! $clientId) {
-            $client = ClientsModel::create([
-                'name'         => $request->new_client_name,
-                'phone_number' => $request->new_client_phone,
-                'description'  => $request->new_client_desc,
-            ]);
-            $clientId = $client->id;
-        }
+        // // Client yaratish yoki mavjud clientni olish
+        // $clientId = $request->client_id ?: null;
+        // if (! $clientId) {
+        //     $client = ClientsModel::create([
+        //         'name'         => $request->new_client_name,
+        //         'phone_number' => $request->new_client_phone,
+        //         'description'  => $request->new_client_desc,
+        //     ]);
+        //     $clientId = $client->id;
+        // }
 
         // Service va addons
         $service      = ServicesModel::findOrFail($request->service_id);

@@ -209,8 +209,8 @@
                 <div class="menu-title">Filial Xodimlar</div>
             </a>
             <ul>
-                <li><a href="{{ route('admin_filial.index') }}"><i class='bx bx-map'></i> Xodimlar </a></li>
-                <li><a href="{{ route('admin_filial.index') }}"><i class='bx bx-map'></i> Statistika </a></li>
+                <li><a href="{{ route('admin_filial.index') }}"><div class="mm-active-gray"><i class='bx bx-map'></i> Xodimlar </div></a></li>
+                <li><a href="{{ route('admin_filial.index') }}"><div class="mm-active-gray"><i class='bx bx-map'></i> Statistika </div></a></li>
             </ul>
         </li>
           <li>

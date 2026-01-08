@@ -8,6 +8,7 @@ use App\Models\ClientsModel;
 use App\Models\PaymentsModel;
 use App\Models\ServicesModel;
 use App\Models\ServiceAddonModel;
+use App\Models\DocumentTypeAdditionModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -15,7 +16,7 @@ class DocumentsModel extends Model
 {
     protected $table='documents';
     use HasFactory;
-    
+
     protected $fillable = [
         'client_id',
         'service_id',
@@ -45,14 +46,34 @@ class DocumentsModel extends Model
     }
 
    public function addons()
-{
-    return $this->belongsToMany(
-        ServiceAddonModel::class,
-        'document_addons',
-        'document_id',
-        'addon_id'
-    )->withPivot('addon_price', 'addon_deadline');
-}
+    {
+        return $this->belongsToMany(
+            ServiceAddonModel::class,
+            'document_addons',
+            'document_id',
+            'addon_id'
+        )->withPivot('addon_price', 'addon_deadline');
+    }
+
+    public function document_type_addons()
+    {
+        return $this->belongsToMany(
+            DocumentTypeAdditionModel::class,
+            'document_type_addons',
+            'document_id',
+            'addon_id'
+        )->withPivot('addon_price');
+    }
+
+    public function document_direction_addons()
+    {
+        return $this->belongsToMany(
+            DocumentDirectionAdditionModel::class,
+            'document_direction_addons',
+            'document_id',
+            'addon_id'
+        )->withPivot('addon_price');
+    }
 
     public function payments() {
         return $this->hasMany(PaymentsModel::class,'document_id','id');
@@ -114,5 +135,9 @@ public function consulateType()
     return $this->belongsTo(ConsulationTypeModel::class, 'consulate_type_id');
 }
 
+public function files()
+{
+    return $this->hasMany(DocumentFile::class, 'document_id');
+}
 
 }

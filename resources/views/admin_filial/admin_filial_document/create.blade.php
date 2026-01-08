@@ -66,8 +66,8 @@ body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto; background:lin
     border-color:#2563eb;
 }
 .result-item.selected {
-    background:#10b981; 
-    color:#fff; 
+    background:#10b981;
+    color:#fff;
     border-color:#059669;
 }
 .new-client-btn {font-weight:600; justify-content:center;}
@@ -347,5 +347,13 @@ $(function(){
     $('#discount').on('input',updatePrice);
     $('#serviceSelect').trigger('change');
 });
+</script>
+<script>
+fetch('/admin_filial/api/clients')
+    .then(response => response.json())
+    .then(data => {
+        console.log('Clients:', data);
+    })
+    .catch(error => console.error(error));
 </script>
 @endsection
