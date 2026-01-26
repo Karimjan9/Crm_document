@@ -154,9 +154,16 @@
                     @method('PUT')
                     <div class="mb-3">
                         <label for="filial_nomi">Konsullik nomi</label>
-                        <input type="text" id="filial_nomi" value="{{ $directionType->name }}" name="name" class="form-control" placeholder="Masalan: Toshkent markaziy filial" required>
+                        <input type="text" id="filial_nomi" value="{{ $consulationType->name }}" name="name" class="form-control" placeholder="Masalan: Toshkent markaziy filial" required>
                     </div>
-
+                    <div class="mb-3">
+                        <label for="amount">Konsullik narxi </label>
+                        <input type="number" id="amount" value="{{ $consulationType->amount }}" name="amount" class="form-control" placeholder="1000" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="day">Konsullik deadline (kunlarda)</label>
+                        <input type="number" id="day" value="{{ $consulationType->day }}" name="day" class="form-control" placeholder="0" required>
+                    </div>
                   
 
                     <div class="mb-3">

@@ -15,6 +15,8 @@ class ConsulationTypeModel extends Model
     protected $fillable = [
         'name',
         'description',
+        'amount',
+        'day'
     ];
     
 }

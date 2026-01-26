@@ -360,12 +360,12 @@
             @endif
 
             <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
-                <div class="breadcrumb-title pe-3">Hujjat turi</div>
-                <a href="{{ route('superadmin.document_type.create') }}" class="btn btn-custom">+ Yangi Hujjat turi</a>
+                <div class="breadcrumb-title pe-3">Legalizatsiya</div>
+                <a href="{{ route('superadmin.document_type.create') }}" class="btn btn-custom">+ Yangi Legalizatsiya</a>
             </div>
 
             <div class="d-flex align-items-center mb-2">
-                <h6 class="mb-0 text-uppercase">Hujjat turi bazasi</h6>
+                <h6 class="mb-0 text-uppercase">Legalizatsiya bazasi</h6>
             </div>
             <hr>
 
@@ -376,9 +376,9 @@
                             <thead>
                                 <tr>
                                     <th class="fixed_header2 align-middle">#</th>
-                                    <th class="fixed_header2 align-middle">Hujjat turi nomi</th>
+                                    <th class="fixed_header2 align-middle">Legalizatsiya nomi</th>
 
-                                    <th class="fixed_header2 align-middle">Hujjat turi izoh</th>
+                                    <th class="fixed_header2 align-middle">Legalizatsiya izoh</th>
                                     <th class="fixed_header2 align-middle">Qo‘shimcha</th>
                                     <th class="fixed_header2 align-middle">Harakatlar</th>
                                 </tr>

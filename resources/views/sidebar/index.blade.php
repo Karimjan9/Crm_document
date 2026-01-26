@@ -232,12 +232,12 @@
     <ul>
         <li>
             <a href="{{ route('superadmin.document_type.index') }}">
-                <i class='bx bx-file'></i> Hujjat turi
+                <i class='bx bx-file'></i> Legalizatsiya
             </a>
         </li>
         <li>
             <a href="{{ route('superadmin.direction_type.index') }}">
-                <i class='bx bx-map'></i> Hujjat yo'nalishi
+                <i class='bx bx-map'></i> Apostil
             </a>
         </li>
         <li>

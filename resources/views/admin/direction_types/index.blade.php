@@ -168,12 +168,12 @@
         @endif
 
         <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
-            <div class="breadcrumb-title pe-3">Hujjat nalishi</div>
-            <a href="{{ route('superadmin.direction_type.create') }}" class="btn btn-custom">+ Yangi Hujjat yo'nalishi</a>
+            <div class="breadcrumb-title pe-3">Apostil</div>
+            <a href="{{ route('superadmin.direction_type.create') }}" class="btn btn-custom">+ Yangi Apostil</a>
         </div>
 
         <div class="d-flex align-items-center mb-2">
-            <h6 class="mb-0 text-uppercase">Hujjat yo'nalishi bazasi</h6>
+            <h6 class="mb-0 text-uppercase">Apostil bazasi</h6>
         </div>
         <hr>
 
@@ -184,9 +184,9 @@
                         <thead>
                             <tr>
                                 <th class="fixed_header2 align-middle">#</th>
-                                <th class="fixed_header2 align-middle">Hujjat yo'nalishi nomi</th>
+                                <th class="fixed_header2 align-middle">Apostil nomi</th>
                            
-                                <th class="fixed_header2 align-middle">Hujjat yo'nalishi  izoh</th>
+                                <th class="fixed_header2 align-middle">Apostil izoh</th>
                                  <th class="fixed_header2 align-middle">Qo‘shimcha</th>
                                 <th class="fixed_header2 align-middle">Harakatlar</th>
                             </tr>

@@ -137,7 +137,7 @@ public function consulateType()
 
 public function files()
 {
-    return $this->hasMany(DocumentFile::class, 'document_id');
+    return $this->hasMany(DocumentFileModel::class, 'document_id');
 }
 
 }

@@ -45,7 +45,7 @@ class AdminFilialDocumentController extends Controller
     public function index()
     {
         $userFilialId = auth()->user()->filial_id;
-
+        // dd(1);
         $documents = DocumentsModel::with(['client', 'service', 'addons', 'user'])
             ->whereHas('user', function ($q) use ($userFilialId) {
                 $q->where('filial_id', $userFilialId);

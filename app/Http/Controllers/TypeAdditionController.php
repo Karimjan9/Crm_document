@@ -25,6 +25,7 @@ class TypeAdditionController extends Controller
             'amount'           => 'required|numeric',
             'name'             => 'required|string|max:255',
             'description'      => 'nullable|string',
+            'day'              => 'required|numeric',
         ]);
         //  dd($request->document_type_id);
         DocumentTypeAdditionModel::create([
@@ -32,6 +33,7 @@ class TypeAdditionController extends Controller
             'name'             => $request->name,
             'amount'           => $request->amount,
             'description'      => $request->description,
+            'day'              => $request->day,
         ]);
 
         return redirect()->route('superadmin.type_addition.index', ['document_type' => $request->document_type_id])->with('success', 'Document Direction Additional created successfully.');
@@ -53,13 +55,18 @@ class TypeAdditionController extends Controller
             'amount'           => 'required|numeric',
             'name'             => 'required|string|max:255',
             'description'      => 'nullable|string',
+            'day'              => 'required|numeric',
         ]);
+        // dd(123);
+
         $documentType = DocumentTypeAdditionModel::findOrFail($type_addition_id);
+        // dd($documentType);
         $documentType->update([
             'document_type_id' => $request->document_type_id,
             'name'             => $request->name,
             'amount'           => $request->amount,
             'description'      => $request->description,
+            'day'              => $request->day,
         ]);
         return redirect()->route('superadmin.type_addition.index', ['document_type' => $id])->with('success', 'Document Direction Additional updated successfully.');
     }

@@ -176,6 +176,10 @@
                         <label for="filial_nomi">Hujjat turi qo'shimchasi narxi</label>
                         <input type="number" id="filial_nomi" name="amount" value="{{ $documentType->amount }}" class="form-control" placeholder="1000" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="filial_nomi">Hujjat deadline</label>
+                        <input type="number" id="day" name="day" value="{{ $documentType->day }}" class="form-control" placeholder="1000" required>
+                    </div>
 
                     <div class="mb-3">
                         <label for="description">Konsullik izoh</label>

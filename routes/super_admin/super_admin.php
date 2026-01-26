@@ -82,6 +82,10 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
     Route::resource('/consulation',ConsulationTypeController::class)->except(['show']);
 
+    Route::get('/consulation_main_type', [ConsulationTypeController::class, 'getMainConsulationType'])->name('consulation.get_main_type');
+
+    Route::put('/consulation_main_type_update', [ConsulationTypeController::class, 'update_main'])->name('consulation.update_main_type');
+
     Route::resource('/sms_message_text', SMSMessageTextController::class)->except(['show']);
 
     Route::resource('document_type/{document_type}/type_addition',TypeAdditionController::class)->except(['show']);

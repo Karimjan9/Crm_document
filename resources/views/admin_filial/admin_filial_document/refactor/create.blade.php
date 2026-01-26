@@ -153,7 +153,7 @@
                         <input class="form-check-input consulate consulate-checkbox" type="checkbox" data-price="{{ $consul_price }}">
                     </div>
                     <div class="mb-3 legalization-container">
-                        <label class="form-label">Legalizatsiya</label>
+                        <label class="form-label">Konsullik qo'shimcha</label>
                         <select class="form-select legalization" style="width: 100%">
                             <option value="">Tanlang...</option>
                             @foreach($consulateTypes as $c)

@@ -14,6 +14,7 @@ class DocumentDirectionAdditionModel extends Model
         'name',
         'description',
         'amount',
+        'day',
     ];
 
 

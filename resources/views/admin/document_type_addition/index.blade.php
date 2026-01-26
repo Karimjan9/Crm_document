@@ -191,15 +191,15 @@
         @endif
 
         <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
-            <div class="breadcrumb-title pe-3">Konsullik</div>
+            <div class="breadcrumb-title pe-3">Legalizatsiya</div>
             <div class="d-flex gap-2">
             <a href="{{ route('superadmin.document_type.index') }}" class="btn btn-outline">← Orqaga</a>
-            <a href="{{ route('superadmin.type_addition.create',['document_type' => $id]) }}" class="btn btn-custom">+ Hujjat turi qo'shimcha+</a>
+            <a href="{{ route('superadmin.type_addition.create',['document_type' => $id]) }}" class="btn btn-custom">+ Legalizatsiya qo'shimcha+</a>
             </div>
         </div>
 
         <div class="d-flex align-items-center mb-2">
-            <h6 class="mb-0 text-uppercase">Konsullik bazasi</h6>
+            <h6 class="mb-0 text-uppercase">Legalizatsiya bazasi</h6>
         </div>
         <hr>
 
@@ -210,9 +210,10 @@
                         <thead>
                             <tr>
                                 <th class="fixed_header2 align-middle">#</th>
-                                <th class="fixed_header2 align-middle">Hujjat turi qo'shimcha nomi</th>
-                                <th class="fixed_header2 align-middle">Hujjat turi qo'shimcha narxi</th>
-                                <th class="fixed_header2 align-middle">Hujjat turi qo'shimcha  izoh</th>
+                                <th class="fixed_header2 align-middle">Legalizatsiya qo'shimcha nomi</th>
+                                <th class="fixed_header2 align-middle">Legalizatsiya qo'shimcha narxi</th>
+                                <th class="fixed_header2 align-middle">Legalizatsiya deadline</th>
+                                <th class="fixed_header2 align-middle">Legalizatsiya qo'shimcha  izoh</th>
                                 <th class="fixed_header2 align-middle">Harakatlar</th>
                             </tr>
                         </thead>
@@ -222,6 +223,7 @@
                                 <td>{{ $key+1 }}</td>
                                 <td>{{ $documentType->name }}</td>
                                   <td>{{ $documentType->amount }}</td>
+                                <td>{{ $documentType->day }}</td>
                                 <td>{{ $documentType->description }}</td>
                              
                                 <td>
