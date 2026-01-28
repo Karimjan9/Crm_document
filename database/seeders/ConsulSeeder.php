@@ -15,10 +15,38 @@ class ConsulSeeder extends Seeder
      */
     public function run()
     {
-        ConsulModel::create([
-            'name' => 'Main',
-            'amount' => 0,
-            'day' => 0,
+        ConsulModel::all()->each(function ($item) {
+            $item->delete();
+        });
+        ConsulModel::insert([
+            [
+                'name' => "Ta'lim va Adliya",
+                'amount' => 150,
+                'day' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Qolganlar',
+                'amount' => 250,
+                'day' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+             [
+                'name' => 'Chet el fuqarolari uchun',
+                'amount' => 100,
+                'day' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+             [
+                'name' => 'Boshqalar',
+                'amount' => 100,
+                'day' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

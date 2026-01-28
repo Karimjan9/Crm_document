@@ -285,7 +285,7 @@
         const filialBox = document.getElementById('filial_box');
 
         function toggleFilial() {
-            if (roleSelect.value.trim().toLowerCase() === 'employee') {
+            if (roleSelect.value.trim().toLowerCase() === 'employee' || roleSelect.value.trim().toLowerCase() === 'admin_filial') {
                 filialBox.style.display = 'block';
             } else {
                 filialBox.style.display = 'none';

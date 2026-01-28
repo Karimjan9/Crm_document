@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\DirectionTypeController;
 use App\Http\Controllers\Admin\SMSMessageTextController;
 use App\Http\Controllers\Admin\ConsulationTypeController;
 use App\Http\Controllers\Admin\FCalendar\HolidayController;
+use App\Http\Controllers\SuperAdmin\StaticApostilController;
 use App\Http\Controllers\Admin\FCalendar\CalendarController as FCalendarController;
 
 Route::name('superadmin.')->prefix('superadmin')->group(function(){
@@ -80,7 +81,15 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
     Route::resource('/direction_type',DirectionTypeController::class)->except(['show']);
 
+    Route::resource('/static/apostil',StaticApostilController::class)->except(['show']);
+
     Route::resource('/consulation',ConsulationTypeController::class)->except(['show']);
+
+    Route::get('/consulation_static', [ConsulationTypeController::class, 'static'])->name('consulation.static_main');
+
+    Route::put('/consulation_static_update/{id}', [ConsulationTypeController::class, 'update_static'])->name('consulation.update_static_main');
+
+    Route::delete('/consulation_static_delete/{id}', [ConsulationTypeController::class, 'destroy_static'])->name('consulation.destroy_static_main');
 
     Route::get('/consulation_main_type', [ConsulationTypeController::class, 'getMainConsulationType'])->name('consulation.get_main_type');
 

@@ -243,9 +243,9 @@
                 <div class="breadcrumb-title pe-3">Konsullik</div>
 
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-custom" id="openMainConsulBtn">
+                    <a href="{{ route('superadmin.consulation.static_main') }}" class="btn btn-custom">
                         ⚙️ Consullik sozlama
-                    </button>
+                    </a>
 
                     <a href="{{ route('superadmin.consulation.create') }}" class="btn btn-custom">
                         + Yangi Konsullik+

@@ -109,4 +109,41 @@ class ConsulationTypeController extends Controller
         ]);
        return response()->json(['message' => 'Main Consulation Type updated successfully.']);
 }
+
+    public function static()
+    {
+        // dd(123);
+        $statics  = ConsulModel::all();
+        return view('admin.consulation_types.static', compact('statics'));
+    }
+
+   public function update_static($id,Request $request)
+{
+    // dd(123);
+    $request->validate([
+        'name'   => 'required|string|max:255',
+        'amount' => 'required|numeric',
+        'day'    => 'required|integer',
+    ]);
+
+    $consul = ConsulModel::findOrFail($id);
+
+    $consul->update([
+        'name'   => $request->name,
+        'amount' => $request->amount,
+        'day'    => $request->day,
+    ]);
+
+    return redirect()->back()->with(
+        'success',
+        'Consulation static muvaffaqiyatli yangilandi.'
+    );
+}
+    public function destroy_static($id)
+    {
+        // dd(123);
+        $consul = ConsulModel::findOrFail($id);
+        $consul->delete();
+        return redirect()->back()->with('success', 'Consulation static muvaffaqiyatli o\'chirildi.');
+    }
 }

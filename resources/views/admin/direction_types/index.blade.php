@@ -166,7 +166,10 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif
-
+        <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
+            <div class="breadcrumb-title pe-3">Static Apostil</div>
+            <a href="{{ route('superadmin.apostil.index') }}" class="btn btn-custom">Static Apostil</a>
+        </div>
         <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
             <div class="breadcrumb-title pe-3">Apostil</div>
             <a href="{{ route('superadmin.direction_type.create') }}" class="btn btn-custom">+ Yangi Apostil</a>

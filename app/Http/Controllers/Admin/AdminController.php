@@ -19,7 +19,7 @@ class AdminController extends Controller
     public function index()
     {
         // dd('here');
-        $users = User::role(['employee', 'courier'])
+        $users = User::role(['employee', 'courier','admin_filial'])
         ->with('roles', 'filial')
         ->orderBy('id', 'desc')
         ->get();
@@ -41,16 +41,20 @@ class AdminController extends Controller
             ->orWhere('name', 'like', '%admin_filial%')
             ->orWhere('name', 'like', '%courier%')
             ->get();
+        $filials = FilialModel::get();
+
+         return view('admin.create', compact('rols', 'filials'));
     } else {
         $rols = Role::where('name', 'like', '%employee%')
             ->orWhere('name', 'like', '%admin_filial%')
             ->orWhere('name', 'like', '%courier%')
             ->get();
+        $filials = FilialModel::get();
+
+        return view('admin.create', compact('rols', 'filials'));
     }
 
-    $filials = FilialModel::get();
-
-    return view('admin.create', compact('rols', 'filials'));
+   
 }
 
         public function store(StoreUserRequest $request)
@@ -59,7 +63,7 @@ class AdminController extends Controller
         $phone = preg_replace('/\D/', '', $request->phone);
         $phone = substr($phone, -9); 
 
-       
+
         $user = User::create([
             'name' => $request->name,
             'login' => $request->login,
@@ -73,7 +77,7 @@ class AdminController extends Controller
        
         $user->assignRole($request->role);
 
-        return redirect()->route('admin.index')
+        return redirect()->route('superadmin.index')
             ->with('success', 'Foydalanuvchi muvaffaqiyatli qo‘shildi va roli biriktirildi ✅');
     }
 
