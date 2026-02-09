@@ -3,8 +3,85 @@
 @section('style')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/bs-stepper/dist/css/bs-stepper.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+:root {
+    --ink: #0f172a;
+    --muted: #64748b;
+    --surface: #ffffff;
+    --surface-2: #f8fafc;
+    --border: #e2e8f0;
+    --accent: #0ea5a4;
+    --accent-2: #2563eb;
+    --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    --radius: 12px;
+}
+
+.page-wrapper {
+    font-family: 'Manrope', sans-serif;
+    color: var(--ink);
+    background:
+        radial-gradient(1200px 500px at 0% -10%, rgba(14, 165, 164, 0.12), transparent 60%),
+        linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    padding-bottom: 40px;
+}
+
+.page-wrapper h1 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    margin-bottom: 0.5rem;
+}
+
+.page-wrapper .card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.page-wrapper .card-body {
+    padding: 1.25rem 1.5rem;
+}
+
+.page-wrapper .btn {
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.page-wrapper .btn-outline-primary {
+    border-color: var(--accent-2);
+    color: var(--accent-2);
+}
+.page-wrapper .btn-outline-primary:hover {
+    background: var(--accent-2);
+    color: #fff;
+}
+
+.page-wrapper .form-control,
+.page-wrapper .form-select,
+.page-wrapper .select2-container .select2-selection--single {
+    border-radius: 10px;
+    border-color: var(--border);
+    min-height: 42px;
+}
+
+.page-wrapper .form-control:focus,
+.page-wrapper .form-select:focus,
+.page-wrapper .select2-container--default .select2-selection--single:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 0.2rem rgba(14, 165, 164, 0.15);
+}
+
+.page-wrapper .bs-stepper .step-trigger {
+    border-radius: 999px;
+    padding: 10px 14px;
+}
+.page-wrapper .bs-stepper .step.active .bs-stepper-circle {
+    background-color: var(--accent);
+}
+
 .file-item {
     display: flex;
     justify-content: space-between;
@@ -21,20 +98,42 @@
 .file-size { font-size: 0.85em; color: #6c757d; }
 .file-remove { color: #dc3545; background: none; border: none; cursor: pointer; font-size: 1.2em; padding: 0 5px; }
 .file-remove:hover { color: #bb2d3b; }
-.selected-files-list { border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 15px; min-height: 100px; max-height: 200px; overflow-y: auto; }
-.no-files-message { text-align: center; padding: 20px; color: #6c757d; font-style: italic; }
-.additional-services { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; }
-.service-addon-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: white; border: 1px solid #e9ecef; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
-.service-addon-item:hover { background: #f8f9fa; border-color: #0d6efd; }
-.service-addon-item.selected { background: #e7f3ff; border-color: #0d6efd; }
-.service-addon-name { font-weight: 500; }
-.service-addon-price { color: #28a745; font-weight: 600; }
+.selected-files-list { border: 1px solid var(--border); border-radius: 0.75rem; padding: 15px; min-height: 100px; max-height: 200px; overflow-y: auto; background: var(--surface); }
+.no-files-message { text-align: center; padding: 20px; color: var(--muted); font-style: italic; }
+.additional-services,
+.additional-services-document,
+.additional-services-direction,
+.additional-services-service {
+    background: var(--surface-2);
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+.service-addon-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.service-addon-item:hover { background: #f1f5f9; border-color: var(--accent-2); }
+.service-addon-item.selected { background: rgba(14, 165, 164, 0.08); border-color: var(--accent); }
+.service-addon-name { font-weight: 600; }
+.service-addon-price { color: #16a34a; font-weight: 700; }
 .service-addon-checkbox { margin-right: 10px; cursor: pointer; }
 </style>
 @endsection
 
 @section('body')
 <div class="page-wrapper">
+    @php
+        $directions = $directions ?? $directionTypes ?? collect();
+    @endphp
 
     <div class="container mt-4">
         <div class="card">
@@ -131,48 +230,143 @@
             <div class="bs-stepper-content">
                 <div class="content step-1">
                     <div class="mb-3">
-                        <label class="form-label">Hujjat turi</label>
-                        <select class="form-select doc-type" style="width: 100%">
-                            <option value="">Tanlang...</option>
-                            @foreach($documentTypes as $t)
-                                <option value="{{ $t->id }}">{{ $t->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Apostil</label>
-                        <select class="form-select direction-type" style="width: 100%">
-                            <option value="">Tanlang...</option>
-                            @foreach($directionTypes as $d)
-                                <option value="{{ $d->id }}">{{ $d->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Konsullik kerak</label>
-                        <input class="form-check-input consulate consulate-checkbox" type="checkbox" data-price="{{ $consul_price }}">
-                    </div>
-                    <div class="mb-3 legalization-container">
-                        <label class="form-label">Konsullik qo'shimcha</label>
-                        <select class="form-select legalization" style="width: 100%">
-                            <option value="">Tanlang...</option>
-                            @foreach($consulateTypes as $c)
-                                <option value="{{ $c->id }}" data-price="{{ $c->price }}">{{ $c->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+    <label class="form-label">Hujjat turi</label>
+    <select class="form-select doc-type" style="width: 100%">
+        <option value="">Tanlang...</option>
+        @foreach($documentTypes as $t)
+            <option value="{{ $t->id }}">{{ $t->name }}</option>
+        @endforeach
+    </select>
+</div>
 
-                    <!-- Контейнер для дополнительных услуг от документа/direction-type/legalization -->
-                    <div class="additional-services-document mb-3" style="display: none;">
-                        <h6>Дополнительные услуги (документ):</h6>
-                        <div class="services-list-document">
-                            <!-- Список услуг будет добавлен динамически -->
-                        </div>
-                        <div class="text-muted small mt-2">
-                            Выбрано услуг: <strong class="selected-count-document">0</strong> |
-                            Общая стоимость: <strong class="addon-total-document">0</strong> сум
-                        </div>
-                    </div>
+{{-- ✅ Yo'nalish tugmalari: faqat doc-type tanlangandan keyin ko‘rinadi --}}
+<div class="mb-3 process-wrapper" style="display:none;">
+    <label class="form-label d-block">Yo'nalish</label>
+
+    <div class="btn-group w-100" role="group">
+        <button type="button" class="btn btn-outline-primary btn-process" data-mode="apostil">
+            Apostil
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-process" data-mode="consul">
+            Konsullik
+        </button>
+    </div>
+
+    <input type="hidden" class="process-mode" value="">
+</div>
+
+{{-- ✅ APOSTIL --}}
+<div class="mb-3 apostil-block" style="display:none;">
+    <div class="border rounded p-3 mb-2">
+        <div class="fw-semibold mb-2">Apostil - 1-guruh</div>
+        <div class="row g-2">
+            @foreach($apostilStatics->where('group_id', 1) as $a)
+                <div class="col-12 col-md-6">
+                    <label class="border rounded p-2 w-100 d-flex align-items-center gap-2">
+                        <input type="radio"
+                               name="apostil_g1___U___"
+                               class="form-check-input apostil-g1"
+                               value="{{ $a->id }}"
+                               data-price="{{ $a->price }}"
+                               data-days="{{ $a->days }}">
+                        <span class="flex-grow-1">{{ $a->name }}</span>
+                        <span class="text-success fw-semibold">{{ number_format($a->price,0,'',' ') }} сум</span>
+                    </label>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    <div class="border rounded p-3">
+        <div class="fw-semibold mb-2">Apostil - 2-guruh</div>
+        <div class="row g-2">
+            @foreach($apostilStatics->where('group_id', 2) as $a)
+                <div class="col-12 col-md-6">
+                    <label class="border rounded p-2 w-100 d-flex align-items-center gap-2">
+                        <input type="radio"
+                               name="apostil_g2___U___"
+                               class="form-check-input apostil-g2"
+                               value="{{ $a->id }}"
+                               data-price="{{ $a->price }}"
+                               data-days="{{ $a->days }}">
+                        <span class="flex-grow-1">{{ $a->name }}</span>
+                        <span class="text-success fw-semibold">{{ number_format($a->price,0,'',' ') }} сум</span>
+                    </label>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+
+<div class="mt-3 direction-block" style="display:none;">
+    <label class="form-label">Yo'nalish (Direction)</label>
+    <select class="form-select direction-type" style="width:100%">
+        <option value="">Tanlang...</option>
+        @foreach($directions as $d)
+            <option value="{{ $d->id }}"
+                    data-price="{{ $d->price ?? $d->amount ?? 0 }}"
+                    data-days="{{ $d->day ?? 0 }}">
+                {{ $d->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+{{-- ✅ KONSULLIK --}}
+<div class="mb-3 consul-block" style="display:none;">
+    <div class="border rounded p-3">
+        <div class="fw-semibold mb-2">Konsullik</div>
+        <div class="row g-2">
+            @foreach($consuls as $c)
+                <div class="col-12 col-md-6">
+                    <label class="border rounded p-2 w-100 d-flex align-items-center gap-2">
+                        <input type="radio"
+                               name="consul_main___U___"
+                               class="form-check-input consul-main"
+                               value="{{ $c->id }}"
+                               data-price="{{ $c->amount }}"
+                               data-days="{{ $c->day }}">
+                        <span class="flex-grow-1">{{ $c->name }}</span>
+                        <span class="text-success fw-semibold">{{ number_format($c->amount,0,'',' ') }} сум</span>
+                    </label>
+                </div>
+            @endforeach
+        </div>
+        <div class="mt-3 legalization-container" style="display:none;">
+            <label class="form-label">Konsullik turi</label>
+            <select class="form-select legalization" style="width:100%">
+                <option value="">Tanlang...</option>
+                @foreach($consulateTypes as $ct)
+                    <option value="{{ $ct->id }}" data-price="{{ $ct->amount ?? 0 }}">
+                        {{ $ct->name }} - {{ number_format($ct->amount ?? 0,0,'',' ') }} so'm
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <input type="checkbox" class="consulate-checkbox d-none" data-price="0">
+    </div>
+</div>
+
+{{-- ✅ Addonlar faqat yo'nalish tanlovi tugaganda ko‘rinadi --}}
+<div class="after-choice-block" style="display:none;">
+    <div class="additional-services-direction mb-3" style="display:none;">
+        <h6>Qo‘shimcha xizmatlar (yo‘nalish):</h6>
+        <div class="services-list-direction"></div>
+        <div class="text-muted small mt-2">
+            Tanlangan xizmatlar: <strong class="selected-count-direction">0</strong> |
+            Umumiy qiymat: <strong class="addon-total-direction">0</strong> so‘m
+        </div>
+    </div>
+    <div class="additional-services-document mb-3" style="display:none;">
+        <h6>Qo‘shimcha xizmatlar (hujjat):</h6>
+        <div class="services-list-document"></div>
+        <div class="text-muted small mt-2">
+            Выбрано услуг: <strong class="selected-count-document">0</strong> |
+            Общая стоимость: <strong class="addon-total-document">0</strong> сум
+        </div>
+    </div>
+</div>
+                  
 
                     <button class="btn btn-primary btn-next">Далее</button>
                 </div>
@@ -388,9 +582,12 @@ class WizardManager {
     }
 
     collectData() {
+        
         const data = [];
+        
         document.querySelectorAll('.wizard-wrapper').forEach((w, i) => {
             const getData = sel => w.querySelector(sel)?.value || '';
+            
             const controller = w._wizardController;
 
             // Получаем данные о консульстве
@@ -408,6 +605,15 @@ class WizardManager {
                 : 0;
 
             const wizardData = {
+                process_mode: getData('.process-mode'),
+                    apostil: {
+                    group1_id: w.querySelector('.apostil-g1:checked')?.value || null,
+                    group2_id: w.querySelector('.apostil-g2:checked')?.value || null,
+                    },
+                    consul: {
+                    consul_id: w.querySelector('.consul-main:checked')?.value || null,
+                    },
+
                 document_type: getData('.doc-type'),
                 direction_type: getData('.direction-type'),
                 consulate: {
@@ -438,6 +644,7 @@ class WizardManager {
 
     async saveAll() {
         const data = this.collectData();
+        
         if (data.length === 0) {
             alert('Нет данных для сохранения');
             return;
@@ -449,7 +656,7 @@ class WizardManager {
             alert('Выберите клиента перед сохранением');
             return;
         }
-
+        
         // Блокируем кнопку сохранения
         const saveBtn = document.getElementById('saveAllWizards');
         const originalText = saveBtn.innerHTML;
@@ -487,7 +694,10 @@ class WizardManager {
                     formData.append('payment_amount', wizardData.payment_amount);
                     formData.append('payment_type', wizardData.payment_type);
                     formData.append('description', wizardData.description);
-
+                    formData.append('process_mode', wizardData.process_mode);
+                    formData.append('apostil_group1_id', wizardData.apostil.group1_id);
+                    formData.append('apostil_group2_id', wizardData.apostil.group2_id);
+                    formData.append('consul_id', wizardData.consul.consul_id);
                     // Добавляем выбранные аддоны
                     formData.append('selected_addons', JSON.stringify(wizardData.selected_addons));
 
@@ -631,15 +841,18 @@ class WizardController {
         this.element = element;
         this.wrapper = element.closest('.wizard-wrapper');
         this.stepper = new Stepper(element);
+
         this.init();
     }
 
     init() {
         this.attachNavigation();
         this.initFileHandlers();
-        this.initPriceCalculation();
-        this.initAddonTracking();
-        this.initConsulateToggle();
+
+        this.initApostilConsulSwitch(); // ✅ doc-type -> tugmalar -> radio
+        this.initAddonTracking();       // ✅ addonlar
+        this.initPriceCalculation();    // ✅ hisob-kitob
+
         this.attachRemoveHandler();
     }
 
@@ -654,6 +867,169 @@ class WizardController {
         //     this.updateConfirm()
         // );
     }
+    initApostilConsulSwitch() {
+    const w = this.wrapper;
+
+    // ✅ unik radio name (har wizard mustaqil)
+    const uid = 'w' + Math.random().toString(36).slice(2, 9);
+    w.querySelectorAll('input[type="radio"][name*="___U___"]').forEach(r => {
+        r.name = r.name.replace('___U___', uid);
+    });
+
+    const docType = w.querySelector('.doc-type');
+
+    const processWrapper = w.querySelector('.process-wrapper');
+    const btns = w.querySelectorAll('.btn-process');
+    const modeInput = w.querySelector('.process-mode');
+
+    const apostilBlock = w.querySelector('.apostil-block');
+    const consulBlock  = w.querySelector('.consul-block');
+    const afterBlock   = w.querySelector('.after-choice-block');
+    const directionBlock = w.querySelector('.direction-block');
+    const directionSelect = w.querySelector('.direction-type');
+    const legalizationContainer = w.querySelector('.legalization-container');
+    const legalizationSelect = w.querySelector('.legalization');
+    const consulateCheckbox = w.querySelector('.consulate-checkbox');
+
+    const clearRadios = (selector) => w.querySelectorAll(selector).forEach(r => r.checked = false);
+
+    const setActiveBtn = (mode) => {
+        btns.forEach(b => {
+            const active = b.dataset.mode === mode;
+            b.classList.toggle('btn-primary', active);
+            b.classList.toggle('btn-outline-primary', !active);
+            b.classList.toggle('active', active);
+        });
+    };
+
+    const showMode = (mode) => {
+        apostilBlock.style.display = (mode === 'apostil') ? 'block' : 'none';
+        consulBlock.style.display  = (mode === 'consul')  ? 'block' : 'none';
+    };
+
+    const hideAll = () => {
+        apostilBlock.style.display = 'none';
+        consulBlock.style.display  = 'none';
+        afterBlock.style.display   = 'none';
+        if (directionBlock) directionBlock.style.display = 'none';
+    };
+
+    const resetAll = () => {
+        clearRadios('.apostil-g1, .apostil-g2, .consul-main');
+        afterBlock.style.display = 'none';
+        if (directionBlock) directionBlock.style.display = 'none';
+        if (directionSelect) directionSelect.value = '';
+        this.hideAddons('direction');
+        if (legalizationContainer) legalizationContainer.style.display = 'none';
+        if (legalizationSelect) legalizationSelect.value = '';
+        if (consulateCheckbox) consulateCheckbox.checked = false;
+
+        // ✅ totals qayta hisob
+        w.querySelector('.discount')?.dispatchEvent(new Event('input'));
+        updateGlobalTotals();
+    };
+
+    const checkReady = () => {
+        const mode = modeInput.value;
+
+        if (mode === 'apostil') {
+            const ok = !!w.querySelector('.apostil-g1:checked') && !!w.querySelector('.apostil-g2:checked');
+            if (directionBlock) directionBlock.style.display = ok ? 'block' : 'none';
+
+            const hasDirection = !!directionSelect?.value;
+            afterBlock.style.display = ok && hasDirection ? 'block' : 'none';
+            if (!hasDirection) {
+                this.hideAddons('direction');
+                this.hideAddons('document');
+            }
+
+            if (ok && hasDirection) {
+                docType?.dispatchEvent(new Event('change'));
+                directionSelect?.dispatchEvent(new Event('change'));
+            }
+
+            if (legalizationContainer) legalizationContainer.style.display = 'none';
+            if (legalizationSelect) legalizationSelect.value = '';
+            if (consulateCheckbox) consulateCheckbox.checked = false;
+        } else if (mode === 'consul') {
+            const hasConsul = !!w.querySelector('.consul-main:checked');
+            const hasLegalization = !!(legalizationSelect && legalizationSelect.value);
+            const ok = hasConsul || hasLegalization;
+            afterBlock.style.display = ok ? 'block' : 'none';
+            if (directionBlock) directionBlock.style.display = 'none';
+            if (directionSelect) directionSelect.value = '';
+            this.hideAddons('direction');
+            if (legalizationContainer) legalizationContainer.style.display = 'block';
+            if (consulateCheckbox) consulateCheckbox.checked = ok;
+            if (hasConsul && !hasLegalization && legalizationSelect) {
+                const firstOption = legalizationSelect.querySelector('option[value]:not([value=\"\"])');
+                if (firstOption) {
+                    legalizationSelect.value = firstOption.value;
+                    legalizationSelect.dispatchEvent(new Event('change'));
+                }
+            }
+        } else {
+            afterBlock.style.display = 'none';
+            if (directionBlock) directionBlock.style.display = 'none';
+            if (directionSelect) directionSelect.value = '';
+            this.hideAddons('direction');
+            if (legalizationContainer) legalizationContainer.style.display = 'none';
+            if (legalizationSelect) legalizationSelect.value = '';
+            if (consulateCheckbox) consulateCheckbox.checked = false;
+        }
+
+        // ✅ totals qayta hisob
+        w.querySelector('.discount')?.dispatchEvent(new Event('input'));
+    };
+
+    // ✅ doc-type tanlanmaguncha tugmalar ko‘rinmasin
+    const toggleProcessVisibility = () => {
+        const hasDoc = !!docType?.value;
+        processWrapper.style.display = hasDoc ? 'block' : 'none';
+
+        if (!hasDoc) {
+            modeInput.value = '';
+            setActiveBtn('__none__');
+            hideAll();
+            resetAll();
+        }
+    };
+
+    docType?.addEventListener('change', () => {
+        toggleProcessVisibility();
+    });
+
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.dataset.mode;
+
+            resetAll();              // eski tanlov tozalanadi
+            modeInput.value = mode;  // yangi mode
+            setActiveBtn(mode);
+            showMode(mode);
+            checkReady();
+        });
+    });
+
+    w.querySelectorAll('.apostil-g1, .apostil-g2, .consul-main').forEach(r => {
+        r.addEventListener('change', checkReady);
+    });
+
+
+    legalizationSelect?.addEventListener('change', () => {
+        if (consulateCheckbox) {
+            const price = parseFloat(legalizationSelect.selectedOptions[0]?.dataset.price || 0);
+            consulateCheckbox.dataset.price = price;
+            consulateCheckbox.checked = !!legalizationSelect.value && modeInput.value === 'consul';
+        }
+        checkReady();
+        w.querySelector('.discount')?.dispatchEvent(new Event('input'));
+    });
+
+    // start state
+    toggleProcessVisibility();
+    hideAll();
+}
 
     initFileHandlers() {
         const fileInput = this.element.querySelector('.file-input');
@@ -715,56 +1091,61 @@ class WizardController {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    initPriceCalculation() {
-        const serviceSelect = this.wrapper.querySelector('.service');
-        const discountInput = this.wrapper.querySelector('.discount');
-        const totalAmount = this.wrapper.querySelector('.total-amount');
-        const finalAmount = this.wrapper.querySelector('.final-amount');
-        const consulateCheckbox = this.wrapper.querySelector('.consulate-checkbox');
-        const legalizationSelect = this.wrapper.querySelector('.legalization');
+   initPriceCalculation() {
+    const w = this.wrapper;
 
-        const calculate = () => {
-            // Цена услуги
-            const servicePrice = parseFloat(serviceSelect.selectedOptions[0]?.dataset.price || 0);
+    const serviceSelect = w.querySelector('.service');
+    const discountInput = w.querySelector('.discount');
+    const legalizationSelect = w.querySelector('.legalization');
+    const totalAmount   = w.querySelector('.total-amount');
+    const finalAmount   = w.querySelector('.final-amount');
 
-            // Цена дополнительных услуг (аддонов)
-            const addonsTotal = this.getAddonsTotal();
+    const getMode = () => w.querySelector('.process-mode')?.value || '';
 
-            // Цена консульства (если чекбокс выбран)
-            const consulatePrice = consulateCheckbox.checked
-                ? parseFloat(consulateCheckbox.dataset.price || 0)
-                : 0;
+    const calculate = () => {
+        const servicePrice = parseFloat(serviceSelect?.selectedOptions?.[0]?.dataset?.price || 0);
+        const addonsTotal  = this.getAddonsTotal();
 
-            // Цена легализации (если выбрана)
-            const legalizationPrice = legalizationSelect.value
-                ? parseFloat(legalizationSelect.selectedOptions[0]?.dataset.price || 0)
-                : 0;
+        // ✅ Apostil/Konsullik narxlari
+        const mode = getMode();
 
-            // Общая сумма до скидки
-            const totalBeforeDiscount = servicePrice + addonsTotal + consulatePrice + legalizationPrice;
+        let apostilPrice = 0;
+        if (mode === 'apostil') {
+            apostilPrice += parseFloat(w.querySelector('.apostil-g1:checked')?.dataset.price || 0);
+            apostilPrice += parseFloat(w.querySelector('.apostil-g2:checked')?.dataset.price || 0);
+        }
 
-            // Скидка
-            const discountAmount = parseFloat(discountInput.value || 0);
+        let consulRadioPrice = 0;
+        if (mode === 'consul') {
+            consulRadioPrice += parseFloat(w.querySelector('.consul-main:checked')?.dataset.price || 0);
+        }
 
-            // Финальная сумма
-            const final = totalBeforeDiscount - discountAmount;
+        let legalizationPrice = 0;
+        if (mode === 'consul') {
+            legalizationPrice += parseFloat(legalizationSelect?.selectedOptions?.[0]?.dataset.price || 0);
+        }
 
-            totalAmount.value = totalBeforeDiscount.toLocaleString();
-            finalAmount.value = final.toLocaleString();
+        const totalBeforeDiscount = servicePrice + addonsTotal + apostilPrice + consulRadioPrice + legalizationPrice;
 
-            // Обновляем глобальные суммы
-            updateGlobalTotals();
-        };
+        const discountAmount = parseFloat(discountInput?.value || 0);
+        const final = totalBeforeDiscount - discountAmount;
 
-        // Привязываем обработчики
-        serviceSelect.addEventListener('change', calculate);
-        discountInput.addEventListener('input', calculate);
-        consulateCheckbox.addEventListener('change', calculate);
-        legalizationSelect.addEventListener('change', calculate);
+        if (totalAmount) totalAmount.value = totalBeforeDiscount.toLocaleString();
+        if (finalAmount) finalAmount.value = final.toLocaleString();
 
-        // Начальный расчет
-        calculate();
-    }
+        updateGlobalTotals();
+    };
+
+    serviceSelect?.addEventListener('change', calculate);
+    discountInput?.addEventListener('input', calculate);
+
+    // radio / tugma o‘zgarsa ham recalculation
+    w.querySelectorAll('.apostil-g1, .apostil-g2, .consul-main, .btn-process')
+        .forEach(el => el.addEventListener('change', calculate));
+
+    calculate();
+}
+
 
     getAddonsTotal() {
         // Суммируем аддоны из обоих контейнеров
@@ -777,6 +1158,11 @@ class WizardController {
         });
 
         // Аддоны услуги
+        const directionCheckboxes = this.wrapper.querySelectorAll('.service-addon-checkbox-direction:checked');
+        directionCheckboxes.forEach(cb => {
+            total += parseFloat(cb.dataset.price || 0);
+        });
+
         const serviceCheckboxes = this.wrapper.querySelectorAll('.service-addon-checkbox-service:checked');
         serviceCheckboxes.forEach(cb => {
             total += parseFloat(cb.dataset.price || 0);
@@ -785,47 +1171,49 @@ class WizardController {
         return total;
     }
 
-    getTotals() {
-        const serviceSelect = this.wrapper.querySelector('.service');
-        const discountInput = this.wrapper.querySelector('.discount');
-        const consulateCheckbox = this.wrapper.querySelector('.consulate-checkbox');
-        const legalizationSelect = this.wrapper.querySelector('.legalization');
+getTotals() {
+    const w = this.wrapper;
 
-        // Цена услуги
-        const servicePrice = parseFloat(serviceSelect.selectedOptions[0]?.dataset.price || 0);
+    const serviceSelect = w.querySelector('.service');
+    const discountInput = w.querySelector('.discount');
+    const legalizationSelect = w.querySelector('.legalization');
 
-        // Цена дополнительных услуг
-        const addonsAmount = this.getAddonsTotal();
+    const servicePrice = parseFloat(serviceSelect?.selectedOptions?.[0]?.dataset?.price || 0);
+    const addonsAmount = this.getAddonsTotal();
 
-        // Цена консульства
-        const consulatePrice = consulateCheckbox.checked
-            ? parseFloat(consulateCheckbox.dataset.price || 0)
-            : 0;
+    const mode = w.querySelector('.process-mode')?.value || '';
 
-        // Цена легализации
-        const legalizationPrice = legalizationSelect.value
-            ? parseFloat(legalizationSelect.selectedOptions[0]?.dataset.price || 0)
-            : 0;
-
-        // Общая сумма до скидки
-        const totalBeforeDiscount = servicePrice + addonsAmount + consulatePrice + legalizationPrice;
-
-        // Скидка
-        const discountAmount = parseFloat(discountInput.value || 0);
-
-        // Финальная сумма
-        const finalAmount = totalBeforeDiscount - discountAmount;
-
-        return {
-            serviceAmount: servicePrice,
-            addonsAmount: addonsAmount,
-            consulateAmount: consulatePrice,
-            legalizationAmount: legalizationPrice,
-            totalAmount: totalBeforeDiscount,
-            discountAmount: discountAmount,
-            finalAmount: finalAmount
-        };
+    let apostilPrice = 0;
+    if (mode === 'apostil') {
+        apostilPrice += parseFloat(w.querySelector('.apostil-g1:checked')?.dataset.price || 0);
+        apostilPrice += parseFloat(w.querySelector('.apostil-g2:checked')?.dataset.price || 0);
     }
+
+    let consulPrice = 0;
+    if (mode === 'consul') {
+        consulPrice += parseFloat(w.querySelector('.consul-main:checked')?.dataset.price || 0);
+    }
+
+    let legalizationPrice = 0;
+    if (mode === 'consul') {
+        legalizationPrice += parseFloat(legalizationSelect?.selectedOptions?.[0]?.dataset.price || 0);
+    }
+
+    const totalBeforeDiscount = servicePrice + addonsAmount + apostilPrice + consulPrice + legalizationPrice;
+    const discountAmount = parseFloat(discountInput?.value || 0);
+    const finalAmount = totalBeforeDiscount - discountAmount;
+
+    return {
+        serviceAmount: servicePrice,
+        addonsAmount: addonsAmount,
+        apostilAmount: apostilPrice,
+        consulAmount: consulPrice,
+        legalizationAmount: legalizationPrice,
+        totalAmount: totalBeforeDiscount,
+        discountAmount: discountAmount,
+        finalAmount: finalAmount
+    };
+}
 
     updateConfirm() {
         const getData = sel => this.wrapper.querySelector(sel);
@@ -906,99 +1294,98 @@ class WizardController {
         };
     }
 
-    initAddonTracking() {
-        const docType = this.wrapper.querySelector('.doc-type');
-        const directionType = this.wrapper.querySelector('.direction-type');
-        const legalization = this.wrapper.querySelector('.legalization');
-        const serviceSelect = this.wrapper.querySelector('.service');
+   initAddonTracking() {
+    const w = this.wrapper;
 
-        // Загрузка аддонов для документа/direction-type/legalization
-        const loadDocumentAddons = async () => {
-            const docTypeVal = docType.value;
-            const directionTypeVal = directionType.value;
-            const legalizationVal = legalization.value;
+    const docType = w.querySelector('.doc-type');
+    const afterBlock = w.querySelector('.after-choice-block'); // faqat tanlov tugaganda ko‘rinadi
+    const directionSelect = w.querySelector('.direction-type');
 
-            if (!docTypeVal && !directionTypeVal && !legalizationVal) {
-                this.hideAddons('document');
-                return;
-            }
+    const loadDocumentAddons = async () => {
+        // afterBlock yopiq bo‘lsa — addon ham kerak emas
+        if (afterBlock.style.display === 'none') {
+            this.hideAddons('document');
+            return;
+        }
 
-            const container = this.wrapper.querySelector('.additional-services-document');
-            const servicesList = container.querySelector('.services-list-document');
-            servicesList.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> Загрузка...</div>';
-            container.style.display = 'block';
+        const docTypeVal = docType?.value || '';
+        if (!docTypeVal) {
+            this.hideAddons('document');
+            return;
+        }
 
-            try {
-                const promises = [];
-                const addonTypes = []; // Массив для хранения типов
+        const container = w.querySelector('.additional-services-document');
+        const servicesList = container.querySelector('.services-list-document');
 
-                if (docTypeVal) {
-                    promises.push(this.fetchAddonsByType('document', docTypeVal));
-                    addonTypes.push('document');
-                }
-                if (directionTypeVal) {
-                    promises.push(this.fetchAddonsByType('direction', directionTypeVal));
-                    addonTypes.push('direction');
-                }
-                // if (legalizationVal) {
-                //     promises.push(this.fetchAddonsByType('consulate', legalizationVal));
-                //     addonTypes.push('consulate');
-                // }
+        servicesList.innerHTML =
+            '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> Загрузка...</div>';
+        container.style.display = 'block';
 
-                const results = await Promise.all(promises);
+        try {
+            const addons = await this.fetchAddonsByType('document', docTypeVal);
+            const addonsWithType = addons.map(a => ({ ...a, sourceType: 'document' }));
+            this.renderAddons(addonsWithType, 'document');
+        } catch (e) {
+            console.error(e);
+            servicesList.innerHTML = '<div class="text-danger small">Ошибка загрузки данных</div>';
+        }
+    };
 
-                // Добавляем тип к каждому аддону
-                const allAddons = [];
-                results.forEach((addons, index) => {
-                    addons.forEach(addon => {
-                        allAddons.push({
-                            ...addon,
-                            sourceType: addonTypes[index] // Добавляем тип источника
-                        });
-                    });
-                });
+    docType?.addEventListener('change', loadDocumentAddons);
 
-                this.renderAddons(allAddons, 'document');
-            } catch (error) {
-                console.error('Ошибка при загрузке дополнительных услуг (документ):', error);
-                servicesList.innerHTML = '<div class="text-danger small">Ошибка загрузки данных</div>';
-            }
-        };
+    const loadDirectionAddons = async () => {
+        // afterBlock yopiq boвЂlsa вЂ” addon ham kerak emas
+        if (afterBlock.style.display === 'none') {
+            this.hideAddons('direction');
+            return;
+        }
 
-        // Загрузка аддонов для услуги
-        const loadServiceAddons = async () => {
-            const serviceVal = serviceSelect.value;
+        const directionVal = directionSelect?.value || '';
+        if (!directionVal) {
+            this.hideAddons('direction');
+            return;
+        }
 
-            if (!serviceVal) {
-                this.hideAddons('service');
-                return;
-            }
+        const container = w.querySelector('.additional-services-direction');
+        const servicesList = container.querySelector('.services-list-direction');
 
-            const container = this.wrapper.querySelector('.additional-services-service');
-            const servicesList = container.querySelector('.services-list-service');
-            servicesList.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> Загрузка...</div>';
-            container.style.display = 'block';
+        servicesList.innerHTML =
+            '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> Р—Р°РіСЂСѓР·РєР°...</div>';
+        container.style.display = 'block';
 
-            try {
-                const addons = await this.fetchAddonsByType('service', serviceVal);
-                // Добавляем тип к каждому аддону
-                const addonsWithType = addons.map(addon => ({
-                    ...addon,
-                    sourceType: 'service'
-                }));
-                this.renderAddons(addonsWithType, 'service');
-            } catch (error) {
-                console.error('Ошибка при загрузке дополнительных услуг (xizmat):', error);
-                servicesList.innerHTML = '<div class="text-danger small">Ошибка загрузки данных</div>';
-            }
-        };
+        try {
+            const addons = await this.fetchAddonsByType('direction', directionVal);
+            const addonsWithType = addons.map(a => ({ ...a, sourceType: 'direction' }));
+            this.renderAddons(addonsWithType, 'direction');
+        } catch (e) {
+            console.error(e);
+            servicesList.innerHTML = '<div class="text-danger small">РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё РґР°РЅРЅС‹С…</div>';
+        }
+    };
 
-        // Отслеживаем изменения
-        docType.addEventListener('change', loadDocumentAddons);
-        directionType.addEventListener('change', loadDocumentAddons);
-        legalization.addEventListener('change', loadDocumentAddons);
-        serviceSelect.addEventListener('change', loadServiceAddons);
-    }
+    directionSelect?.addEventListener('change', () => {
+        const mode = w.querySelector('.process-mode')?.value || '';
+        if (mode === 'apostil') {
+            const ok = !!w.querySelector('.apostil-g1:checked') && !!w.querySelector('.apostil-g2:checked');
+            const hasDirection = !!directionSelect?.value;
+            afterBlock.style.display = ok && hasDirection ? 'block' : 'none';
+        }
+
+        loadDirectionAddons();
+        loadDocumentAddons();
+    });
+
+    // ✅ afterBlock ochilganda ham addon yuklansin
+    // (tanlov tugaganda initPriceCalculation input trigger qiladi; shu yerda ham hook)
+    w.addEventListener('change', (e) => {
+        if (e.target.classList.contains('apostil-g1') ||
+            e.target.classList.contains('apostil-g2') ||
+            e.target.classList.contains('consul-main') ||
+            e.target.classList.contains('legalization')) {
+            loadDocumentAddons();
+        }
+    });
+}
 
     async fetchAddonsByType(type, id) {
         try {
@@ -1021,7 +1408,7 @@ class WizardController {
     }
 
     renderAddons(addons, containerType) {
-        const suffix = containerType === 'document' ? '-document' : '-service';
+        const suffix = '-' + containerType;
         const container = this.wrapper.querySelector(`.additional-services${suffix}`);
         const servicesList = container.querySelector(`.services-list${suffix}`);
 
@@ -1080,7 +1467,7 @@ class WizardController {
     }
 
     updateAddonTotal(containerType) {
-        const suffix = containerType === 'document' ? '-document' : '-service';
+        const suffix = '-' + containerType;
         const container = this.wrapper.querySelector(`.additional-services${suffix}`);
         const checkboxes = container.querySelectorAll(`.service-addon-checkbox-${containerType}:checked`);
         const totalSpan = container.querySelector(`.addon-total${suffix}`);
@@ -1128,7 +1515,7 @@ class WizardController {
     }
 
     hideAddons(containerType) {
-        const suffix = containerType === 'document' ? '-document' : '-service';
+        const suffix = '-' + containerType;
         const container = this.wrapper.querySelector(`.additional-services${suffix}`);
         container.style.display = 'none';
         container.querySelector(`.services-list${suffix}`).innerHTML = '';

@@ -341,7 +341,7 @@ class DocumentController extends Controller
         $models = [
             'document' => [DocumentTypeAddition::class, 'document_type_id', 'amount'],
             'direction' => [DocumentDirectionAddition::class, 'document_direction_id', 'amount'],
-            'consulate' => [ConsulateAddon::class, 'consulate_type_id', 'price'],
+            'consulate' => [ConsulationType::class, 'id', 'price'],
             'service' => [ServiceAddon::class, 'service_id', 'price']
         ];
 

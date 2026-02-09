@@ -117,7 +117,7 @@
     </style> --}}
 
     <div class="footer-content">
-        <p class="footer-copy">Copyright © <span>2025</span>. All rights reserved.</p>
+        <p class="footer-copy">Copyright © <span>2026</span>. All rights reserved.</p>
     </div>
 </footer>
 

@@ -114,6 +114,59 @@
     font-size: 14px;
 }
 
+/* ===================== ADMIN FILIAL (PRO) ===================== */
+.metismenu .filial-item > a {
+    position: relative;
+    background: rgba(14, 165, 164, 0.08);
+    border: 1px solid rgba(14, 165, 164, 0.15);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.12);
+}
+.metismenu .filial-item > a::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #22d3ee, #2563eb);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.metismenu .filial-item > a:hover::before,
+.metismenu .filial-item.active > a::before {
+    opacity: 1;
+}
+.metismenu .filial-item .parent-icon i {
+    color: #38bdf8;
+    animation: gentleFloat 6s ease-in-out infinite;
+}
+.metismenu .filial-item > a:hover {
+    transform: translateX(4px);
+    background: rgba(14, 165, 164, 0.15);
+    box-shadow: 0 10px 26px rgba(2, 132, 199, 0.18);
+}
+.metismenu .filial-item > a:hover .parent-icon i {
+    transform: scale(1.12) rotate(-4deg);
+}
+.metismenu .filial-item ul li a i {
+    color: #93c5fd;
+}
+
+@keyframes gentleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .parent-icon i,
+    .metismenu ul li a i,
+    .metismenu .filial-item .parent-icon i {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
 /* ===================== DYNAMIC COLOR CHANGE (JS) ===================== */
 </style>
 
@@ -288,34 +341,34 @@
 
         @endrole
         @hasanyrole('admin_filial')
-             <li>
+             <li class="filial-item">
             <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
+                <div class="parent-icon"><i class='bx bx-buildings'></i></div>
                 <div class="menu-title">Filial Xodimlar</div>
             </a>
             <ul>
-                <li><a href="{{ route('admin_filial.index') }}"><div class="mm-active-gray"><i class='bx bx-map'></i> Xodimlar </div></a></li>
-                <li><a href="{{ route('admin_filial.index') }}"><div class="mm-active-gray"><i class='bx bx-map'></i> Statistika </div></a></li>
+                <li><a href="{{ route('admin_filial.index') }}"><div class="mm-active-gray"><i class='bx bx-group'></i> Xodimlar </div></a></li>
+                <li><a href="{{ route('admin_filial.index') }}"><div class="mm-active-gray"><i class='bx bx-line-chart'></i> Statistika </div></a></li>
             </ul>
         </li>
-          <li>
+          <li class="filial-item">
             <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
-                <div class="menu-title">Documents</div>
+                <div class="parent-icon"><i class='bx bx-folder-open'></i></div>
+                <div class="menu-title">Hujjatlar</div>
             </a>
             <ul>
-                <li><a href="{{ route('admin_filial.document.index') }}"><i class='bx bx-map'></i> Documents </a></li>
-                <li><a href="{{ route('admin_filial.doc_summary') }}"><i class='bx bx-map'></i> Document Hisobot </a></li>
+                <li><a href="{{ route('admin_filial.document.index') }}"><i class='bx bx-file-blank'></i> Hujjatlar </a></li>
+                <li><a href="{{ route('admin_filial.doc_summary') }}"><i class='bx bx-bar-chart-alt-2'></i> Hujjat hisobot </a></li>
             </ul>
         </li>
-          <li>
+          <li class="filial-item">
             <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
-                <div class="menu-title">Documents</div>
+                <div class="parent-icon"><i class='bx bx-wallet'></i></div>
+                <div class="menu-title">Xarajatlar</div>
             </a>
             <ul>
-                <li><a href="{{ route('admin_filial.expense_admin.index') }}"><i class='bx bx-map'></i> Xarajatlar  </a></li>
-                <li><a href="{{ route('admin_filial.expense.statistika') }}"><i class='bx bx-map'></i> Xarjatlar Hisobot </a></li>
+                <li><a href="{{ route('admin_filial.expense_admin.index') }}"><i class='bx bx-receipt'></i> Xarajatlar </a></li>
+                <li><a href="{{ route('admin_filial.expense.statistika') }}"><i class='bx bx-trending-up'></i> Xarajatlar hisobot </a></li>
             </ul>
         </li>
         @endrole
@@ -353,7 +406,8 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-    const icons = document.querySelectorAll('.parent-icon i');
+    const icons = Array.from(document.querySelectorAll('.parent-icon i'))
+        .filter(icon => !icon.closest('.filial-item'));
     const colors = ['#007bff','#00aaff','#28a745','#6f42c1','#e91e63','#ff9800'];
     let index = 0;
 

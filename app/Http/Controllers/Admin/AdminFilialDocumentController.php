@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DocumentCreateRequest;
 use App\Http\Requests\Admin\DocumentUpdateRequest;
+use App\Models\ApostilStatikModel;
 use App\Models\ClientsModel;
 use App\Models\ConsulationTypeModel;
+use App\Models\ConsulModel;
 use App\Models\DirectionTypeModel;
 use App\Models\DocumentsModel;
 use App\Models\DocumentTypeModel;
@@ -60,23 +62,23 @@ class AdminFilialDocumentController extends Controller
     {
         $userFilialId   = auth()->user()->filial_id;
         $documentTypes  = DocumentTypeModel::all();
-        $directionTypes = DirectionTypeModel::all();
+        $directions = DirectionTypeModel::all();
         $consulateTypes = ConsulationTypeModel::all();
         // Faqat o‘z filialidagi xizmatlar
         $services = ServicesModel::all();
 
         // Faqat o‘z filialidagi qo‘shimcha xizmatlar
         $addons = ServiceAddonModel::all();
-
+        $consuls=ConsulModel::all();
         // return view('admin_filial.admin_filial_document.create',
         //     compact('services', 'addons', 'documentTypes',
         //         'directionTypes', 'consulateTypes'));
 
         $consul_price = 1000;
-
+        $apostilStatics=ApostilStatikModel::all();
         return view('admin_filial.admin_filial_document.refactor.create',
             compact('services', 'addons', 'documentTypes',
-                'directionTypes', 'consulateTypes', 'consul_price'));
+                'directions', 'consulateTypes', 'consul_price', 'apostilStatics', 'consuls'));
     }
 
     // -------------------------------
@@ -85,7 +87,7 @@ class AdminFilialDocumentController extends Controller
     public function store(DocumentCreateRequest $request)
     {
         // // Client yaratish yoki mavjud clientni olish
-        // $clientId = $request->client_id ?: null;
+        $clientId = $request->client_id;
         // if (! $clientId) {
         //     $client = ClientsModel::create([
         //         'name'         => $request->new_client_name,
