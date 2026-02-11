@@ -373,27 +373,26 @@
         </li>
         @endrole
            @hasanyrole('employee')
-
-          <li>
-            <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
-                <div class="menu-title">Documents</div>
-            </a>
-            <ul>
-                <li><a href="{{ route('admin_filial.document.index') }}"><i class='bx bx-map'></i> Documents </a></li>
-                <li><a href="{{ route('admin_filial.doc_summary') }}"><i class='bx bx-map'></i> Document Hisobot </a></li>
-            </ul>
-        </li>
-          <li>
-            <a href="javascript:;" class="has-arrow" aria-expanded="false">
-                <div class="parent-icon"><i class='bx bx-git-branch'></i></div>
-                <div class="menu-title">Documents</div>
-            </a>
-            <ul>
-                <li><a href="{{ route('admin_filial.expense_admin.index') }}"><i class='bx bx-map'></i> Xarajatlar  </a></li>
-                <li><a href="{{ route('admin_filial.expense.statistika') }}"><i class='bx bx-map'></i> Xarjatlar Hisobot </a></li>
-            </ul>
-        </li>
+            <li class="filial-item">
+                <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                    <div class="parent-icon"><i class='bx bx-folder-open'></i></div>
+                    <div class="menu-title">Hujjatlar</div>
+                </a>
+                <ul>
+                    <li><a href="{{ route('employee.document.index') }}"><i class='bx bx-file-blank'></i> Hujjatlarim </a></li>
+                    <li><a href="{{ route('employee.doc_summary') }}"><i class='bx bx-bar-chart-alt-2'></i> Hujjat hisobot </a></li>
+                </ul>
+            </li>
+            <li class="filial-item">
+                <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                    <div class="parent-icon"><i class='bx bx-wallet'></i></div>
+                    <div class="menu-title">Xarajatlar</div>
+                </a>
+                <ul>
+                    <li><a href="{{ route('employee.expense_admin.index') }}"><i class='bx bx-receipt'></i> Xarajatlarim </a></li>
+                    <li><a href="{{ route('employee.expense.statistika') }}"><i class='bx bx-trending-up'></i> Xarajatlar hisobot </a></li>
+                </ul>
+            </li>
         @endrole
 
     </ul>

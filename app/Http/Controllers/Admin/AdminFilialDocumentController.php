@@ -14,12 +14,14 @@ use App\Models\DocumentTypeModel;
 use App\Models\PaymentsModel;
 use App\Models\ServiceAddonModel;
 use App\Models\ServicesModel;
+use App\Support\StoresDocuments;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AdminFilialDocumentController extends Controller
 {
+    use StoresDocuments;
 //     if (auth()->user()->role == 'superadmin') {
 //     $documents = DocumentsModel::with(['client','service','addons','user'])
 //         ->orderBy('id','DESC')
@@ -47,13 +49,39 @@ class AdminFilialDocumentController extends Controller
     public function index()
     {
         $userFilialId = auth()->user()->filial_id;
-        // dd(1);
-        $documents = DocumentsModel::with(['client', 'service', 'addons', 'user'])
+
+        $documents = DocumentsModel::select([
+                'id',
+                'client_id',
+                'service_id',
+                'user_id',
+                'document_code',
+                'deadline_time',
+                'final_price',
+                'paid_amount',
+                'discount',
+                'status_doc',
+                'process_mode',
+                'document_type_id',
+                'direction_type_id',
+                'consulate_type_id',
+                'created_at',
+            ])
+            ->with([
+                'client:id,name',
+                'service:id,name,deadline',
+                'addons',
+                'user:id,filial_id',
+                'files:id,document_id,original_name,file_path',
+                'documentType:id,name',
+                'directionType:id,name',
+                'consulateType:id,name',
+            ])
             ->whereHas('user', function ($q) use ($userFilialId) {
                 $q->where('filial_id', $userFilialId);
             })
             ->orderBy('id', 'DESC')
-            ->get();
+            ->paginate(30);
 
         return view('admin_filial.admin_filial_document.index', compact('documents'));
     }
@@ -86,78 +114,7 @@ class AdminFilialDocumentController extends Controller
     // -------------------------------
     public function store(DocumentCreateRequest $request)
     {
-        // // Client yaratish yoki mavjud clientni olish
-        $clientId = $request->client_id;
-        // if (! $clientId) {
-        //     $client = ClientsModel::create([
-        //         'name'         => $request->new_client_name,
-        //         'phone_number' => $request->new_client_phone,
-        //         'description'  => $request->new_client_desc,
-        //     ]);
-        //     $clientId = $client->id;
-        // }
-
-        // Service va addons
-        $service      = ServicesModel::findOrFail($request->service_id);
-        $servicePrice = $service->price;
-        $deadlineTime = $service->deadline;
-        // dd( $deadlineTime);
-        $addons_total = 0;
-        $addonsData   = [];
-        if ($request->addons) {
-            $addons = DB::table('service_addons')->whereIn('id', $request->addons)->get();
-            foreach ($addons as $addon) {
-                $addons_total += $addon->price;
-                $deadlineTime += $addon->deadline;
-                $addonsData[$addon->id] = [
-                    'addon_price'    => $addon->price,
-                    'addon_deadline' => $addon->deadline,
-                ];
-            }
-        }
-        // dd( $deadlineTime);
-        $discount   = $request->discount ?? 0;
-        $totalPrice = $servicePrice + $addons_total;
-        $finalPrice = $totalPrice - ($totalPrice * ($discount / 100));
-
-        // Document yaratish
-        $code         = Auth::user()->filial->code;
-        $last         = DocumentsModel::latest()->first();
-        $number       = ($last ? $last->id : 0) + 1 + 1000000;
-        $documentCode = $code . '-' . $number;
-
-        $document = DocumentsModel::create([
-            'client_id'          => $clientId,
-            'service_id'         => $request->service_id,
-            'service_price'      => $servicePrice,
-            'addons_total_price' => $addons_total,
-            'deadline_time'      => $deadlineTime,
-            'final_price'        => $finalPrice,
-            'paid_amount'        => $request->paid_amount ?? 0,
-            'discount'           => $discount,
-            'user_id'            => auth()->id(),
-            'description'        => $request->description,
-            'filial_id'          => auth()->user()->filial_id,
-            'document_code'      => $documentCode,
-            'document_type_id'   => $request->document_type_id,
-            'direction_type_id'  => $request->direction_type_id,
-            'consulate_type_id'  => $request->consulate_type_id,
-        ]);
-
-        // Addons attach qilish
-        if (! empty($addonsData)) {
-            $document->addons()->attach($addonsData);
-        }
-
-        // Agar paid_amount va payment_type mavjud bo‘lsa, Payment yaratish
-        if ($request->paid_amount && $request->payment_type) {
-            \App\Models\PaymentsModel::create([
-                'document_id'      => $document->id,
-                'amount'           => $request->paid_amount,
-                'payment_type'     => $request->payment_type,
-                'paid_by_admin_id' => auth()->id(),
-            ]);
-        }
+        $this->storeDocumentFromRequest($request);
 
         return redirect()->route('admin_filial.document.index')
             ->with('success', 'Hujjat muvaffaqiyatli yaratildi!');
@@ -257,17 +214,9 @@ class AdminFilialDocumentController extends Controller
 
         $query = DocumentsModel::with(['client', 'service', 'addons', 'payments', 'user']);
 
-        // Agar admin_filial bo'lsa - filial bo'yicha filter
-        if ($user->role === 'admin_filial') {
-            $query->whereHas('user', function ($q) use ($userFilialId) {
-                $q->where('filial_id', $userFilialId);
-            });
-        }
-
-        // Agar employee bo'lsa - faqat o'zining documentlari
-        else {
-            $query->where('user_id', $user->id);
-        }
+        $query->whereHas('user', function ($q) use ($userFilialId) {
+            $q->where('filial_id', $userFilialId);
+        });
 
         $documents = $query->orderBy('id', 'DESC')->get();
 
@@ -326,3 +275,4 @@ class AdminFilialDocumentController extends Controller
             ->with('success', 'Hujjat muvaffaqiyatli tugallandi!');
     }
 }
+

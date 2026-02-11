@@ -217,7 +217,7 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
     <!-- Breadcrumb & New Document Button -->
     <div class="page-breadcrumb d-flex justify-content-between mb-4">
       <div class="breadcrumb-title">Hujjatlar ro'yxati</div>
-      <a href="{{ route('admin_filial.document.create') }}" class="btn btn-custom">+ Yangi hujjat</a>
+      <a href="{{ route('employee.document.create') }}" class="btn btn-custom">+ Yangi hujjat</a>
     </div>
 
     <!-- Card with Filter & Table -->
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('completeModal');
     const confirmBtn = document.getElementById('confirmComplete');
     const cancelBtn = document.getElementById('cancelBtn');
-    const completeBaseUrl = "{{ route('admin_filial.document.complete', ['document' => '__id__']) }}";
+    const completeBaseUrl = "{{ route('employee.document.complete', ['document' => '__id__']) }}";
 
     document.querySelectorAll('.complete-btn').forEach(btn => {
         btn.addEventListener('click', function () {

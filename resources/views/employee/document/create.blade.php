@@ -200,7 +200,7 @@ body{
     <div class="progress-bar" id="progressBar"></div>
 </div>
 
-<form method="POST" action="{{ route('admin_filial.document.store') }}" id="multiStepForm">
+<form method="POST" action="{{ route('employee.document.store') }}" id="multiStepForm">
 @csrf
 
 {{-- STEP 1 (Guruh 1 + 2) --}}
@@ -407,7 +407,7 @@ $(function(){
         let q=$(this).val().trim(); clearTimeout(timer);
         if(q.length<3){ $('#phoneSearchResults').hide().html(''); return; }
         timer=setTimeout(()=>{
-            $.get("{{ route('admin_filial.clients.search') }}",{q:q},function(res){
+            $.get("{{ route('employee.clients.search') }}",{q:q},function(res){
                 let html='';
                 if(!res || res.length===0){
                     html='<div class="new-client-btn">➕ Yangi mijoz yaratish</div>';
@@ -464,7 +464,7 @@ $(function(){
 });
 </script>
 <script>
-const clientListUrl = "{{ url('/admin_filial/api/clients') }}";
+const clientListUrl = "{{ url('/employee/api/clients') }}";
 if (clientListUrl) {
     fetch(clientListUrl)
         .then(response => response.json())

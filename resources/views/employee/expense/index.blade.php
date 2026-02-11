@@ -134,7 +134,7 @@ body {
 {{-- Add Expense Modal --}}
 <div class="modal fade" id="addExpenseModal" tabindex="-1">
     <div class="modal-dialog">
-        <form action="{{ route('admin_filial.expense_admin.store') }}" method="POST" id="addExpenseForm">
+        <form action="{{ route('employee.expense_admin.store') }}" method="POST" id="addExpenseForm">
             @csrf
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
@@ -202,7 +202,7 @@ body {
 @section('script_include_end_body')
 <script>
 $(document).ready(function(){
-    const expenseEditBaseUrl = "{{ url('admin_filial/expense_admin') }}";
+    const expenseEditBaseUrl = "{{ url('employee/expense_admin') }}";
 
     // Edit tugmasi bosilganda modalga ma'lumotlarni qo'yish
     $('.edit-expense-btn').click(function(){

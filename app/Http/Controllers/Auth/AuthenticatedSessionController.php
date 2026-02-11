@@ -39,7 +39,7 @@ class AuthenticatedSessionController extends Controller
 
         }else if($request->user()->hasRole("employee")){
             // dd(1);
-                return redirect()->route('employee.index');
+                return redirect()->route('employee.document.index');
 
         }else if($request->user()->hasRole("courier")){
 

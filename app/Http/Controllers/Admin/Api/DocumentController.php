@@ -2,206 +2,98 @@
 
 namespace App\Http\Controllers\Admin\Api;
 
-use App\Http\Controllers\Controller;
+use App\Models\ClientsModel;
 use Illuminate\Http\Request;
+use App\Models\PaymentsModel;
+use App\Models\ServicesModel;
+use App\Models\DocumentsModel;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
-use App\Models\DocumentTypeAdditionModel as DocumentTypeAddition;
-use App\Models\DocumentDirectionAdditionModel as DocumentDirectionAddition;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use App\Models\DocumentFileModel as DocumentFile;
 use App\Models\ServiceAddonModel as ServiceAddon;
 use App\Models\ConsulationTypeModel as ConsulationType;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use App\Models\ServicesModel;
-use Illuminate\Support\Facades\Auth;
-use App\Models\DocumentsModel;
-use App\Models\DocumentFileModel as DocumentFile;
+use App\Models\DocumentTypeAdditionModel as DocumentTypeAddition;
+use App\Models\DocumentDirectionAdditionModel as DocumentDirectionAddition;
+use App\Support\StoresDocuments;
 
 class DocumentController extends Controller
 {
+    use StoresDocuments;
 
     public function store(Request $request)
     {
+        $data = $request->all();
+        $data['service_id'] = $data['service_id'] ?? $data['service'] ?? null;
+        $data['document_type_id'] = $data['document_type_id'] ?? $data['document_type'] ?? null;
+        $data['direction_type_id'] = $data['direction_type_id'] ?? $data['direction_type'] ?? null;
+        $data['consulate_type_id'] = $data['consulate_type_id'] ?? $data['legalization_id'] ?? null;
 
-        $validator = Validator::make($request->all(), [
-            // Основные поля
+        $normalizeNullable = function ($value) {
+            if ($value === null) {
+                return null;
+            }
+            if (is_string($value)) {
+                $value = trim($value);
+                if ($value === '' || strtolower($value) === 'null' || strtolower($value) === 'undefined') {
+                    return null;
+                }
+            }
+            return $value;
+        };
+
+        foreach ([
+            'service_id',
+            'document_type_id',
+            'direction_type_id',
+            'consulate_type_id',
+            'process_mode',
+            'apostil_group1_id',
+            'apostil_group2_id',
+            'consul_id',
+            'discount',
+            'payment_amount',
+            'payment_type',
+            'description',
+        ] as $field) {
+            if (array_key_exists($field, $data)) {
+                $data[$field] = $normalizeNullable($data[$field]);
+            }
+        }
+
+        $request->merge($data);
+
+        $validator = Validator::make($data, [
             'client_id' => 'required|integer|exists:clients,id',
-            'document_type' => 'required|string|max:255',
-            'direction_type' => 'required|boolean',
-
-            // Консульство
-            'consulate_enabled' => 'required|boolean',
-            'consulate_price' => 'nullable|numeric|min:0',
-
-            // Легализация
-            'legalization_id' => 'required|integer|exists:legalizations,id',
-            'legalization_price' => 'required|numeric|min:0',
-
-            // Сервис и оплата
-            'service' => 'required|string|max:255',
-            'discount' => 'nullable|numeric',
-            'payment_amount' => 'required|numeric|min:0',
-            'payment_type' => ['required', 'string', Rule::in(['cash', 'card', 'transfer', 'online'])],
-
-            // Описание
+            'service_id' => 'required|integer|exists:services,id',
+            'document_type_id' => 'required|integer|exists:document_type,id',
+            'direction_type_id' => 'required_if:process_mode,apostil|nullable|integer|exists:direction_type,id',
+            'consulate_type_id' => 'required_if:process_mode,consul|nullable|integer|exists:consulates_type,id',
+            'process_mode' => 'nullable|string|in:apostil,consul',
+            'apostil_group1_id' => 'required_if:process_mode,apostil|nullable|integer|exists:apostil_static,id',
+            'apostil_group2_id' => 'required_if:process_mode,apostil|nullable|integer|exists:apostil_static,id',
+            'consul_id' => 'required_if:process_mode,consul|nullable|integer|exists:consul,id',
+            'discount' => 'nullable|numeric|min:0',
+            'payment_amount' => 'nullable|numeric|min:0',
+            'payment_type' => ['nullable', 'string', Rule::in(['cash', 'card', 'transfer', 'online', 'admin_entry'])],
             'description' => 'nullable|string|max:5000',
-
-            // Аддоны (JSON строка)
             'selected_addons' => 'nullable|json',
-
-            // Totals (JSON строка)
-            'totals' => 'required|json',
-
-            // Файлы
+            'addons' => 'nullable|array',
+            'addons.*' => 'nullable|integer|exists:service_addons,id',
             'files' => 'nullable|array',
-            'files.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240', // максимум 10MB
-        ], [
-            // Кастомные сообщения об ошибках
-            'client_id.required' => 'Не указан ID клиента',
-            'client_id.exists' => 'Клиент не найден',
-            'document_type.required' => 'Не указан тип документа',
-            'legalization_id.exists' => 'Указанная легализация не существует',
-            'payment_type.in' => 'Недопустимый тип оплаты',
-            'files.*.mimes' => 'Допустимые форматы файлов: PDF, DOC, DOCX, JPG, JPEG, PNG',
-            'files.*.max' => 'Размер файла не должен превышать 10MB',
+            'files.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
         ]);
 
-
-        $service      = ServicesModel::findOrFail($request->service);
-        $servicePrice = $service->price;
-        $deadlineTime = $service->deadline;
-
-        if ($request->selected_addons) {
-            $selectedAddons = json_decode($request->selected_addons, true);
-
-            if (is_array($selectedAddons) && count($selectedAddons) > 0) {
-                // Конфигурация таблиц для каждого типа
-                $tableConfig = [
-                    'document' => 'document_type_addition',
-                    'direction' => 'document_direction_addition',
-                    'service' => 'service_addons'
-                ];
-
-                // Группируем по типу
-                $addonsByType = [];
-                foreach ($selectedAddons as $addon) {
-                    $sourceType = $addon['sourceType'] ?? null;
-                    if ($sourceType && isset($tableConfig[$sourceType])) {
-                        $addonsByType[$sourceType][] = $addon['id'];
-                    }
-                }
-
-                $addons_total = 0;
-                $addonsData = [];
-
-                // Обрабатываем каждый тип
-                foreach ($addonsByType as $type => $ids) {
-                    if (empty($ids)) continue;
-
-                    $tableName = $tableConfig[$type];
-                    $addons = DB::table($tableName)->whereIn('id', $ids)->get();
-
-                    foreach ($addons as $addon) {
-                        $price = $addon->amount ?? $addon->price ?? 0;
-                        $deadline = $addon->deadline ?? 0;
-
-                        $addons_total += $price;
-                        $deadlineTime += $deadline;
-
-                        $addonsData[] = [
-                            'addon_id' => $addon->id,
-                            'addon_type' => $type,
-                            'addon_price' => $price,
-                            'addon_deadline' => $deadline,
-                            'addon_name' => $addon->name ?? '',
-                        ];
-                    }
-                }
-
-            }
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        // dd($addonsData);
-
-        $discount   = intval($request->discount);
-        $totalPrice = $servicePrice + $addons_total;
-        $finalPrice = $totalPrice - $discount;
-
-        $code = Auth::user()->filial->code;
-
-        // Используем автоинкремент ID с добавлением базового числа
-        $baseNumber = 1000000;
-        $nextId = DocumentsModel::max('id') + 1;
-        $number = $baseNumber + $nextId;
-
-        $documentCode = $code . '-' . $number;
-
-        // Проверка уникальности
-        while (DocumentsModel::where('document_code', $documentCode)->exists()) {
-            $number++;
-            $documentCode = $code . '-' . $number;
-        }
-
-        $document = DocumentsModel::create([
-            'client_id'          => $request->client_id,
-            'service_id'         => $request->service,
-            'service_price'      => $servicePrice,
-            'addons_total_price' => $addons_total,
-            'deadline_time'      => $deadlineTime,
-            'final_price'        => $finalPrice,
-            'paid_amount'        => $request->payment_amount ?? 0,
-            'discount'           => $discount,
-            'user_id'            => auth()->id(),
-            'description'        => $request->description,
-            'filial_id'          => auth()->user()->filial_id,
-            'document_code'      => $documentCode,
-            'document_type_id'   => $request->document_type,
-            'direction_type_id'  => $request->direction_type,
-            'consulate_type_id'  => $request->legalization_id,
-        ]);
-
-        if (!empty($addonsData)) {
-            foreach ($addonsData as $addon) {
-                switch ($addon['addon_type']) {
-                    case 'document':
-                        $document->document_type_addons()->attach($addon['addon_id'], [
-                            'addon_price' => $addon['addon_price'],
-                        ]);
-                        break;
-
-                    case 'direction':
-                        $document->document_direction_addons()->attach($addon['addon_id'], [
-                            'addon_price' => $addon['addon_price'],
-                        ]);
-                        break;
-
-                    case 'consulate':
-                        $document->consulate_addons()->attach($addon['addon_id'], [
-                            'addon_price' => $addon['addon_price'],
-                        ]);
-                        break;
-
-                    case 'service':
-                        $document->addons()->attach($addon['addon_id'], [
-                            'addon_price' => $addon['addon_price'],
-                        ]);
-                        break;
-                }
-            }
-        }
-
-        if ($request->hasFile('files')) {
-            foreach ($request->file('files') as $file) {
-                $path = $file->store('documents/' . $document->document_code, 'public');
-
-                DocumentFile::create([
-                    'document_id' => $document->id,
-                    'original_name' => $file->getClientOriginalName(),
-                    'file_path' => $path,
-                    'file_type' => $file->getClientMimeType(),
-                    'file_size' => $file->getSize(),
-                ]);
-            }
-        }
+        $document = $this->storeDocumentFromRequest($request);
 
         return response()->json([
             'success' => true,
@@ -365,3 +257,4 @@ class DocumentController extends Controller
         return response()->json($addons);
     }
 }
+

@@ -11,6 +11,9 @@ class AdminFilialController extends Controller
 {
     public function index()
     {
+        if (!Auth::user()->hasRole('admin_filial')) {
+            abort(403);
+        }
         $user=Auth::user()->filial_id;
 
          $users = User::role(['employee', 'courier'])

@@ -10,7 +10,7 @@ class EmployeeController extends Controller
 
     public function index()
     {
-        dd('employee');
+        return redirect()->route('employee.document.index');
     }
 
    

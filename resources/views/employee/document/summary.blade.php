@@ -322,7 +322,7 @@ $(document).ready(function(){
         $('#descriptionModal').modal('show');
     });
 
-    const paymentHistoryBase = "{{ route('admin_filial.payments', ['document' => '__id__']) }}";
+    const paymentHistoryBase = "{{ route('employee.payments', ['document' => '__id__']) }}";
 
     // Payment history modal
     $('.payment-history-btn').click(function(e){
@@ -360,7 +360,7 @@ $(document).ready(function(){
     $('#paymentForm').submit(function(e){
         e.preventDefault();
         $.ajax({
-            url: "{{ route('admin_filial.add_payment') }}",
+            url: "{{ route('employee.add_payment') }}",
             method: "POST",
             data: {
                 _token: "{{ csrf_token() }}",
