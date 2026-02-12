@@ -14,6 +14,8 @@ use App\Models\DocumentTypeModel;
 use App\Models\PaymentsModel;
 use App\Models\ServiceAddonModel;
 use App\Models\ServicesModel;
+use App\Models\User;
+use App\Models\DocumentCourier;
 use App\Support\StoresDocuments;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -60,13 +62,19 @@ class DocumentController extends Controller
                 'files:id,document_id,original_name,file_path',
                 'documentType:id,name',
                 'directionType:id,name',
-                'consulateType:id,name'
+                'consulateType:id,name',
+                'courierAssignment.courier:id,name',
             ])
             ->where('user_id', $user->id)
             ->orderBy('id', 'DESC')
             ->paginate(30);
 
-        return view('employee.document.index', compact('documents'));
+        $couriers = User::role('courier')
+            ->where('filial_id', $user->filial_id)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return view('employee.document.index', compact('documents', 'couriers'));
     }
 
     public function create()
@@ -246,6 +254,10 @@ class DocumentController extends Controller
 
     public function completeDocument(DocumentsModel $document)
     {
+        if ($document->courierAssignment && in_array($document->courierAssignment->status, ['sent', 'accepted'])) {
+            return redirect()->back()->with('error', 'Courierga yuborilgan hujjatni tugallab bo‘lmaydi.');
+        }
+
         if ($document->user_id !== auth()->id()) {
             abort(403);
         }
@@ -255,5 +267,43 @@ class DocumentController extends Controller
 
         return redirect()->route('employee.document.index')
             ->with('success', 'Hujjat muvaffaqiyatli tugallandi!');
+    }
+
+    public function sendToCourier(Request $request, DocumentsModel $document)
+    {
+        $user = auth()->user();
+
+        if ($document->user_id !== $user->id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'courier_id' => 'required|exists:users,id',
+            'comment' => 'nullable|string|max:1000',
+        ]);
+
+        $courier = User::role('courier')
+            ->where('filial_id', $user->filial_id)
+            ->where('id', $request->courier_id)
+            ->firstOrFail();
+
+        $assignment = DocumentCourier::firstOrNew(['document_id' => $document->id]);
+        if ($assignment->exists && in_array($assignment->status, ['sent', 'accepted'])) {
+            return redirect()->back()->with('error', 'Bu hujjat allaqachon courierda.');
+        }
+
+        $assignment->courier_id = $courier->id;
+        $assignment->sent_by_id = $user->id;
+        $assignment->status = 'sent';
+        $assignment->sent_comment = $request->comment;
+        $assignment->courier_comment = null;
+        $assignment->return_comment = null;
+        $assignment->sent_at = now();
+        $assignment->accepted_at = null;
+        $assignment->rejected_at = null;
+        $assignment->returned_at = null;
+        $assignment->save();
+
+        return redirect()->back()->with('success', 'Hujjat courierga yuborildi.');
     }
 }

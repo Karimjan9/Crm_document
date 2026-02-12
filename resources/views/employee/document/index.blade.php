@@ -81,6 +81,35 @@ body {
   inset: auto !important;
   float: none;
   margin-top: 6px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+.action-item.send {
+  background: #eef2ff;
+  color: #1e3a8a;
+}
+.action-item.complete {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.action-item:hover {
+  transform: translateX(2px);
+  opacity: 0.95;
+}
+.action-item.disabled-link {
+  opacity: 0.6;
 }
 /* Cards */
 .card {
@@ -253,6 +282,7 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                 <th>Deadline</th>
                 <th>Status moddiy</th>
                 <th>Status hujjat</th>
+                <th>Courier</th>
                 <th>Batafsil</th>
                 <th>Actions</th>
               </tr>
@@ -266,6 +296,8 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                 @endphp
                 @php
                   $statusText = $doc->paid_amount >= $doc->final_price ? 'yopilgan' : 'jarayonda';
+                  $courierAssignment = $doc->courierAssignment;
+                  $courierActive = $courierAssignment && in_array($courierAssignment->status, ['sent', 'accepted']);
                 @endphp
                 <tr class="doc-row"
                     data-doc-id="{{ $doc->id }}"
@@ -303,6 +335,28 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                     @endif
                   </td>
                   <td>
+                    @if($courierAssignment)
+                      @php
+                        $courierBadgeClass = [
+                          'sent' => 'bg-warning',
+                          'accepted' => 'bg-success',
+                          'rejected' => 'bg-danger',
+                          'returned' => 'bg-success',
+                        ][$courierAssignment->status] ?? 'bg-warning';
+                      @endphp
+                      <div>
+                        <span class="badge {{ $courierBadgeClass }}">
+                          {{ $courierAssignment->status }}
+                        </span>
+                      </div>
+                      <div style="font-size:12px;color:#64748b;">
+                        {{ $courierAssignment->courier->name ?? '-' }}
+                      </div>
+                    @else
+                      <span class="badge bg-warning">Yo‘q</span>
+                    @endif
+                  </td>
+                  <td>
                     <div class="details-actions">
                       <button type="button"
                               class="btn btn-custom btn-sm details-toggle"
@@ -326,7 +380,16 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                         </button>
                         <ul class="dropdown-menu">
                           <li>
-                            <button class="dropdown-item text-danger complete-btn" type="button" data-id="{{ $doc->id }}">
+                            @if(!$courierActive)
+                              <button class="dropdown-item action-item send send-courier-btn" type="button" data-id="{{ $doc->id }}">
+                                Courierga jo'natish
+                              </button>
+                            @else
+                              <span class="dropdown-item action-item send text-muted">Courierda</span>
+                            @endif
+                          </li>
+                          <li>
+                            <button class="dropdown-item action-item complete complete-btn {{ $courierActive ? 'disabled-link' : '' }}" type="button" data-id="{{ $doc->id }}">
                               Tugallash
                             </button>
                           </li>
@@ -386,6 +449,44 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
   </div>
 </div>
 
+<!-- Send to Courier Modal -->
+<div class="modal fade" id="sendCourierModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form method="POST" id="sendCourierForm">
+      @csrf
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Courierga jo'natish</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          @if($couriers->count() === 0)
+            <div class="alert alert-warning">Courier topilmadi. Avval courier qo'shing.</div>
+          @else
+            <div class="mb-3">
+              <label class="form-label">Courier</label>
+              <select name="courier_id" class="form-select" required>
+                <option value="">Tanlang</option>
+                @foreach($couriers as $courier)
+                  <option value="{{ $courier->id }}">{{ $courier->name }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Izoh</label>
+              <textarea name="comment" class="form-control" rows="3" placeholder="Izoh (ixtiyoriy)"></textarea>
+            </div>
+          @endif
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+          <button type="submit" class="btn btn-primary" {{ $couriers->count() === 0 ? 'disabled' : '' }}>Jo'natish</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div id="completeModal" 
      style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
             background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
@@ -417,6 +518,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const confirmBtn = document.getElementById('confirmComplete');
     const cancelBtn = document.getElementById('cancelBtn');
     const completeBaseUrl = "{{ route('employee.document.complete', ['document' => '__id__']) }}";
+    const sendCourierBase = "{{ route('employee.document.send_courier', ['document' => '__id__']) }}";
+    const sendCourierForm = document.getElementById('sendCourierForm');
 
     document.querySelectorAll('.complete-btn').forEach(btn => {
         btn.addEventListener('click', function () {
@@ -426,6 +529,17 @@ document.addEventListener('DOMContentLoaded', function () {
             confirmBtn.href = completeBaseUrl.replace('__id__', id);
 
             modal.style.display = "flex";
+        });
+    });
+
+    document.querySelectorAll('.send-courier-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            let id = this.dataset.id;
+            if (sendCourierForm) {
+                sendCourierForm.action = sendCourierBase.replace('__id__', id);
+                const courierModal = new bootstrap.Modal(document.getElementById('sendCourierModal'));
+                courierModal.show();
+            }
         });
     });
 

@@ -149,4 +149,9 @@ public function consulateType()
         return $this->hasMany(DocumentProcessChargeModel::class, 'document_id');
     }
 
+    public function courierAssignment()
+    {
+        return $this->hasOne(DocumentCourier::class, 'document_id');
+    }
+
 }

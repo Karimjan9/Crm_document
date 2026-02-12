@@ -394,6 +394,18 @@
                 </ul>
             </li>
         @endrole
+        @hasanyrole('courier')
+            <li class="filial-item">
+                <a href="javascript:;" class="has-arrow" aria-expanded="false">
+                    <div class="parent-icon"><i class='bx bx-folder-open'></i></div>
+                    <div class="menu-title">Hujjatlar</div>
+                </a>
+                <ul>
+                    <li><a href="{{ route('courier.documents.index') }}"><i class='bx bx-file-blank'></i> Hujjatlar </a></li>
+                    <li><a href="{{ route('courier.documents.history') }}"><i class='bx bx-history'></i> Hujjat tarixi </a></li>
+                </ul>
+            </li>
+        @endrole
 
     </ul>
 

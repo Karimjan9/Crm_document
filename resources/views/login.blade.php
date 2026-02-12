@@ -30,7 +30,7 @@ body.light-mode {
     color: #111;
 }
 
-/* === Vanta Background === */
+/* === Animated Background (CSS only) === */
 .vanta-bg {
     position: fixed;
     top: 0;
@@ -38,6 +38,53 @@ body.light-mode {
     width: 100%;
     height: 100%;
     z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(34, 211, 238, 0.22), transparent 42%),
+        radial-gradient(circle at 80% 75%, rgba(59, 130, 246, 0.22), transparent 46%),
+        linear-gradient(135deg, #0f172a, #1e293b 70%);
+}
+
+.vanta-bg::before,
+.vanta-bg::after {
+    content: "";
+    position: absolute;
+    width: 52vmax;
+    height: 52vmax;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.28) 0%, rgba(56, 189, 248, 0) 68%);
+    top: -15vmax;
+    left: -10vmax;
+    animation: floatOrb 18s ease-in-out infinite;
+    will-change: transform;
+}
+
+.vanta-bg::after {
+    width: 44vmax;
+    height: 44vmax;
+    top: auto;
+    left: auto;
+    right: -10vmax;
+    bottom: -12vmax;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.30) 0%, rgba(37, 99, 235, 0) 70%);
+    animation-duration: 24s;
+    animation-direction: reverse;
+}
+
+body.light-mode .vanta-bg {
+    background:
+        radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.16), transparent 42%),
+        radial-gradient(circle at 80% 75%, rgba(14, 165, 233, 0.16), transparent 46%),
+        linear-gradient(135deg, #f8fafc, #e2e8f0 70%);
+}
+
+body.light-mode .vanta-bg::before {
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.20) 0%, rgba(59, 130, 246, 0) 68%);
+}
+
+body.light-mode .vanta-bg::after {
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.20) 0%, rgba(14, 165, 233, 0) 70%);
 }
 
 /* === Login Card with Glassmorphism + Neon === */
@@ -176,7 +223,7 @@ body.light-mode .form-control {
 #welcome-screen {
     position: fixed;
     inset: 0;
-    background-color: #0f172a;
+    background: linear-gradient(140deg, #0b1225, #111c34 65%, #0f172a);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -191,6 +238,34 @@ body.light-mode .form-control {
     position: absolute;
     inset: 0;
     z-index: 0;
+    background:
+        radial-gradient(circle at 30% 35%, rgba(56, 189, 248, 0.25), transparent 36%),
+        radial-gradient(circle at 70% 60%, rgba(59, 130, 246, 0.22), transparent 42%);
+    animation: driftBackground 16s ease-in-out infinite alternate;
+}
+
+#welcome-globe::before {
+    content: "";
+    position: absolute;
+    width: min(60vw, 520px);
+    height: min(60vw, 520px);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0.08) 45%, rgba(59, 130, 246, 0) 72%);
+    animation: pulseGlow 9s ease-in-out infinite;
+}
+
+body.light-mode #welcome-screen {
+    background: linear-gradient(140deg, #eef4ff, #dfeafe 65%, #f8fafc);
+}
+
+body.light-mode #welcome-globe {
+    background:
+        radial-gradient(circle at 30% 35%, rgba(37, 99, 235, 0.16), transparent 36%),
+        radial-gradient(circle at 70% 60%, rgba(14, 165, 233, 0.14), transparent 42%);
 }
 
 .welcome-text {
@@ -256,6 +331,44 @@ body.light-mode .form-control {
     to {
         opacity: 0;
         visibility: hidden;
+    }
+}
+
+@keyframes floatOrb {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(5vmax, 4vmax);
+    }
+}
+
+@keyframes driftBackground {
+    0% {
+        transform: scale(1) translate3d(0, 0, 0);
+    }
+    100% {
+        transform: scale(1.08) translate3d(-1.5%, 1.5%, 0);
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(0.95);
+        opacity: 0.75;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.08);
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vanta-bg::before,
+    .vanta-bg::after,
+    #welcome-globe,
+    #welcome-globe::before {
+        animation: none;
     }
 }
 
@@ -329,50 +442,10 @@ body.light-mode .form-control {
 			</form>
 		</div>
 
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>
 		<script>
-			let vantaEffect;
-			function setVanta() {
-				if (vantaEffect) vantaEffect.destroy();
-				vantaEffect = window.VANTA.GLOBE({
-					el: ".vanta-bg",
-					mouseControls: true,
-					touchControls: true,
-					gyroControls: false,
-					minHeight: 200.00,
-					minWidth: 200.00,
-					scale: 1.00,
-					scaleMobile: 1.00,
-					color: 0x00bcd4,
-					color2: 0x2196f3,
-					backgroundColor: 0x0f172a
-				});
-			}
-			setVanta();
-
-			// Globe in Welcome screen
-			window.VANTA.GLOBE({
-				el: "#welcome-globe",
-				mouseControls: false,
-				touchControls: false,
-				minHeight: 200.00,
-				minWidth: 200.00,
-				scale: 1.00,
-				scaleMobile: 1.00,
-				color: 0x00bcd4,
-				color2: 0x2196f3,
-				backgroundColor: 0x0f172a
-			});
-
 			const toggle = document.getElementById("theme-toggle");
 			toggle.addEventListener("change", () => {
 				document.body.classList.toggle("light-mode");
-				if (document.body.classList.contains("light-mode")) {
-					vantaEffect.setOptions({ backgroundColor: 0xf8fafc, color: 0x2563eb, color2: 0x3b82f6 });
-				} else {
-					vantaEffect.setOptions({ backgroundColor: 0x0f172a, color: 0x00bcd4, color2: 0x2196f3 });
-				}
 			});
 
 			document.addEventListener("DOMContentLoaded", () => {

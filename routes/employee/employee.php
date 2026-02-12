@@ -28,6 +28,7 @@ Route::name('employee.')->prefix('employee')->group(function(){
     Route::post('/payment/add', [EmployeeDocumentController::class, 'add_payment'])->name('add_payment');
     Route::get('/payments/{document}', [EmployeeDocumentController::class, 'paymentHistory'])->name('payments');
     Route::get('/document/complete/{document}', [EmployeeDocumentController::class, 'completeDocument'])->name('document.complete');
+    Route::post('/document/{document}/send-courier', [EmployeeDocumentController::class, 'sendToCourier'])->name('document.send_courier');
     Route::get('/service/{service}/addons', [EmployeeDocumentController::class, 'getServiceAddons'])->name('get_service_addons');
     Route::get('/clients/search', [AdminClientDocumentController::class, 'search'])->name('clients.search');
 

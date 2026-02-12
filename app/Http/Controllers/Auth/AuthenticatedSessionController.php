@@ -24,26 +24,41 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
+        $t0 = microtime(true);
         $request->authenticate();
+        $t1 = microtime(true);
 
         $request->session()->regenerate();
+        $t2 = microtime(true);
+        $user = $request->user()->loadMissing('roles');
+        $t3 = microtime(true);
+
+        if (config('app.debug')) {
+            \Log::info('auth_login_timing', [
+                'authenticate_ms' => (int) (($t1 - $t0) * 1000),
+                'session_regen_ms' => (int) (($t2 - $t1) * 1000),
+                'load_roles_ms' => (int) (($t3 - $t2) * 1000),
+                'total_ms' => (int) (($t3 - $t0) * 1000),
+            ]);
+        }
       
-        if($request->user()->hasRole("admin_manager") || $request->user()->hasRole("super_admin")){
+        $roles = $user->getRoleNames();
+        if ($roles->contains('admin_manager') || $roles->contains('super_admin')) {
             // dd('here');
             return redirect()->route('superadmin.index');
 
         }
-        else if($request->user()->hasRole("admin_filial")){
+        else if ($roles->contains('admin_filial')) {
             // dd(1);
                     return redirect()->route('admin_filial.index');
 
-        }else if($request->user()->hasRole("employee")){
+        }else if ($roles->contains('employee')) {
             // dd(1);
                 return redirect()->route('employee.document.index');
 
-        }else if($request->user()->hasRole("courier")){
+        }else if ($roles->contains('courier')) {
 
-                 return redirect()->route('courier.index'); 
+                 return redirect()->route('courier.documents.index'); 
         }
         else{
                  return redirect()->route('login'); 
