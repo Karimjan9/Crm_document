@@ -8,7 +8,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 	<!--favicon-->
-	{{-- <link rel="icon" href="{{ url('logo.png') }}" type="image/png" /> --}}
+	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/favicon-32x32.png') }}" />
+	<link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
 	<!--plugins-->
 	{{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> --}}
 	<link href="{{ url('assets/plugins/notifications/css/lobibox.min.css') }}" rel="stylesheet"/>
@@ -32,6 +33,7 @@
 	<link href="{{ url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap') }}" rel="stylesheet">
 	<link href="{{ url('assets/css/app.css') }}" rel="stylesheet">
 	<link href="{{ url('assets/css/icons.css') }}" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 	<!-- Theme Style CSS -->
 	<link rel="stylesheet" href="{{ url('assets/css/dark-theme.css') }}" />
 	<link rel="stylesheet" href="{{ url('assets/css/semi-dark.css') }}" />
@@ -117,7 +119,7 @@
     </style> --}}
 
     <div class="footer-content">
-        <p class="footer-copy">Copyright © <span>2025</span>. All rights reserved.</p>
+        <p class="footer-copy">Copyright © <span>2026</span>. All rights reserved.</p>
     </div>
 </footer>
 

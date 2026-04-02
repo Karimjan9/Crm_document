@@ -283,13 +283,16 @@
     document.addEventListener('DOMContentLoaded', function() {
         const roleSelect = document.getElementById('role');
         const filialBox = document.getElementById('filial_box');
+        const filialSelect = document.getElementById('filial');
 
         function toggleFilial() {
-            if (roleSelect.value.trim().toLowerCase() === 'employee') {
+            if (roleSelect.value.trim().toLowerCase() === 'employee' || roleSelect.value.trim().toLowerCase() === 'admin_filial') {
                 filialBox.style.display = 'block';
+                filialSelect.required = true;
             } else {
                 filialBox.style.display = 'none';
-                document.getElementById('filial').value = '';
+                filialSelect.required = false;
+                filialSelect.value = '';
             }
         }
 

@@ -9,7 +9,7 @@ class CourierController extends Controller
 {
     public function index()
     {
-        return view('courier.index');
+        return redirect()->route('courier.documents.index');
     }
 }
 

@@ -202,6 +202,7 @@ body {
 @section('script_include_end_body')
 <script>
 $(document).ready(function(){
+    const expenseEditBaseUrl = "{{ url('admin_filial/expense_admin') }}";
 
     // Edit tugmasi bosilganda modalga ma'lumotlarni qo'yish
     $('.edit-expense-btn').click(function(){
@@ -215,7 +216,7 @@ $(document).ready(function(){
         $('#edit_filial').val(filial);
         $('#edit_description').val(description);
 
-        $('#editExpenseForm').attr('action', '/admin_filial/expense/' + id);
+        $('#editExpenseForm').attr('action', expenseEditBaseUrl + '/' + id);
 
         $('#editExpenseModal').modal('show');
     });

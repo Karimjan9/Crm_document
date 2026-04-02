@@ -6,7 +6,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--favicon-->
-	<link rel="icon" href="{{ url('assets/images/favicon-32x32.png') }}" type="image/png" />
+	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/favicon-32x32.png') }}" />
+	<link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
 	<!-- loader-->
 	<link href="{{ url('assets/css/pace.min.css') }}" rel="stylesheet" />
 	<script src="{{ url('assets/js/pace.min.js') }}"></script>
@@ -16,6 +17,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 	<link href="{{ url('assets/css/app.css') }}" rel="stylesheet">
 	<link href="{{ url('assets/css/icons.css') }}" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 	<title>{{ config('app.name') }}</title>
 </head>
 
@@ -48,7 +50,7 @@
 			<div class="d-flex align-items-center justify-content-between flex-wrap">
 				<ul class="list-inline mb-0">
 				</ul>
-				<p class="mb-0">Copyright © 2025.</p>
+				<p class="mb-0">Copyright © 2026.</p>
 			</div>
 		</div>
 	</div>

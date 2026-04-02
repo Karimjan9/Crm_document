@@ -322,12 +322,14 @@ $(document).ready(function(){
         $('#descriptionModal').modal('show');
     });
 
+    const paymentHistoryBase = "{{ route('admin_filial.payments', ['document' => '__id__']) }}";
+
     // Payment history modal
     $('.payment-history-btn').click(function(e){
         e.stopPropagation();
         let docId = $(this).data('document-id');
         $.ajax({
-            url: "/admin_filial/payments/"+docId,
+            url: paymentHistoryBase.replace('__id__', docId),
             method: "GET",
             success: function(res){
                 let tbody = '';

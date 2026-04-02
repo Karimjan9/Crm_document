@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\ConsulModel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\ConsulationTypeModel;
@@ -12,8 +13,10 @@ class ConsulationTypeController extends Controller
     public function index()
     {
         $consulationTypes = ConsulationTypeModel::all();
-        return view('admin.consulation_types.index', compact('consulationTypes'));
+        $main_consul = ConsulModel::first();
+        return view('admin.consulation_types.index', compact('consulationTypes', 'main_consul'));
     }
+
 
  
     public function create()
@@ -27,11 +30,15 @@ class ConsulationTypeController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'amount' => 'required|numeric',
+            'day' => 'required|integer',
         ]);
 
         ConsulationTypeModel::create([
             'name' => $request->name,
             'description' => $request->description,
+            'amount' => $request->amount,
+            'day' => $request->day,
         ]);
 
         return redirect()->route('superadmin.consulation.index')->with('success', 'Consulation Type created successfully.');
@@ -56,12 +63,16 @@ class ConsulationTypeController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'amount' => 'required|numeric',
+            'day' => 'required|integer',
         ]);
 
         $consulationType = ConsulationTypeModel::findOrFail($id);
         $consulationType->update([
             'name' => $request->name,
             'description' => $request->description,
+            'amount' => $request->amount,
+            'day' => $request->day,
         ]);
 
         return redirect()->route('superadmin.consulation.index')->with('success', 'Consulation Type updated successfully.');
@@ -74,5 +85,65 @@ class ConsulationTypeController extends Controller
         $consulationType->delete();
 
         return redirect()->route('superadmin.consulation.index')->with('success', 'Consulation Type deleted successfully.');
+    }
+
+    public function getMainConsulationType()
+    {
+        $mainConsulationType = ConsulModel::first();
+        return response()->json($mainConsulationType);
+    }
+
+    public function update_main(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'amount' => 'required|numeric',
+            'day' => 'required|integer',
+        ]);
+
+        $mainConsulationType = ConsulModel::first();
+        $mainConsulationType->update([
+            'name' => $request->name,
+            'amount' => $request->amount,
+            'day' => $request->day,
+        ]);
+       return response()->json(['message' => 'Main Consulation Type updated successfully.']);
+}
+
+    public function static()
+    {
+        // dd(123);
+        $statics  = ConsulModel::all();
+        return view('admin.consulation_types.static', compact('statics'));
+    }
+
+   public function update_static($id,Request $request)
+{
+    // dd(123);
+    $request->validate([
+        'name'   => 'required|string|max:255',
+        'amount' => 'required|numeric',
+        'day'    => 'required|integer',
+    ]);
+
+    $consul = ConsulModel::findOrFail($id);
+
+    $consul->update([
+        'name'   => $request->name,
+        'amount' => $request->amount,
+        'day'    => $request->day,
+    ]);
+
+    return redirect()->back()->with(
+        'success',
+        'Consulation static muvaffaqiyatli yangilandi.'
+    );
+}
+    public function destroy_static($id)
+    {
+        // dd(123);
+        $consul = ConsulModel::findOrFail($id);
+        $consul->delete();
+        return redirect()->back()->with('success', 'Consulation static muvaffaqiyatli o\'chirildi.');
     }
 }

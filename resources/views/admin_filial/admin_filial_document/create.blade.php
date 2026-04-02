@@ -464,11 +464,14 @@ $(function(){
 });
 </script>
 <script>
-fetch('/admin_filial/api/clients')
-    .then(response => response.json())
-    .then(data => {
-        console.log('Clients:', data);
-    })
-    .catch(error => console.error(error));
+const clientListUrl = "{{ url('/admin_filial/api/clients') }}";
+if (clientListUrl) {
+    fetch(clientListUrl)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Clients:', data);
+        })
+        .catch(error => console.error(error));
+}
 </script>
 @endsection

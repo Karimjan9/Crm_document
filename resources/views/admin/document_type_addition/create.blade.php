@@ -175,10 +175,14 @@
                         <label for="filial_nomi">Hujjat turi qo'shimchasi narxi</label>
                         <input type="number" id="filial_nomi" name="amount" class="form-control" placeholder="1000" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="filial_nomi">Hujjat deadline</label>
+                        <input type="number" id="day" name="day" class="form-control" placeholder="1000" required>
+                    </div>
 
                     <div class="mb-3">
-                        <label for="description">Konsullik izoh</label>
-                        <textarea id="description" name="description" rows="4" class="form-control" placeholder="Konsullik haqida qisqacha ma’lumot..."></textarea>
+                        <label for="description">Legalizatsiya izoh</label>
+                        <textarea id="description" name="description" rows="4" class="form-control" placeholder="Legalizatsiya haqida qisqacha ma’lumot..."></textarea>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">

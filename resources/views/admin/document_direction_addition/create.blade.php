@@ -155,7 +155,21 @@
 @section('body')
 <div class="page-wrapper">
     <div class="page-content">
-
+        @if (session('success'))
+            <div class="alert alert-success mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="alert alert-danger mb-3">
+                <strong>Xatoliklar mavjud!</strong>
+                <ul class="mb-0 mt-2">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div class="page-breadcrumb mb-3">
             <div class="breadcrumb-title">Yangi Hujjat turi qo'shimchasi Qo‘shish</div>
             <a href="{{ route('superadmin.type_addition.index',['document_type'=>$id]) }}" class="btn btn-outline">← Orqaga</a>
@@ -174,6 +188,10 @@
                       <div class="mb-3">
                         <label for="filial_nomi">Hujjat turi qo'shimchasi narxi</label>
                         <input type="number" id="filial_nomi" name="amount" class="form-control" placeholder="1000" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="filial_nomi">Hujjat deadline</label>
+                        <input type="number" id="day" name="day" class="form-control" placeholder="1000" required>
                     </div>
 
                     <div class="mb-3">

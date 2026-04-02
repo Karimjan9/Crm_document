@@ -69,6 +69,7 @@ Route::name('admin_filial.')
         Route::resource('expense_admin', ExpenseAdminController::class);
         Route::get('/expense/statistika', [ExpenseAdminController::class, 'statistika'])->name('expense.statistika');
 
-        // Complete document
-        Route::get('/document/complete/{document}', [AdminFilialDocumentController::class, 'completeDocument'])->name('document.complete');
-    });
+    // Complete document
+    Route::get('/document/complete/{document}', [AdminFilialDocumentController::class, 'completeDocument'])->name('document.complete');
+    Route::post('/document/{document}/send-courier', [AdminFilialDocumentController::class, 'sendToCourier'])->name('document.send_courier');
+});

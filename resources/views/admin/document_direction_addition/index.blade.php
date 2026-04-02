@@ -194,7 +194,7 @@
             <div class="breadcrumb-title pe-3">Konsullik</div>
             <div class="d-flex gap-2">
             <a href="{{ route('superadmin.direction_type.index') }}" class="btn btn-outline">← Orqaga</a>
-            <a href="{{ route('superadmin.direction_addition.create',['direction_type' => $id]) }}" class="btn btn-custom">+ Hujjat turi qo'shimcha+</a>
+            <a href="{{ route('superadmin.direction_addition.create',['direction_type' => $id]) }}" class="btn btn-custom">+ Apostil qo'shimcha+</a>
             </div>
         </div>
 
@@ -210,9 +210,10 @@
                         <thead>
                             <tr>
                                 <th class="fixed_header2 align-middle">#</th>
-                                <th class="fixed_header2 align-middle">Hujjat turi qo'shimcha nomi</th>
-                                <th class="fixed_header2 align-middle">Hujjat turi qo'shimcha narxi</th>
-                                <th class="fixed_header2 align-middle">Hujjat turi qo'shimcha  izoh</th>
+                                <th class="fixed_header2 align-middle">Apostil qo'shimcha nomi</th>
+                                <th class="fixed_header2 align-middle">Apostil qo'shimcha narxi</th>
+                                <th class="fixed_header2 align-middle">Apostil deadline</th>
+                                <th class="fixed_header2 align-middle">Apostil qo'shimcha  izoh</th>
                                 <th class="fixed_header2 align-middle">Harakatlar</th>
                             </tr>
                         </thead>
@@ -222,13 +223,14 @@
                                 <td>{{ $key+1 }}</td>
                                 <td>{{ $directionType->name }}</td>
                                   <td>{{ $directionType->amount }}</td>
+                                <td>{{ $directionType->day }}</td>
                                 <td>{{ $directionType->description }}</td>
                              
                                 <td>
-                                    <a class="btn btn-warning" href="{{ route('superadmin.direction_type.edit',['direction_type'=>$id,'direction_addition'=>$directionType->id]) }}">O'zgartirish</a>
+                                    <a class="btn btn-warning" href="{{ route('superadmin.direction_addition.edit',['direction_type'=>$id,'direction_addition'=>$directionType->id]) }}">O'zgartirish</a>
 
                                     <!-- Delete Form -->
-                                    <form action="{{ route('superadmin.type_addition.destroy',['direction_type'=>$id,'direction_addition'=>$directionType->id]) }}" method="POST" class="d-inline delete-form">
+                                    <form action="{{ route('superadmin.direction_addition.destroy',['direction_type'=>$id,'direction_addition'=>$directionType->id]) }}" method="POST" class="d-inline delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" class="btn btn-danger btn-delete" data-name="{{ $directionType->name }}">O'chirish</button>

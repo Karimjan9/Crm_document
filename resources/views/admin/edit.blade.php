@@ -140,6 +140,7 @@
 @endsection
 
 @section('body')
+@php($currentRole = old('role', optional($user->roles->first())->name))
 <div class="page-wrapper">
     <div class="page-content">
 
@@ -151,13 +152,13 @@
         <div class="card radius-10">
             <div class="card-body">
 
-                @if ($errors->any())
+                @if (false && $errors->any())
                     <div class="alert alert-danger">
                         Ma’lumotlarni tekshirib, qaytadan kiriting.
                     </div>
                 @endif
 
-                <form action="{{ route('admin.update', $user->id) }}" method="POST">
+                <form action="{{ route('superadmin.update', $user->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -191,8 +192,11 @@
                         <label for="role">Rolni tanlang</label>
                         <select name="role" id="role" class="form-control" required>
                             <option value="">-- Rolni tanlang --</option>
+                            @if($currentRole && !$rols->contains('name', $currentRole))
+                                <option value="{{ $currentRole }}" selected>{{ ucfirst($currentRole) }}</option>
+                            @endif
                             @foreach($rols as $rol)
-                                <option value="{{ $rol->name }}" {{ $user->hasRole($rol->name) ? 'selected' : '' }}>
+                                <option value="{{ $rol->name }}" {{ $currentRole === $rol->name ? 'selected' : '' }}>
                                     {{ ucfirst($rol->name) }}
                                 </option>
                             @endforeach
@@ -201,12 +205,12 @@
                     </div>
 
                     {{-- Filial --}}
-                    <div class="mb-3" id="filial_box" style="display: none;">
+                    <div class="mb-3" id="filial_box" style="{{ in_array($currentRole, ['employee', 'admin_filial'], true) ? 'display: block;' : 'display: none;' }}">
                         <label for="filial">Filialni tanlang</label>
                         <select name="filial_id" id="filial" class="form-control">
                             <option value="">-- Filialni tanlang --</option>
                             @foreach($filials as $filial)
-                                <option value="{{ $filial->id }}" {{ $user->filial_id == $filial->id ? 'selected' : '' }}>
+                                <option value="{{ $filial->id }}" {{ old('filial_id', $user->filial_id) == $filial->id ? 'selected' : '' }}>
                                     {{ $filial->name }}
                                 </option>
                             @endforeach
@@ -225,9 +229,15 @@
                     {{-- Parol --}}
                     <div class="mb-3">
                         <label for="password">Yangi parol (ixtiyoriy)</label>
-                        <input type="password" id="password" name="password" class="form-control"
+                        <input type="password" id="password" name="password" class="form-control" autocomplete="new-password"
                                placeholder="Agar o‘zgartirmoqchi bo‘lsangiz, kiriting">
                         @error('password') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password_confirmation">Parolni tasdiqlash (ixtiyoriy)</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" class="form-control"
+                               placeholder="Yangi parolni qayta kiriting" autocomplete="new-password">
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
@@ -246,13 +256,17 @@
     document.addEventListener('DOMContentLoaded', function () {
         const roleSelect = document.getElementById('role');
         const filialBox = document.getElementById('filial_box');
+        const filialSelect = document.getElementById('filial');
 
         function toggleFilial() {
-            if (roleSelect.value.trim().toLowerCase() === 'employee') {
+            const currentRole = roleSelect.value.trim().toLowerCase();
+            if (currentRole === 'employee' || currentRole === 'admin_filial') {
                 filialBox.style.display = 'block';
+                filialSelect.required = true;
             } else {
                 filialBox.style.display = 'none';
-                document.getElementById('filial').value = '';
+                filialSelect.required = false;
+                filialSelect.value = '';
             }
         }
 

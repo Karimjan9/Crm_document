@@ -157,26 +157,29 @@
     <div class="page-content">
 
         <div class="page-breadcrumb mb-3">
-            <div class="breadcrumb-title">Yangi Hujjat turi qo'shimchasi Qo‘shish</div>
+            <div class="breadcrumb-title">Yangi Apostil  qo'shimchasi Qo‘shish</div>
             <a href="{{ route('superadmin.type_addition.index',['document_type'=>$id]) }}" class="btn btn-outline">← Orqaga</a>
         </div>
 
         <div class="card radius-10">
             <div class="card-body">
-                <form action="{{ route('superadmin.direction_addition.edit',['document_type'=>$id,'direction_addition'=>$documentType->id]) }}" method="POST">
+                <form action="{{ route('superadmin.direction_addition.update',['direction_type'=>$id,'direction_addition'=>$documentType->id]) }}" method="POST">
                     @csrf
                     @method("PUT")
                     <input type="hidden" name="document_type_id" value="{{$id}}">
                     <div class="mb-3">
-                        <label for="filial_nomi">Hujjat turi qo'shimchasi nomi</label>
-                        <input type="text" id="filial_nomi" name="name" value="{{ $documentType->name }}" class="form-control" placeholder="Hujjat turi qo'shimchasi" required>
+                        <label for="filial_nomi">Apostil  qo'shimchasi nomi</label>
+                        <input type="text" id="filial_nomi" name="name" value="{{ $documentType->name }}" class="form-control" placeholder="Apostil  qo'shimchasi" required>
                     </div>
 
                       <div class="mb-3">
-                        <label for="filial_nomi">Hujjat turi qo'shimchasi narxi</label>
+                        <label for="filial_nomi">Apostil  qo'shimchasi narxi</label>
                         <input type="number" id="filial_nomi" name="amount" value="{{ $documentType->amount }}" class="form-control" placeholder="1000" required>
                     </div>
-
+                    <div class="mb-3">
+                        <label for="filial_nomi">Apostil deadline</label>
+                        <input type="number" id="filial_nomi" name="day" value="{{ $documentType->day }}" class="form-control" placeholder="7" required>
+                    </div>
                     <div class="mb-3">
                         <label for="description">Konsullik izoh</label>
                         <textarea id="description" name="description" rows="4" class="form-control" placeholder="Konsullik haqida qisqacha ma’lumot...">{{ $documentType->description }}</textarea>

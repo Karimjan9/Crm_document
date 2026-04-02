@@ -171,8 +171,14 @@
                         <input type="text" id="filial_nomi" name="name" class="form-control" placeholder="BAA" required>
                     </div>
 
-               
-
+                    <div class="mb-3">
+                        <label for="amount">Konsullik narxi </label>
+                        <input type="number" id="amount" name="amount" class="form-control" placeholder="1000" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="day">Konsullik deadline (kunlarda)</label>
+                        <input type="number" id="day" name="day" class="form-control" placeholder="0" required>
+                    </div>
                     <div class="mb-3">
                         <label for="description">Konsullik izoh</label>
                         <textarea id="description" name="description" rows="4" class="form-control" placeholder="Konsullik haqida qisqacha ma’lumot..."></textarea>

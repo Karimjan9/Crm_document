@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Courier\CourierController;
 use App\Http\Controllers\KalendarController;
@@ -35,6 +36,9 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::post('/account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
+    Route::post('/account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
+    Route::post('/account/settings', [AccountController::class, 'updateSettings'])->name('account.settings.update');
 });
 
 // holidays
@@ -109,9 +113,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 Route::middleware(['guest'])->group(function () {
-    
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
-
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login_post');
 });
 

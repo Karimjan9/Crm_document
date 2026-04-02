@@ -12,7 +12,8 @@ class PaymentsModel extends Model
     use HasFactory;
     protected $fillable = ['document_id','amount','payment_type','paid_by_admin_id'];
 
-    // public function document() {
-    //     return $this->belongsTo(DocumentsModel::class);
-    // }
+    public function paidByAdmin()
+    {
+        return $this->belongsTo(User::class, 'paid_by_admin_id')->withTrashed();
+    }
 }

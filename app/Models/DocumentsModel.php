@@ -33,7 +33,11 @@ class DocumentsModel extends Model
         'description',
         'filial_id',
         'document_code',
-        'status_doc'
+        'status_doc',
+        'process_mode',
+        'apostil_group1_id',
+        'apostil_group2_id',
+        'consul_id',
     ];
 
 
@@ -80,6 +84,11 @@ class DocumentsModel extends Model
     }
     public function user() {
         return $this->belongsTo(User::class,'user_id','id');
+    }
+
+    public function filial()
+    {
+        return $this->belongsTo(FilialModel::class, 'filial_id');
     }
 
 
@@ -135,9 +144,19 @@ public function consulateType()
     return $this->belongsTo(ConsulationTypeModel::class, 'consulate_type_id');
 }
 
-public function files()
-{
-    return $this->hasMany(DocumentFile::class, 'document_id');
-}
+    public function files()
+    {
+        return $this->hasMany(DocumentFileModel::class, 'document_id');
+    }
+
+    public function processCharges()
+    {
+        return $this->hasMany(DocumentProcessChargeModel::class, 'document_id');
+    }
+
+    public function courierAssignment()
+    {
+        return $this->hasOne(DocumentCourier::class, 'document_id');
+    }
 
 }
