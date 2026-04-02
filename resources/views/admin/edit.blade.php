@@ -229,9 +229,15 @@
                     {{-- Parol --}}
                     <div class="mb-3">
                         <label for="password">Yangi parol (ixtiyoriy)</label>
-                        <input type="password" id="password" name="password" class="form-control"
+                        <input type="password" id="password" name="password" class="form-control" autocomplete="new-password"
                                placeholder="Agar o‘zgartirmoqchi bo‘lsangiz, kiriting">
                         @error('password') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password_confirmation">Parolni tasdiqlash (ixtiyoriy)</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" class="form-control"
+                               placeholder="Yangi parolni qayta kiriting" autocomplete="new-password">
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
