@@ -140,6 +140,7 @@
 @endsection
 
 @section('body')
+@php($currentRole = old('role', optional($user->roles->first())->name))
 <div class="page-wrapper">
     <div class="page-content">
 
@@ -191,8 +192,11 @@
                         <label for="role">Rolni tanlang</label>
                         <select name="role" id="role" class="form-control" required>
                             <option value="">-- Rolni tanlang --</option>
+                            @if($currentRole && !$rols->contains('name', $currentRole))
+                                <option value="{{ $currentRole }}" selected>{{ ucfirst($currentRole) }}</option>
+                            @endif
                             @foreach($rols as $rol)
-                                <option value="{{ $rol->name }}" {{ $user->hasRole($rol->name) ? 'selected' : '' }}>
+                                <option value="{{ $rol->name }}" {{ $currentRole === $rol->name ? 'selected' : '' }}>
                                     {{ ucfirst($rol->name) }}
                                 </option>
                             @endforeach
@@ -201,7 +205,7 @@
                     </div>
 
                     {{-- Filial --}}
-                    <div class="mb-3" id="filial_box" style="display: none;">
+                    <div class="mb-3" id="filial_box" style="{{ in_array($currentRole, ['employee', 'admin_filial'], true) ? 'display: block;' : 'display: none;' }}">
                         <label for="filial">Filialni tanlang</label>
                         <select name="filial_id" id="filial" class="form-control">
                             <option value="">-- Filialni tanlang --</option>
@@ -252,7 +256,7 @@
             const currentRole = roleSelect.value.trim().toLowerCase();
             if (currentRole === 'employee' || currentRole === 'admin_filial') {
                 filialBox.style.display = 'block';
-                filialSelect.required = currentRole === 'employee';
+                filialSelect.required = true;
             } else {
                 filialBox.style.display = 'none';
                 filialSelect.required = false;

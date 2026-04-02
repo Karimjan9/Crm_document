@@ -288,7 +288,7 @@
         function toggleFilial() {
             if (roleSelect.value.trim().toLowerCase() === 'employee' || roleSelect.value.trim().toLowerCase() === 'admin_filial') {
                 filialBox.style.display = 'block';
-                filialSelect.required = roleSelect.value.trim().toLowerCase() === 'employee';
+                filialSelect.required = true;
             } else {
                 filialBox.style.display = 'none';
                 filialSelect.required = false;
