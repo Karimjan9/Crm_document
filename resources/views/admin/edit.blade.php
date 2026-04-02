@@ -157,7 +157,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.update', $user->id) }}" method="POST">
+                <form action="{{ route('superadmin.update', $user->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -246,13 +246,16 @@
     document.addEventListener('DOMContentLoaded', function () {
         const roleSelect = document.getElementById('role');
         const filialBox = document.getElementById('filial_box');
+        const filialSelect = document.getElementById('filial');
 
         function toggleFilial() {
             if (roleSelect.value.trim().toLowerCase() === 'employee') {
                 filialBox.style.display = 'block';
+                filialSelect.required = true;
             } else {
                 filialBox.style.display = 'none';
-                document.getElementById('filial').value = '';
+                filialSelect.required = false;
+                filialSelect.value = '';
             }
         }
 

@@ -178,7 +178,7 @@ class DocumentController extends Controller
 
                 /* ================= DOCUMENT CODE ================= */
 
-                $code   = Auth::user()->filial->code;
+                $code   = $this->resolveFilialCode();
                 $lastId = DocumentsModel::latest('id')->value('id') ?? 0;
                 $number = $lastId + 1 + 1000000;
 
@@ -197,7 +197,7 @@ class DocumentController extends Controller
                     'discount'           => $discount,
                     'user_id'            => auth()->id(),
                     'description'        => $item['description'] ?? null,
-                    'filial_id'          => auth()->user()->filial_id,
+                    'filial_id'          => $this->resolveFilialId(),
                     'document_code'      => $documentCode,
                     'document_type_id'   => $item['document_type_id'],
                     'direction_type_id'  => $item['direction_type_id'],

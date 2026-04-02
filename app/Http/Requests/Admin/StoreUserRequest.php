@@ -19,7 +19,7 @@ class StoreUserRequest extends FormRequest
             'phone' => 'required|digits:9|integer|unique:users,phone',
             'password' => 'required|confirmed|min:6',
             'role' => 'required|string',
-            'filial_id' => 'nullable|integer',
+            'filial_id' => 'required_if:role,employee|nullable|integer|exists:filial,id',
         ];
     }
 
@@ -27,26 +27,28 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'name.required' => 'Foydalanuvchi ismi majburiy.',
-            'name.string' => 'Ism faqat matndan iborat bo‘lishi kerak.',
+            'name.string' => 'Ism faqat matndan iborat bolishi kerak.',
             'name.max' => 'Ism uzunligi 255 belgidan oshmasin.',
 
             'login.required' => 'Login kiritish majburiy.',
-            'login.string' => 'Login matn ko‘rinishida bo‘lishi kerak.',
+            'login.string' => 'Login matn korinishida bolishi kerak.',
             'login.unique' => 'Bu login allaqachon mavjud.',
 
             'phone.required' => 'Telefon raqami majburiy.',
-            'phone.integer' => 'Telefon raqami faqat raqamlardan iborat bo‘lishi kerak.',
-            'phone.digits' => 'Telefon raqami 9 xonali bo‘lishi kerak.',
+            'phone.integer' => 'Telefon raqami faqat raqamlardan iborat bolishi kerak.',
+            'phone.digits' => 'Telefon raqami 9 xonali bolishi kerak.',
             'phone.unique' => 'Bu telefon raqami tizimda allaqachon mavjud.',
 
             'password.required' => 'Parol kiritish majburiy.',
             'password.confirmed' => 'Parollar bir-biriga mos emas.',
-            'password.min' => 'Parol kamida 6 belgidan iborat bo‘lishi kerak.',
+            'password.min' => 'Parol kamida 6 belgidan iborat bolishi kerak.',
 
             'role.required' => 'Foydalanuvchi roli tanlanishi shart.',
-            'role.string' => 'Rol nomi matn ko‘rinishida bo‘lishi kerak.',
+            'role.string' => 'Rol nomi matn korinishida bolishi kerak.',
 
-            'filial_id.integer' => 'Filial identifikatori noto‘g‘ri formatda.',
+            'filial_id.required_if' => 'Employee uchun filial tanlanishi shart.',
+            'filial_id.integer' => 'Filial identifikatori notogri formatda.',
+            'filial_id.exists' => 'Tanlangan filial mavjud emas.',
         ];
     }
 }

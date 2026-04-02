@@ -15,6 +15,11 @@ use Illuminate\Validation\Rules\In;
 
 class AdminController extends Controller
 {
+    protected function userRoutePrefix(): string
+    {
+        return request()->routeIs('superadmin.*') ? 'superadmin' : 'admin';
+    }
+
    
     public function index()
     {
@@ -69,15 +74,13 @@ class AdminController extends Controller
             'login' => $request->login,
             'phone' => $phone,
             'password' => Hash::make($request->password),
-            'filial_id' => ($request->role === 'employee' && $request->filled('filial_id'))
-                ? $request->filial_id
-                : null,
+            'filial_id' => $request->role === 'employee' ? $request->filial_id : null,
         ]);
 
        
         $user->assignRole($request->role);
 
-        return redirect()->route('superadmin.index')
+        return redirect()->route($this->userRoutePrefix() . '.index')
             ->with('success', 'Foydalanuvchi muvaffaqiyatli qo‘shildi va roli biriktirildi ✅');
     }
 
@@ -128,7 +131,7 @@ class AdminController extends Controller
     }
 
     return redirect()
-        ->route('admin.index')
+        ->route('superadmin.index')
         ->with('success', 'Foydalanuvchi ma’lumotlari muvaffaqiyatli yangilandi!');
 }
 

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DocumentsModel;
 use App\Models\PaymentsModel;
 use App\Models\ServicesModel;
+use App\Models\FilialModel;
 use App\Models\DocumentFileModel as DocumentFile;
 use App\Models\ServiceAddonModel;
 use App\Models\DocumentTypeAdditionModel;
@@ -18,6 +19,16 @@ use App\Models\ConsulationTypeModel;
 
 trait StoresDocuments
 {
+    protected function resolveFilialId(): int
+    {
+        return Auth::user()?->filial_id ?? 1;
+    }
+
+    protected function resolveFilialCode(): string
+    {
+        return FilialModel::find($this->resolveFilialId())?->code ?? '1';
+    }
+
     protected function storeDocumentFromRequest(Request $request): DocumentsModel
     {
         return DB::transaction(function () use ($request) {
@@ -65,7 +76,7 @@ trait StoresDocuments
                 'discount'           => $discountInput,
                 'user_id'            => auth()->id(),
                 'description'        => $request->input('description'),
-                'filial_id'          => auth()->user()->filial_id,
+                'filial_id'          => $this->resolveFilialId(),
                 'document_code'      => $this->generateDocumentCode(),
                 'document_type_id'   => $documentTypeId,
                 'direction_type_id'  => $directionTypeId,
@@ -316,7 +327,7 @@ trait StoresDocuments
 
     protected function generateDocumentCode(): string
     {
-        $code = Auth::user()->filial->code;
+        $code = $this->resolveFilialCode();
         $baseNumber = 1000000;
         $nextId = DocumentsModel::max('id') + 1;
         $number = $baseNumber + $nextId;
