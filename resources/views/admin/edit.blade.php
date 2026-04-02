@@ -152,7 +152,7 @@
         <div class="card radius-10">
             <div class="card-body">
 
-                @if ($errors->any())
+                @if (false && $errors->any())
                     <div class="alert alert-danger">
                         Ma’lumotlarni tekshirib, qaytadan kiriting.
                     </div>

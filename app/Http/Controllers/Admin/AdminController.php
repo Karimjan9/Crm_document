@@ -113,24 +113,35 @@ class AdminController extends Controller
     $data = $request->validated();
 
    
-    if (empty($data['password'])) {
-        unset($data['password']);
-    } else {
-        $data['password'] = bcrypt($data['password']);
+    $updateData = [];
+
+    foreach (['name', 'phone', 'login'] as $field) {
+        if (array_key_exists($field, $data) && $data[$field] !== null && $data[$field] !== $user->{$field}) {
+            $updateData[$field] = $data[$field];
+        }
     }
 
-   
-    $user->update([
-        'name' => $data['name'],
-        'phone' => $data['phone'],
-        'login' => $data['login'],
-        'password' => $data['password'] ?? $user->password,
-        'filial_id' => $data['filial_id'] ?? null,
-    ]);
+    if (!empty($data['password'])) {
+        $updateData['password'] = bcrypt($data['password']);
+    }
 
-    
-    if (!empty($data['role'])) {
-        $user->syncRoles([$data['role']]);
+    $currentRole = $user->roles->first()?->name;
+    $newRole = $data['role'] ?? $currentRole;
+
+    if (!empty($newRole) && $newRole !== $currentRole) {
+        $user->syncRoles([$newRole]);
+    }
+
+    if (in_array($newRole, ['employee', 'admin_filial'], true)) {
+        if (array_key_exists('filial_id', $data) && (int) $data['filial_id'] !== (int) $user->filial_id) {
+            $updateData['filial_id'] = $data['filial_id'];
+        }
+    } elseif ($user->filial_id !== null) {
+        $updateData['filial_id'] = null;
+    }
+
+    if (!empty($updateData)) {
+        $user->update($updateData);
     }
 
     return redirect()
