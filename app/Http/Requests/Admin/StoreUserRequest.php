@@ -19,7 +19,7 @@ class StoreUserRequest extends FormRequest
             'phone' => 'required|digits:9|integer|unique:users,phone',
             'password' => 'required|confirmed|min:6',
             'role' => 'required|string',
-            'filial_id' => 'required_if:role,employee|nullable|integer|exists:filial,id',
+            'filial_id' => 'required_if:role,employee,admin_filial|nullable|integer|exists:filial,id',
         ];
     }
 
@@ -46,7 +46,7 @@ class StoreUserRequest extends FormRequest
             'role.required' => 'Foydalanuvchi roli tanlanishi shart.',
             'role.string' => 'Rol nomi matn korinishida bolishi kerak.',
 
-            'filial_id.required_if' => 'Employee uchun filial tanlanishi shart.',
+            'filial_id.required_if' => 'Employee yoki admin filial uchun filial tanlanishi shart.',
             'filial_id.integer' => 'Filial identifikatori notogri formatda.',
             'filial_id.exists' => 'Tanlangan filial mavjud emas.',
         ];

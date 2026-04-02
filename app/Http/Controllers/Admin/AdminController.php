@@ -74,7 +74,7 @@ class AdminController extends Controller
             'login' => $request->login,
             'phone' => $phone,
             'password' => Hash::make($request->password),
-            'filial_id' => $request->role === 'employee' ? $request->filial_id : null,
+            'filial_id' => in_array($request->role, ['employee', 'admin_filial'], true) ? $request->filial_id : null,
         ]);
 
        
@@ -93,7 +93,10 @@ class AdminController extends Controller
    
     public function edit($id)
     {
-         $rols=Role::where('name' , 'like', '%employee%')->orWhere('name','like','%courier%')->get();
+         $rols = Role::where('name', 'like', '%employee%')
+            ->orWhere('name', 'like', '%admin_filial%')
+            ->orWhere('name', 'like', '%courier%')
+            ->get();
         // dd($rols);
         $filials=FilialModel::get();
         $user=User::find($id);

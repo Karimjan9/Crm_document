@@ -206,7 +206,7 @@
                         <select name="filial_id" id="filial" class="form-control">
                             <option value="">-- Filialni tanlang --</option>
                             @foreach($filials as $filial)
-                                <option value="{{ $filial->id }}" {{ $user->filial_id == $filial->id ? 'selected' : '' }}>
+                                <option value="{{ $filial->id }}" {{ old('filial_id', $user->filial_id) == $filial->id ? 'selected' : '' }}>
                                     {{ $filial->name }}
                                 </option>
                             @endforeach
@@ -249,9 +249,10 @@
         const filialSelect = document.getElementById('filial');
 
         function toggleFilial() {
-            if (roleSelect.value.trim().toLowerCase() === 'employee') {
+            const currentRole = roleSelect.value.trim().toLowerCase();
+            if (currentRole === 'employee' || currentRole === 'admin_filial') {
                 filialBox.style.display = 'block';
-                filialSelect.required = true;
+                filialSelect.required = currentRole === 'employee';
             } else {
                 filialBox.style.display = 'none';
                 filialSelect.required = false;
