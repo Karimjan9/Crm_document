@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\DirectionTypeController;
 use App\Http\Controllers\Admin\SMSMessageTextController;
 use App\Http\Controllers\Admin\ConsulationTypeController;
 use App\Http\Controllers\Admin\FCalendar\HolidayController;
+use App\Http\Controllers\SuperAdmin\ExcelExportController;
 use App\Http\Controllers\SuperAdmin\StaticApostilController;
 use App\Http\Controllers\Admin\FCalendar\CalendarController as FCalendarController;
 
@@ -96,6 +97,12 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
     Route::put('/consulation_main_type_update', [ConsulationTypeController::class, 'update_main'])->name('consulation.update_main_type');
 
     Route::resource('/sms_message_text', SMSMessageTextController::class)->except(['show']);
+
+    Route::middleware('role:super_admin')->prefix('excel')->name('excel.')->group(function () {
+        Route::get('/{dataset}', [ExcelExportController::class, 'download'])
+            ->where('dataset', 'clients|documents|employees|all')
+            ->name('download');
+    });
 
     Route::resource('document_type/{document_type}/type_addition',TypeAdditionController::class)->except(['show']);
 

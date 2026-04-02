@@ -4,6 +4,7 @@ namespace App\Models;
 
 
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,6 +27,8 @@ class User extends Authenticatable
         'login',
         'phone',
         'password',
+        'avatar_path',
+        'settings',
     ];
 
     /**
@@ -45,6 +48,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'settings' => 'array',
     ];
 
    
@@ -52,6 +56,25 @@ class User extends Authenticatable
      public function filial()
     {
         return $this->belongsTo(FilialModel::class);
+    }
+
+    public function createdDocuments()
+    {
+        return $this->hasMany(DocumentsModel::class, 'user_id', 'id');
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar_path && Storage::disk('public')->exists($this->avatar_path)) {
+            return Storage::url($this->avatar_path);
+        }
+
+        return url('avatar-4.png');
+    }
+
+    public function setting(string $key, mixed $default = null): mixed
+    {
+        return data_get($this->settings ?? [], $key, $default);
     }
 
     // public function hasRole($role)

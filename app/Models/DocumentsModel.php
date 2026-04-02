@@ -86,6 +86,11 @@ class DocumentsModel extends Model
         return $this->belongsTo(User::class,'user_id','id');
     }
 
+    public function filial()
+    {
+        return $this->belongsTo(FilialModel::class, 'filial_id');
+    }
+
 
 
 public function getDeadlineRemainingAttribute()

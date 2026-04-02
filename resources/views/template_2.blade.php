@@ -7,7 +7,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--favicon-->
-	{{-- <link rel="icon" href="assets/images/favicon-32x32.png" type="image/png" /> --}}
+	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets_2/images/favicon-32x32.png') }}" />
+	<link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
 	<!--plugins-->
 	<link href="{{ url('assets_2/plugins/notifications/css/lobibox.min.css') }}" rel="stylesheet"/>
 	<link href="{{ url('assets_2/plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet"/>
@@ -23,6 +24,7 @@
 	<link href="{{ url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap') }}" rel="stylesheet">
 	<link href="{{ url('assets_2/css/app.css') }}" rel="stylesheet">
 	<link href="{{ url('assets_2/css/icons.css') }}" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 	<!-- Theme Style CSS -->
 	<link rel="stylesheet" href="{{ url('assets_2/css/dark-theme.css') }}" />
 	<link rel="stylesheet" href="{{ url('assets_2/css/semi-dark.css') }}" />
