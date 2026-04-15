@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\ConsulModel;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ConsulSeeder extends Seeder
@@ -15,38 +14,37 @@ class ConsulSeeder extends Seeder
      */
     public function run()
     {
-        ConsulModel::all()->each(function ($item) {
-            $item->delete();
-        });
-        ConsulModel::insert([
+        $records = [
             [
                 'name' => "Ta'lim va Adliya",
-                'amount' => 150,
-                'day' => 0,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'amount' => 150000,
+                'day' => 3,
             ],
             [
                 'name' => 'Qolganlar',
-                'amount' => 250,
-                'day' => 0,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'amount' => 250000,
+                'day' => 5,
             ],
-             [
+            [
                 'name' => 'Chet el fuqarolari uchun',
-                'amount' => 100,
-                'day' => 0,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'amount' => 100000,
+                'day' => 2,
             ],
-             [
+            [
                 'name' => 'Boshqalar',
-                'amount' => 100,
-                'day' => 0,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'amount' => 120000,
+                'day' => 3,
             ],
-        ]);
+        ];
+
+        foreach ($records as $record) {
+            ConsulModel::updateOrCreate(
+                ['name' => $record['name']],
+                [
+                    'amount' => $record['amount'],
+                    'day' => $record['day'],
+                ]
+            );
+        }
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\Criteria;
+use App\Support\DeadlineBellData;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,15 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
-
-        try {
-            //code...
-          
-        } catch (\Throwable $th) {
-            //throw $th;
-        }
-
+        View::composer('header', function ($view) {
+            $view->with('deadlineBell', DeadlineBellData::buildFor(auth()->user()));
+        });
 
         Paginator::defaultView('vendor.pagination.bootstrap-5');
  

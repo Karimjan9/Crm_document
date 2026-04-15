@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ConsulationTypeController;
 use App\Http\Controllers\Admin\FCalendar\HolidayController;
 use App\Http\Controllers\SuperAdmin\ExcelExportController;
 use App\Http\Controllers\SuperAdmin\StaticApostilController;
+use App\Http\Controllers\SuperAdmin\PackageTemplateController;
 use App\Http\Controllers\Admin\FCalendar\CalendarController as FCalendarController;
 
 Route::name('superadmin.')->prefix('superadmin')->group(function(){
@@ -25,7 +26,7 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
         Route::get('calendar',  function () {
             return view('calendar/fl/index');
-        });
+        })->name('calendar.full.index');
 
         // Календарь
         Route::prefix('calendar')->group(function () {
@@ -75,6 +76,11 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
     Route::get('/calendar/index', [CalendarController::class, 'index'])->name('calendar.index');
 
     Route::resource('/service',ServiceController::class)->except(['show']);
+
+    Route::middleware('role:super_admin')->resource('/template-package', PackageTemplateController::class)
+        ->except(['show'])
+        ->parameter('template-package', 'templatePackage')
+        ->names('template_package');
 
     Route::resource('service/{service}/addon',ServiceAddonController::class)->except(['show', 'index']);
 

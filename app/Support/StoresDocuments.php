@@ -16,9 +16,12 @@ use App\Models\DocumentDirectionAdditionModel;
 use App\Models\ApostilStatikModel;
 use App\Models\ConsulModel;
 use App\Models\ConsulationTypeModel;
+use App\Models\PackageTemplate;
 
 trait StoresDocuments
 {
+    protected ?int $nextDocumentNumber = null;
+
     protected function resolveFilialId(): int
     {
         return Auth::user()?->filial_id ?? 1;
@@ -31,129 +34,146 @@ trait StoresDocuments
 
     protected function storeDocumentFromRequest(Request $request): DocumentsModel
     {
-        return DB::transaction(function () use ($request) {
-            $serviceId = $request->input('service_id') ?? $request->input('service');
-            $documentTypeId = $request->input('document_type_id') ?? $request->input('document_type');
-            $directionTypeId = $request->input('direction_type_id') ?? $request->input('direction_type');
-            $consulateTypeId = $request->input('consulate_type_id') ?? $request->input('legalization_id');
+        return DB::transaction(fn () => $this->persistDocumentFromRequest($request));
+    }
 
-            $processMode = $request->input('process_mode');
-            $apostilGroup1Id = $request->input('apostil_group1_id');
-            $apostilGroup2Id = $request->input('apostil_group2_id');
-            $consulId = $request->input('consul_id');
+    protected function storeDocumentFromPayload(array $payload, array $files = []): DocumentsModel
+    {
+        $request = Request::create('/', 'POST', $payload, [], ['files' => $files]);
 
-            $service = ServicesModel::findOrFail($serviceId);
-            $servicePrice = $service->price;
-            $deadlineTime = $service->deadline ?? 0;
+        return $this->persistDocumentFromRequest($request);
+    }
 
-            [$addonsTotal, $addonsDeadline, $addonsAttach] = $this->buildAddonsFromRequest($request);
-            $deadlineTime += $addonsDeadline;
+    protected function persistDocumentFromRequest(Request $request): DocumentsModel
+    {
+        $serviceId = $request->input('service_id') ?? $request->input('service');
+        $documentTypeId = $request->input('document_type_id') ?? $request->input('document_type');
+        $directionTypeId = $request->input('direction_type_id') ?? $request->input('direction_type');
+        $consulateTypeId = $request->input('consulate_type_id') ?? $request->input('legalization_id');
 
-            $extras = $this->calculateProcessExtras(
-                $processMode,
-                $apostilGroup1Id,
-                $apostilGroup2Id,
-                $consulId,
-                $consulateTypeId
-            );
+        $processMode = $request->input('process_mode');
+        $processMode = $processMode === 'service' ? null : $processMode;
+        $apostilGroup1Id = $request->input('apostil_group1_id');
+        $apostilGroup2Id = $request->input('apostil_group2_id');
+        $consulId = $request->input('consul_id');
 
-            $addonsTotal += $extras['price'];
-            $deadlineTime += $extras['deadline'];
+        $service = ServicesModel::findOrFail($serviceId);
+        $servicePrice = $service->price;
+        $deadlineTime = $service->deadline ?? 0;
 
-            $discountInput = (float) ($request->input('discount') ?? 0);
-            $totalPrice = $servicePrice + $addonsTotal;
-            $discountAmount = $this->calculateDiscountAmount($request, $discountInput, $totalPrice);
-            $finalPrice = $totalPrice - $discountAmount;
+        [$addonsTotal, $addonsDeadline, $addonsAttach] = $this->buildAddonsFromRequest($request);
+        $deadlineTime += $addonsDeadline;
 
-            $document = DocumentsModel::create([
-                'client_id'          => $request->input('client_id'),
-                'service_id'         => $serviceId,
-                'service_price'      => $servicePrice,
-                'addons_total_price' => $addonsTotal,
-                'deadline_time'      => $deadlineTime,
-                'final_price'        => $finalPrice,
-                'paid_amount'        => $request->input('paid_amount', $request->input('payment_amount', 0)),
-                'discount'           => $discountInput,
-                'user_id'            => auth()->id(),
-                'description'        => $request->input('description'),
-                'filial_id'          => $this->resolveFilialId(),
-                'document_code'      => $this->generateDocumentCode(),
-                'document_type_id'   => $documentTypeId,
-                'direction_type_id'  => $directionTypeId,
-                'consulate_type_id'  => $consulateTypeId,
-                'process_mode'       => $processMode,
-                'apostil_group1_id'  => $apostilGroup1Id,
-                'apostil_group2_id'  => $apostilGroup2Id,
-                'consul_id'          => $consulId,
+        $extras = $this->calculateProcessExtras(
+            $processMode,
+            $apostilGroup1Id,
+            $apostilGroup2Id,
+            $consulId,
+            $consulateTypeId
+        );
+
+        $addonsTotal += $extras['price'];
+        $deadlineTime += $extras['deadline'];
+
+        $discountInput = (float) ($request->input('discount') ?? 0);
+        $totalPrice = $servicePrice + $addonsTotal;
+        $discountAmount = min($this->resolveAppliedDiscountAmount($request, $discountInput, $totalPrice), $totalPrice);
+        $finalPrice = max($totalPrice - $discountAmount, 0);
+
+        $document = DocumentsModel::create([
+            'client_id'          => $request->input('client_id'),
+            'service_id'         => $serviceId,
+            'service_price'      => $servicePrice,
+            'addons_total_price' => $addonsTotal,
+            'deadline_time'      => $deadlineTime,
+            'final_price'        => $finalPrice,
+            'paid_amount'        => $request->input('paid_amount', $request->input('payment_amount', 0)),
+            'discount'           => $discountInput,
+            'user_id'            => auth()->id(),
+            'description'        => $request->input('description'),
+            'filial_id'          => $this->resolveFilialId(),
+            'document_code'      => $this->generateDocumentCode(),
+            'document_type_id'   => $documentTypeId,
+            'direction_type_id'  => $directionTypeId,
+            'consulate_type_id'  => $consulateTypeId,
+            'process_mode'       => $processMode,
+            'apostil_group1_id'  => $apostilGroup1Id,
+            'apostil_group2_id'  => $apostilGroup2Id,
+            'consul_id'          => $consulId,
+        ]);
+
+        if (!empty($extras['charges'])) {
+            $now = now();
+            $rows = [];
+            foreach ($extras['charges'] as $charge) {
+                $rows[] = [
+                    'document_id' => $document->id,
+                    'charge_type' => $charge['type'],
+                    'source_id'   => $charge['source_id'],
+                    'price'       => $charge['price'],
+                    'days'        => $charge['days'],
+                    'name'        => $charge['name'],
+                    'created_at'  => $now,
+                    'updated_at'  => $now,
+                ];
+            }
+            DB::table('document_process_charges')->insert($rows);
+        }
+
+        if (!empty($addonsAttach['document'])) {
+            $document->document_type_addons()->attach($addonsAttach['document']);
+        }
+
+        if (!empty($addonsAttach['direction'])) {
+            $document->document_direction_addons()->attach($addonsAttach['direction']);
+        }
+
+        if (!empty($addonsAttach['service'])) {
+            $document->addons()->attach($addonsAttach['service']);
+        }
+
+        $paidAmount = $request->input('paid_amount', $request->input('payment_amount', 0));
+        $paymentType = $request->input('payment_type');
+        if ($paidAmount && $paymentType) {
+            PaymentsModel::create([
+                'document_id'      => $document->id,
+                'amount'           => $paidAmount,
+                'payment_type'     => $paymentType,
+                'paid_by_admin_id' => auth()->id(),
             ]);
+        }
 
-            if (!empty($extras['charges'])) {
-                $now = now();
-                $rows = [];
-                foreach ($extras['charges'] as $charge) {
-                    $rows[] = [
-                        'document_id' => $document->id,
-                        'charge_type' => $charge['type'],
-                        'source_id'   => $charge['source_id'],
-                        'price'       => $charge['price'],
-                        'days'        => $charge['days'],
-                        'name'        => $charge['name'],
-                        'created_at'  => $now,
-                        'updated_at'  => $now,
-                    ];
-                }
-                DB::table('document_process_charges')->insert($rows);
-            }
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('documents/' . $document->document_code, 'public');
 
-            if (!empty($addonsAttach['document'])) {
-                $document->document_type_addons()->attach($addonsAttach['document']);
-            }
-
-            if (!empty($addonsAttach['direction'])) {
-                $document->document_direction_addons()->attach($addonsAttach['direction']);
-            }
-
-            if (!empty($addonsAttach['service'])) {
-                $document->addons()->attach($addonsAttach['service']);
-            }
-
-            $paidAmount = $request->input('paid_amount', $request->input('payment_amount', 0));
-            $paymentType = $request->input('payment_type');
-            if ($paidAmount && $paymentType) {
-                PaymentsModel::create([
-                    'document_id'      => $document->id,
-                    'amount'           => $paidAmount,
-                    'payment_type'     => $paymentType,
-                    'paid_by_admin_id' => auth()->id(),
+                DocumentFile::create([
+                    'document_id'   => $document->id,
+                    'original_name' => $file->getClientOriginalName(),
+                    'file_path'     => $path,
+                    'file_type'     => $file->getClientMimeType(),
+                    'file_size'     => $file->getSize(),
                 ]);
             }
+        }
 
-            if ($request->hasFile('files')) {
-                foreach ($request->file('files') as $file) {
-                    $path = $file->store('documents/' . $document->document_code, 'public');
-
-                    DocumentFile::create([
-                        'document_id'   => $document->id,
-                        'original_name' => $file->getClientOriginalName(),
-                        'file_path'     => $path,
-                        'file_type'     => $file->getClientMimeType(),
-                        'file_size'     => $file->getSize(),
-                    ]);
-                }
-            }
-
-            return $document;
-        });
+        return $document;
     }
 
     protected function buildAddonsFromRequest(Request $request): array
     {
         $selectedAddons = [];
 
-        if ($request->filled('selected_addons')) {
-            $decoded = json_decode($request->input('selected_addons'), true);
-            if (is_array($decoded)) {
-                $selectedAddons = $decoded;
+        if ($request->has('selected_addons')) {
+            $rawSelectedAddons = $request->input('selected_addons');
+
+            if (is_array($rawSelectedAddons)) {
+                $selectedAddons = $rawSelectedAddons;
+            } elseif (is_string($rawSelectedAddons) && trim($rawSelectedAddons) !== '') {
+                $decoded = json_decode($rawSelectedAddons, true);
+                if (is_array($decoded)) {
+                    $selectedAddons = $decoded;
+                }
             }
         }
 
@@ -325,18 +345,41 @@ trait StoresDocuments
         return $isPercent ? ($totalPrice * ($discountInput / 100)) : $discountInput;
     }
 
+    protected function resolveAppliedDiscountAmount(Request $request, float $discountInput, float $totalPrice): float
+    {
+        $templateId = $request->input('package_template_id');
+
+        if ($templateId) {
+            $template = PackageTemplate::query()
+                ->active()
+                ->find($templateId);
+
+            if ($template && PackageTemplateSupport::matchesRequest($template, $request)) {
+                return max($totalPrice - (float) $template->promo_price, 0);
+            }
+        }
+
+        return $this->calculateDiscountAmount($request, $discountInput, $totalPrice);
+    }
+
     protected function generateDocumentCode(): string
     {
         $code = $this->resolveFilialCode();
-        $baseNumber = 1000000;
-        $nextId = DocumentsModel::max('id') + 1;
-        $number = $baseNumber + $nextId;
-        $documentCode = $code . '-' . $number;
+
+        if ($this->nextDocumentNumber === null) {
+            $baseNumber = 1000000;
+            $nextId = (DocumentsModel::max('id') ?? 0) + 1;
+            $this->nextDocumentNumber = $baseNumber + $nextId;
+        }
+
+        $documentCode = $code . '-' . $this->nextDocumentNumber;
 
         while (DocumentsModel::where('document_code', $documentCode)->exists()) {
-            $number++;
-            $documentCode = $code . '-' . $number;
+            $this->nextDocumentNumber++;
+            $documentCode = $code . '-' . $this->nextDocumentNumber;
         }
+
+        $this->nextDocumentNumber++;
 
         return $documentCode;
     }

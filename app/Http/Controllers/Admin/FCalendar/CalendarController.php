@@ -2,158 +2,169 @@
 
 namespace App\Http\Controllers\Admin\FCalendar;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\Holiday;
+use App\Support\WorkdayCalendar;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Controller;
 
 class CalendarController extends Controller
 {
-    /**
-     * Получить все данные для календаря
-     */
     public function getCalendarData(Request $request)
     {
         try {
-            // Валидация параметров
             $validator = Validator::make($request->all(), [
                 'start' => 'required|date',
-                'end' => 'required|date'
+                'end' => 'required|date',
             ]);
 
             if ($validator->fails()) {
-                Log::error('Validation error in getCalendarData:', $validator->errors()->toArray());
+                Log::error('Validation error in getCalendarData', $validator->errors()->toArray());
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Неверные параметры даты',
-                    'errors' => $validator->errors()
+                    'message' => 'Date range is invalid',
+                    'errors' => $validator->errors(),
                 ], 400);
             }
 
             $start = $request->input('start');
             $end = $request->input('end');
 
-            // Убедимся, что даты корректны
             try {
-                $startDate = Carbon::parse($start);
-                $endDate = Carbon::parse($end);
-            } catch (\Exception $e) {
-                Log::error('Invalid date format:', ['start' => $start, 'end' => $end]);
+                Carbon::parse($start);
+                Carbon::parse($end);
+            } catch (\Throwable $e) {
+                Log::error('Invalid date format', ['start' => $start, 'end' => $end]);
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Неверный формат даты'
+                    'message' => 'Date format is invalid',
                 ], 400);
             }
 
-            $events = [];
-
-            // 1. Получаем праздники
-            $holidays = $this->getHolidays($start, $end);
-            $events = array_merge($events, $holidays);
-
-            // 2. Добавляем выходные
-            $weekends = $this->getWeekends($start, $end);
-            $events = array_merge($events, $weekends);
+            $events = array_merge(
+                $this->getHolidays($start, $end),
+                $this->getWeekends($start, $end)
+            );
 
             Log::info('Calendar data loaded successfully', [
                 'start' => $start,
                 'end' => $end,
-                'total_events' => count($events)
+                'total_events' => count($events),
             ]);
 
             return response()->json($events);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error loading calendar data: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка загрузки данных календаря',
-                'error' => $e->getMessage()
+                'message' => 'Calendar data could not be loaded',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
-    /**
-     * Проверить доступность даты
-     */
     public function checkDateAvailability(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'date' => 'required|date'
+                'date' => 'required|date',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'available' => false,
-                    'message' => 'Неверный формат даты',
-                    'errors' => $validator->errors()
+                    'message' => 'Date format is invalid',
+                    'errors' => $validator->errors(),
                 ], 400);
             }
 
             $date = $request->input('date');
             $carbonDate = Carbon::parse($date);
 
-            // Проверяем выходной
-            if ($carbonDate->isWeekend()) {
+            if ($carbonDate->isSunday()) {
                 return response()->json([
                     'available' => false,
-                    'message' => 'Выходной день',
+                    'message' => 'Yakshanba avtomatik dam olish kuni',
                     'reason' => 'weekend',
-                    'date' => $date
+                    'date' => $date,
                 ]);
             }
 
-            // Проверяем праздник
-            $holiday = Holiday::active()->whereDate('date', $date)->first();
+            $holiday = WorkdayCalendar::findNamedOffDay($carbonDate);
 
             if ($holiday) {
                 return response()->json([
                     'available' => false,
-                    'message' => 'Праздничный день: ' . $holiday->title,
+                    'message' => 'Bu kun allaqachon belgilangan: ' . $holiday->title,
                     'reason' => 'holiday',
                     'holiday' => $holiday,
-                    'date' => $date
+                    'date' => $date,
                 ]);
             }
 
             return response()->json([
                 'available' => true,
-                'message' => 'Дата доступна',
-                'date' => $date
+                'message' => 'Date is available',
+                'date' => $date,
             ]);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error checking date availability: ' . $e->getMessage());
+
             return response()->json([
                 'available' => false,
-                'message' => 'Ошибка проверки даты',
-                'error' => $e->getMessage()
+                'message' => 'Date check failed',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
-    /**
-     * Получить праздники на диапазон дат
-     */
-    private function getHolidays($start, $end)
+    private function getHolidays(string $start, string $end): array
     {
-        $holidays = Holiday::active()
-            ->whereBetween('date', [$start, $end])
-            ->get();
+        $startDate = Carbon::parse($start)->startOfDay();
+        $endDate = Carbon::parse($end)->startOfDay();
 
+        $holidays = Holiday::active()->get();
         $events = [];
 
         foreach ($holidays as $holiday) {
+            $holidayDate = $holiday->date->copy()->startOfDay();
+
+            if (!$holiday->is_recurring && !$holidayDate->between($startDate, $endDate)) {
+                continue;
+            }
+
+            if ($holiday->is_recurring) {
+                $occurrence = Carbon::create(
+                    $startDate->year,
+                    $holidayDate->month,
+                    $holidayDate->day
+                )->startOfDay();
+
+                while ($occurrence->lessThan($startDate)) {
+                    $occurrence->addYear();
+                }
+
+                if ($occurrence->greaterThan($endDate)) {
+                    continue;
+                }
+
+                $eventDate = $occurrence;
+            } else {
+                $eventDate = $holidayDate;
+            }
+
             $events[] = [
-                'id' => 'holiday_' . $holiday->id,
+                'id' => 'holiday_' . $holiday->id . '_' . $eventDate->format('Ymd'),
                 'title' => $holiday->title,
-                'start' => $holiday->date->format('Y-m-d'),
-                'end' => $holiday->date->format('Y-m-d'),
+                'start' => $eventDate->format('Y-m-d'),
+                'end' => $eventDate->format('Y-m-d'),
                 'color' => $holiday->getColor(),
                 'textColor' => $holiday->getTextColor(),
                 'allDay' => true,
@@ -164,15 +175,14 @@ class CalendarController extends Controller
                     'holiday_id' => $holiday->id,
                     'holiday_type' => $holiday->type,
                     'description' => $holiday->description,
-                    'is_recurring' => $holiday->is_recurring
-                ]
+                    'is_recurring' => $holiday->is_recurring,
+                ],
             ];
 
-            // Также добавляем текстовую метку
             $events[] = [
-                'id' => 'label_' . $holiday->id,
+                'id' => 'label_' . $holiday->id . '_' . $eventDate->format('Ymd'),
                 'title' => $holiday->title,
-                'start' => $holiday->date->format('Y-m-d'),
+                'start' => $eventDate->format('Y-m-d'),
                 'display' => 'auto',
                 'backgroundColor' => 'transparent',
                 'textColor' => $holiday->getTextColor(),
@@ -182,67 +192,39 @@ class CalendarController extends Controller
                 'extendedProps' => [
                     'type' => 'holiday_label',
                     'holiday_id' => $holiday->id,
-                ]
+                ],
             ];
         }
 
         return $events;
     }
 
-    /**
-     * Получить выходные дни
-     */
-    private function getWeekends($start, $end)
+    private function getWeekends(string $start, string $end): array
     {
         $events = [];
-        $startDate = Carbon::parse($start);
-        $endDate = Carbon::parse($end);
+        $cursor = Carbon::parse($start)->startOfDay();
+        $endDate = Carbon::parse($end)->startOfDay()->addDay();
 
-        // Увеличиваем endDate на 1 день, чтобы включить последний день
-        $endDate = $endDate->copy()->addDay();
-
-        $weekendDays = [Carbon::SUNDAY];
-
-        while ($startDate < $endDate) {
-            if (in_array($startDate->dayOfWeek, $weekendDays)){
-                $dayName = $this->getRussianDayName($startDate->dayOfWeek);
-
+        while ($cursor->lessThan($endDate)) {
+            if ($cursor->isSunday()) {
                 $events[] = [
-                    'id' => 'weekend_' . $startDate->format('Y-m-d'),
-                    'title' => 'Выходной',
-                    'start' => $startDate->format('Y-m-d'),
+                    'id' => 'weekend_' . $cursor->format('Y-m-d'),
+                    'title' => 'Yakshanba',
+                    'start' => $cursor->format('Y-m-d'),
                     'display' => 'background',
                     'backgroundColor' => 'rgba(200, 200, 200, 0.3)',
                     'allDay' => true,
                     'editable' => false,
                     'extendedProps' => [
                         'type' => 'weekend',
-                        'day_name' => $dayName
-                    ]
+                        'day_name' => 'yakshanba',
+                    ],
                 ];
             }
 
-            $startDate->addDay();
+            $cursor->addDay();
         }
 
         return $events;
-    }
-
-    /**
-     * Получить русское название дня недели
-     */
-    private function getRussianDayName($dayOfWeek)
-    {
-        $days = [
-            0 => 'воскресенье',
-            1 => 'понедельник',
-            2 => 'вторник',
-            3 => 'среда',
-            4 => 'четверг',
-            5 => 'пятница',
-            6 => 'суббота'
-        ];
-
-        return $days[$dayOfWeek] ?? '';
     }
 }

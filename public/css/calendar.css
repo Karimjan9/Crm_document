@@ -44,7 +44,6 @@
 }
 
 /* Стили для выходных */
-.fc-day-sat,
 .fc-day-sun {
     background-color: rgba(245, 245, 245, 0.7);
 }

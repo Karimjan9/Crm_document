@@ -3,11 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Database\Seeders\OrderSeeder;
-use Database\Seeders\CareerSeeder;
-use Database\Seeders\DepartementsSeeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use PhpParser\Comment\Doc;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,15 +13,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
         $this->call([
-    
-            UserSeeder::class,
             FilialSeeder::class,
-            ConsulationTypeSeeder::class,
-            DirectionTypeSeeder::class,
+            UserSeeder::class,
             DocumentTypeSeeder::class,
-          
+            DirectionTypeSeeder::class,
+            ConsulationTypeSeeder::class,
+            ConsulSeeder::class,
+            ApostilStaticSeeder::class,
         ]);
     }
 }

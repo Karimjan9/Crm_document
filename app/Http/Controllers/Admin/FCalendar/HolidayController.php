@@ -2,50 +2,42 @@
 
 namespace App\Http\Controllers\Admin\FCalendar;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\Holiday;
+use App\Support\WorkdayCalendar;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Controller;
 
 class HolidayController extends Controller
 {
-    /**
-     * Получить список праздников
-     */
     public function index(Request $request)
     {
         try {
             $query = Holiday::query();
 
-            // Фильтрация по типу
             if ($request->has('type')) {
                 $query->where('type', $request->type);
             }
 
-            // Фильтрация по году
             if ($request->has('year')) {
                 $query->whereYear('date', $request->year);
             }
 
-            // Фильтрация по месяцу
             if ($request->has('month')) {
                 $query->whereMonth('date', $request->month);
             }
 
-            // Фильтрация по статусу
             if ($request->has('is_active')) {
                 $query->where('is_active', $request->is_active);
             }
 
-            // Сортировка
             $sortBy = $request->get('sort_by', 'date');
             $sortOrder = $request->get('sort_order', 'asc');
             $query->orderBy($sortBy, $sortOrder);
 
-            // Пагинация
             $perPage = $request->get('per_page', 15);
             $holidays = $query->paginate($perPage);
 
@@ -54,21 +46,18 @@ class HolidayController extends Controller
                 'data' => $holidays,
                 'total' => $holidays->total(),
                 'per_page' => $holidays->perPage(),
-                'current_page' => $holidays->currentPage()
+                'current_page' => $holidays->currentPage(),
             ]);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error fetching holidays: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка получения списка праздников'
+                'message' => 'Holiday list could not be loaded',
             ], 500);
         }
     }
 
-    /**
-     * Получить информацию о празднике
-     */
     public function show($id)
     {
         try {
@@ -76,21 +65,18 @@ class HolidayController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $holiday
+                'data' => $holiday,
             ]);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error fetching holiday: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Праздник не найден'
+                'message' => 'Holiday not found',
             ], 404);
         }
     }
 
-    /**
-     * Создать новый праздник
-     */
     public function store(Request $request)
     {
         try {
@@ -101,15 +87,19 @@ class HolidayController extends Controller
                 'color' => 'nullable|string|max:7',
                 'description' => 'nullable|string',
                 'is_recurring' => 'boolean',
-                'is_active' => 'boolean'
+                'is_active' => 'boolean',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Ошибки валидации',
-                    'errors' => $validator->errors()
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
                 ], 422);
+            }
+
+            if ($response = $this->validateOffDayDate($request->date)) {
+                return $response;
             }
 
             $holiday = Holiday::create([
@@ -120,29 +110,28 @@ class HolidayController extends Controller
                 'description' => $request->description,
                 'is_recurring' => $request->boolean('is_recurring', false),
                 'is_active' => $request->boolean('is_active', true),
-                'created_by' => auth()->id()
+                'created_by' => auth()->id(),
             ]);
+
+            WorkdayCalendar::clearCache();
 
             Log::info('Holiday created', ['id' => $holiday->id, 'title' => $holiday->title]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Праздник успешно создан',
-                'data' => $holiday
+                'message' => 'Off day created successfully',
+                'data' => $holiday,
             ], 201);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error creating holiday: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка создания праздника'
+                'message' => 'Off day could not be created',
             ], 500);
         }
     }
 
-    /**
-     * Обновить праздник
-     */
     public function update(Request $request, $id)
     {
         try {
@@ -155,64 +144,67 @@ class HolidayController extends Controller
                 'color' => 'nullable|string|max:7',
                 'description' => 'nullable|string',
                 'is_recurring' => 'boolean',
-                'is_active' => 'boolean'
+                'is_active' => 'boolean',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Ошибки валидации',
-                    'errors' => $validator->errors()
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
                 ], 422);
             }
 
+            $dateToValidate = $request->input('date', $holiday->date->toDateString());
+            if ($response = $this->validateOffDayDate($dateToValidate)) {
+                return $response;
+            }
+
             $holiday->update($request->all());
+
+            WorkdayCalendar::clearCache();
 
             Log::info('Holiday updated', ['id' => $holiday->id]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Праздник успешно обновлен',
-                'data' => $holiday
+                'message' => 'Off day updated successfully',
+                'data' => $holiday,
             ]);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error updating holiday: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка обновления праздника'
+                'message' => 'Off day could not be updated',
             ], 500);
         }
     }
 
-    /**
-     * Удалить праздник
-     */
     public function destroy($id)
     {
         try {
             $holiday = Holiday::findOrFail($id);
             $holiday->delete();
 
+            WorkdayCalendar::clearCache();
+
             Log::info('Holiday deleted', ['id' => $id]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Праздник успешно удален'
+                'message' => 'Off day deleted successfully',
             ]);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error deleting holiday: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка удаления праздника'
+                'message' => 'Off day could not be deleted',
             ], 500);
         }
     }
 
-    /**
-     * Получить ближайшие праздники
-     */
     public function upcoming(Request $request)
     {
         try {
@@ -226,21 +218,18 @@ class HolidayController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $holidays
+                'data' => $holidays,
             ]);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error fetching upcoming holidays: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка получения ближайших праздников'
+                'message' => 'Upcoming off days could not be loaded',
             ], 500);
         }
     }
 
-    /**
-     * Получить статистику
-     */
     public function stats()
     {
         try {
@@ -259,21 +248,18 @@ class HolidayController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $stats
+                'data' => $stats,
             ]);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error fetching holiday stats: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка получения статистики'
+                'message' => 'Off day stats could not be loaded',
             ], 500);
         }
     }
 
-    /**
-     * Массовый импорт праздников
-     */
     public function bulkImport(Request $request)
     {
         try {
@@ -281,14 +267,14 @@ class HolidayController extends Controller
                 'holidays' => 'required|array',
                 'holidays.*.title' => 'required|string|max:255',
                 'holidays.*.date' => 'required|date',
-                'holidays.*.type' => 'required|in:national,company,regional,religious,other'
+                'holidays.*.type' => 'required|in:national,company,regional,religious,other',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Ошибки валидации',
-                    'errors' => $validator->errors()
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
                 ], 422);
             }
 
@@ -299,6 +285,11 @@ class HolidayController extends Controller
 
             foreach ($request->holidays as $holidayData) {
                 try {
+                    if (Carbon::parse($holidayData['date'])->isSunday()) {
+                        $failed++;
+                        continue;
+                    }
+
                     Holiday::create([
                         'title' => $holidayData['title'],
                         'date' => $holidayData['date'],
@@ -307,44 +298,42 @@ class HolidayController extends Controller
                         'description' => $holidayData['description'] ?? null,
                         'is_recurring' => $holidayData['is_recurring'] ?? false,
                         'is_active' => $holidayData['is_active'] ?? true,
-                        'created_by' => auth()->id()
+                        'created_by' => auth()->id(),
                     ]);
 
                     $imported++;
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     $failed++;
                     Log::error('Error importing holiday: ' . $e->getMessage());
                 }
             }
 
             DB::commit();
+            WorkdayCalendar::clearCache();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Импорт завершен',
+                'message' => 'Bulk import completed',
                 'imported' => $imported,
-                'failed' => $failed
+                'failed' => $failed,
             ]);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in bulk import: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка импорта праздников'
+                'message' => 'Bulk import failed',
             ], 500);
         }
     }
 
-    /**
-     * Экспорт праздников в CSV
-     */
     public function exportCsv()
     {
         try {
             $holidays = Holiday::all();
 
-            $csv = "Название;Дата;Тип;Цвет;Описание;Повторяющийся;Активный\n";
+            $csv = "Title;Date;Type;Color;Description;Recurring;Active\n";
 
             foreach ($holidays as $holiday) {
                 $csv .= sprintf(
@@ -354,28 +343,25 @@ class HolidayController extends Controller
                     $holiday->getTypeName(),
                     $holiday->color ?? '',
                     str_replace(';', ',', $holiday->description ?? ''),
-                    $holiday->is_recurring ? 'Да' : 'Нет',
-                    $holiday->is_active ? 'Да' : 'Нет'
+                    $holiday->is_recurring ? 'Yes' : 'No',
+                    $holiday->is_active ? 'Yes' : 'No'
                 ) . "\n";
             }
 
             return response($csv, 200, [
                 'Content-Type' => 'text/csv',
-                'Content-Disposition' => 'attachment; filename="holidays_' . date('Y-m-d') . '.csv"'
+                'Content-Disposition' => 'attachment; filename="holidays_' . date('Y-m-d') . '.csv"',
             ]);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error exporting holidays to CSV: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка экспорта'
+                'message' => 'CSV export failed',
             ], 500);
         }
     }
 
-    /**
-     * Получить данные для редактирования
-     */
     public function edit($id)
     {
         try {
@@ -383,47 +369,58 @@ class HolidayController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $holiday
+                'data' => $holiday,
             ]);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error fetching holiday for edit: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка получения данных для редактирования'
+                'message' => 'Off day data could not be loaded',
             ], 404);
         }
     }
 
-    /**
-     * Копировать праздник
-     */
     public function copy($id)
     {
         try {
             $original = Holiday::findOrFail($id);
 
             $copy = $original->replicate();
-            $copy->title = $original->title . ' (копия)';
+            $copy->title = $original->title . ' (copy)';
             $copy->save();
+
+            WorkdayCalendar::clearCache();
 
             Log::info('Holiday copied', [
                 'original_id' => $original->id,
-                'copy_id' => $copy->id
+                'copy_id' => $copy->id,
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Праздник успешно скопирован',
-                'data' => $copy
+                'message' => 'Off day copied successfully',
+                'data' => $copy,
             ]);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error copying holiday: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка копирования праздника'
+                'message' => 'Off day could not be copied',
             ], 500);
         }
+    }
+
+    private function validateOffDayDate(string $date)
+    {
+        if (!Carbon::parse($date)->isSunday()) {
+            return null;
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Yakshanba avtomatik dam olish kuni. Uni alohida kiritish shart emas.',
+        ], 422);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class DocumentCreateRequest extends FormRequest
 {
@@ -34,6 +35,21 @@ class DocumentCreateRequest extends FormRequest
             }
             $this->merge(['new_client_phone' => $phone]);
         }
+
+        foreach ([
+            'process_mode',
+            'selection_mode',
+            'direction_type_id',
+            'consulate_type_id',
+            'apostil_group1_id',
+            'apostil_group2_id',
+            'consul_id',
+            'package_template_id',
+        ] as $field) {
+            if ($this->has($field) && $this->input($field) === '') {
+                $this->merge([$field => null]);
+            }
+        }
         //   dd($this->all());
     }
   
@@ -54,12 +70,34 @@ class DocumentCreateRequest extends FormRequest
         'payment_type'     => 'nullable|string|in:cash,card,online,admin_entry,transfer',
         'description'      => 'nullable|string|max:2000',
         'document_type_id' => 'required|exists:document_type,id',
-        'direction_type_id'=> 'required_if:process_mode,apostil|nullable|exists:direction_type,id',
-        'consulate_type_id'=> 'required_if:process_mode,consul|nullable|exists:consulates_type,id',
-        'process_mode'     => 'nullable|in:apostil,consul',
-        'apostil_group1_id'=> 'required_if:process_mode,apostil|nullable|exists:apostil_static,id',
-        'apostil_group2_id'=> 'required_if:process_mode,apostil|nullable|exists:apostil_static,id',
-        'consul_id'        => 'required_if:process_mode,consul|nullable|exists:consul,id',
+        'package_template_id' => 'nullable|exists:package_templates,id',
+        'direction_type_id'=> [
+            'nullable',
+            'exists:direction_type,id',
+            Rule::requiredIf(fn () => $this->input('process_mode') === 'apostil'),
+        ],
+        'consulate_type_id'=> [
+            'nullable',
+            'exists:consulates_type,id',
+            Rule::requiredIf(fn () => $this->input('process_mode') === 'consul' && !$this->filled('consul_id')),
+        ],
+        'process_mode'     => 'nullable|in:apostil,consul,service',
+        'selection_mode'   => 'nullable|in:consul,legalization,mixed',
+        'apostil_group1_id'=> [
+            'nullable',
+            'exists:apostil_static,id',
+            Rule::requiredIf(fn () => $this->input('process_mode') === 'apostil'),
+        ],
+        'apostil_group2_id'=> [
+            'nullable',
+            'exists:apostil_static,id',
+            Rule::requiredIf(fn () => $this->input('process_mode') === 'apostil'),
+        ],
+        'consul_id'        => [
+            'nullable',
+            'exists:consul,id',
+            Rule::requiredIf(fn () => $this->input('process_mode') === 'consul' && !$this->filled('consulate_type_id')),
+        ],
     ];
 
     // Agar client_id bo‘sh bo‘lsa, yangi mijoz uchun name va phone majburiy

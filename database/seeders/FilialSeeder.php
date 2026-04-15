@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\FilialModel;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class FilialSeeder extends Seeder
@@ -15,19 +14,22 @@ class FilialSeeder extends Seeder
      */
     public function run()
     {
-        FilialModel::create([
+        FilialModel::firstOrCreate([
             'name' => 'Buxoro Filiali',
             'code' => 'BR001',
+        ], [
             'description' => 'The primary branch located in the city center.',
         ]);
-        FilialModel::create([
+        FilialModel::firstOrCreate([
             'name' => 'Samarqand Filiali',
             'code' => 'SM002',
+        ], [
             'description' => 'A branch serving the Samarqand region.',
         ]);
-        FilialModel::create([
+        FilialModel::firstOrCreate([
             'name' => 'Toshkent Filiali',
             'code' => 'TK003',
+        ], [
             'description' => 'Main branch in the capital city.',
         ]);
     }

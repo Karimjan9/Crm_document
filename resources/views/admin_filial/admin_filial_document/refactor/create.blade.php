@@ -127,6 +127,7 @@
 .service-addon-price { color: #16a34a; font-weight: 700; }
 .service-addon-checkbox { margin-right: 10px; cursor: pointer; }
 </style>
+@include('partials.document_package_styles')
 @endsection
 
 @section('body')
@@ -159,6 +160,8 @@
 
             </div>
         </div>
+
+        @include('partials.document_package_selector', ['packageTemplates' => $packageTemplates])
 
         <div class="card">
             <div class="card-body">
@@ -243,12 +246,15 @@
 <div class="mb-3 process-wrapper" style="display:none;">
     <label class="form-label d-block">Yo'nalish</label>
 
-    <div class="btn-group w-100" role="group">
-        <button type="button" class="btn btn-outline-primary btn-process" data-mode="apostil">
+    <div class="d-flex flex-wrap gap-2" role="group" aria-label="Yo'nalish tanlovi">
+        <button type="button" class="btn btn-outline-primary btn-process flex-fill" data-mode="apostil">
             Apostil
         </button>
-        <button type="button" class="btn btn-outline-primary btn-process" data-mode="consul">
-            Konsullik
+        <button type="button" class="btn btn-outline-primary btn-process flex-fill" data-mode="consul">
+            Legalizatsiya
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-process flex-fill" data-mode="service">
+            Xizmatlar
         </button>
     </div>
 
@@ -315,25 +321,52 @@
 {{-- ✅ KONSULLIK --}}
 <div class="mb-3 consul-block" style="display:none;">
     <div class="border rounded p-3">
-        <div class="fw-semibold mb-2">Konsullik</div>
-        <div class="row g-2">
-            @foreach($consuls as $c)
-                <div class="col-12 col-md-6">
-                    <label class="border rounded p-2 w-100 d-flex align-items-center gap-2">
-                        <input type="radio"
-                               name="consul_main___U___"
-                               class="form-check-input consul-main"
-                               value="{{ $c->id }}"
-                               data-price="{{ $c->amount }}"
-                               data-days="{{ $c->day }}">
-                        <span class="flex-grow-1">{{ $c->name }}</span>
-                        <span class="text-success fw-semibold">{{ number_format($c->amount,0,'',' ') }} so'm</span>
-                    </label>
-                </div>
-            @endforeach
+        <div class="fw-semibold mb-3">Legalizatsiya</div>
+
+        <div class="mb-3">
+            <label class="form-label d-block">Tanlov turi</label>
+            <div class="d-flex flex-wrap gap-2" role="group" aria-label="Legalizatsiya tanlovi">
+                <button type="button" class="btn btn-outline-primary btn-legalization-mode flex-fill" data-choice="consul">
+                    Konsullik
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-legalization-mode flex-fill" data-choice="legalization">
+                    Legalizatsiya
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-legalization-mode flex-fill" data-choice="mixed">
+                    Mix
+                </button>
+            </div>
+            <button type="button" class="btn btn-link btn-sm px-0 mt-2 btn-legalization-reset">
+                Tanlovni tozalash
+            </button>
+            <input type="hidden" class="legalization-mode" value="">
+            <div class="form-text">
+                Boshlang'ich holat bo'sh bo'ladi. Kerakli rejimni tanlang.
+            </div>
         </div>
+
+        <div class="consul-options" style="display:none;">
+            <div class="fw-semibold mb-2">Konsullik</div>
+            <div class="row g-2">
+                @foreach($consuls as $c)
+                    <div class="col-12 col-md-6">
+                        <label class="border rounded p-2 w-100 d-flex align-items-center gap-2">
+                            <input type="radio"
+                                   name="consul_main___U___"
+                                   class="form-check-input consul-main"
+                                   value="{{ $c->id }}"
+                                   data-price="{{ $c->amount }}"
+                                   data-days="{{ $c->day }}">
+                            <span class="flex-grow-1">{{ $c->name }}</span>
+                            <span class="text-success fw-semibold">{{ number_format($c->amount,0,'',' ') }} so'm</span>
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
         <div class="mt-3 legalization-container" style="display:none;">
-            <label class="form-label">Konsullik turi</label>
+            <label class="form-label">Legalizatsiya turi</label>
             <select class="form-select legalization" style="width:100%">
                 <option value="">Tanlang...</option>
                 @foreach($consulateTypes as $ct)
@@ -590,41 +623,41 @@ class WizardManager {
             const getData = sel => w.querySelector(sel)?.value || '';
             
             const controller = w._wizardController;
-
-            // Konsullik ma'lumotlarini olamiz
-            const consulateCheckbox = w.querySelector('.consulate-checkbox');
-            const consulateChecked = consulateCheckbox?.checked || false;
-            const consulatePrice = consulateChecked
-                ? parseFloat(consulateCheckbox.dataset.price || 0)
-                : 0;
-
-            // Legallashtirish ma'lumotlarini olamiz
-            const legalizationSelect = w.querySelector('.legalization');
-            const legalizationValue = legalizationSelect?.value || '';
-            const legalizationPrice = legalizationValue
-                ? parseFloat(legalizationSelect.selectedOptions[0]?.dataset.price || 0)
-                : 0;
-
-            const wizardData = {
-                process_mode: getData('.process-mode'),
+            const processPayload = controller
+                ? controller.getProcessPayload()
+                : {
+                    viewMode: getData('.process-mode'),
+                    processMode: getData('.process-mode'),
+                    selectionMode: getData('.legalization-mode'),
+                    directionType: getData('.direction-type'),
                     apostil: {
-                    group1_id: w.querySelector('.apostil-g1:checked')?.value || null,
-                    group2_id: w.querySelector('.apostil-g2:checked')?.value || null,
+                        group1_id: w.querySelector('.apostil-g1:checked')?.value || null,
+                        group2_id: w.querySelector('.apostil-g2:checked')?.value || null,
                     },
                     consul: {
-                    consul_id: w.querySelector('.consul-main:checked')?.value || null,
+                        consul_id: w.querySelector('.consul-main:checked')?.value || null,
+                        price: parseFloat(w.querySelector('.consul-main:checked')?.dataset.price || 0),
                     },
+                    legalization: {
+                        id: getData('.legalization') || null,
+                        price: parseFloat(w.querySelector('.legalization')?.selectedOptions[0]?.dataset.price || 0),
+                    },
+                    consulateEnabled: false
+                };
 
+            const wizardData = {
+                process_mode: processPayload.processMode,
+                process_view_mode: processPayload.viewMode,
+                process_selection_mode: processPayload.selectionMode,
+                apostil: processPayload.apostil,
+                consul: processPayload.consul,
                 document_type: getData('.doc-type'),
-                direction_type: getData('.direction-type'),
+                direction_type: processPayload.directionType,
                 consulate: {
-                    enabled: consulateChecked,
-                    price: consulatePrice
+                    enabled: processPayload.consulateEnabled,
+                    price: (processPayload.consul.price || 0) + (processPayload.legalization.price || 0)
                 },
-                legalization: {
-                    id: legalizationValue,
-                    price: legalizationPrice
-                },
+                legalization: processPayload.legalization,
                 selected_addons: controller ? controller.getSelectedAddons() : [],
                 service: getData('.service'),
                 discount: getData('.discount'),
@@ -643,18 +676,175 @@ class WizardManager {
         return data;
     }
 
+    normalizeSaveValue(value) {
+        if (value === null || value === undefined) {
+            return null;
+        }
+
+        const normalized = String(value).trim();
+        if (!normalized) {
+            return null;
+        }
+
+        const lowered = normalized.toLowerCase();
+        if (lowered === 'null' || lowered === 'undefined') {
+            return null;
+        }
+
+        return normalized;
+    }
+
+    buildBatchSavePayload(data, clientId) {
+        return data.map((wizardData) => {
+            const processMode = this.normalizeSaveValue(wizardData.process_mode) || 'service';
+            const selectionMode = processMode === 'consul'
+                ? (this.normalizeSaveValue(wizardData.selection_mode || wizardData.process_selection_mode) || null)
+                : null;
+
+            const selectedAddons = Array.isArray(wizardData.selected_addons)
+                ? wizardData.selected_addons
+                    .map((addon) => {
+                        const sourceType = addon?.sourceType ?? addon?.type ?? addon?.container ?? null;
+                        const id = Number(addon?.id || 0);
+
+                        if (!sourceType || !id) {
+                            return null;
+                        }
+
+                        return {
+                            id,
+                            sourceType: String(sourceType),
+                        };
+                    })
+                    .filter(Boolean)
+                : [];
+
+            return {
+                client_id: clientId,
+                document_type_id: this.normalizeSaveValue(wizardData.document_type),
+                service_id: this.normalizeSaveValue(wizardData.service),
+                process_mode: processMode,
+                selection_mode: selectionMode,
+                direction_type_id: processMode === 'apostil'
+                    ? this.normalizeSaveValue(wizardData.direction_type)
+                    : null,
+                apostil_group1_id: processMode === 'apostil'
+                    ? this.normalizeSaveValue(wizardData.apostil?.group1_id)
+                    : null,
+                apostil_group2_id: processMode === 'apostil'
+                    ? this.normalizeSaveValue(wizardData.apostil?.group2_id)
+                    : null,
+                consul_id: processMode === 'consul' && ['consul', 'mixed'].includes(selectionMode)
+                    ? this.normalizeSaveValue(wizardData.consul?.consul_id)
+                    : null,
+                consulate_type_id: processMode === 'consul' && ['legalization', 'mixed'].includes(selectionMode)
+                    ? this.normalizeSaveValue(wizardData.legalization?.id)
+                    : null,
+                discount: this.normalizeSaveValue(wizardData.discount) || '0',
+                paid_amount: this.normalizeSaveValue(wizardData.payment_amount) || '0',
+                payment_type: this.normalizeSaveValue(wizardData.payment_type),
+                description: this.normalizeSaveValue(wizardData.description),
+                selected_addons: selectedAddons,
+            };
+        });
+    }
+
+    appendBatchFiles(formData) {
+        document.querySelectorAll('.wizard-wrapper').forEach((wrapper, index) => {
+            const fileInput = wrapper.querySelector('.file-input');
+            if (!fileInput?.files?.length) {
+                return;
+            }
+
+            Array.from(fileInput.files).forEach((file) => {
+                formData.append(`files[${index}][]`, file);
+            });
+        });
+    }
+
+    async parseJsonResponse(response) {
+        const responseText = await response.text();
+
+        try {
+            return {
+                result: responseText ? JSON.parse(responseText) : {},
+                invalidJson: false,
+                raw: responseText,
+            };
+        } catch (error) {
+            return {
+                result: {
+                    message: `Server JSON qaytarmadi (status ${response.status})`,
+                },
+                invalidJson: true,
+                raw: responseText,
+            };
+        }
+    }
+
+    buildBatchErrorMessage(result, status, raw = '', invalidJson = false) {
+        let message = result?.message || `Hujjatlarni saqlashda xato (status ${status})`;
+
+        if (result?.errors) {
+            const grouped = new Map();
+            const general = [];
+
+            Object.entries(result.errors).forEach(([field, messages]) => {
+                const normalizedMessages = (Array.isArray(messages) ? messages : [messages])
+                    .filter(Boolean)
+                    .map((entry) => String(entry));
+                const match = field.match(/^items\.(\d+)\./);
+
+                if (match) {
+                    const itemIndex = Number(match[1]) + 1;
+                    const current = grouped.get(itemIndex) || [];
+                    grouped.set(itemIndex, current.concat(normalizedMessages));
+                    return;
+                }
+
+                general.push(...normalizedMessages);
+            });
+
+            const detailParts = [];
+
+            grouped.forEach((messages, index) => {
+                detailParts.push(`Hujjat ${index}: ${messages.join('; ')}`);
+            });
+
+            if (general.length) {
+                detailParts.push(general.join('; '));
+            }
+
+            if (detailParts.length) {
+                message += `: ${detailParts.join(' | ')}`;
+            }
+        } else if (invalidJson && raw) {
+            const rawText = String(raw)
+                .replace(/<[^>]*>/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .slice(0, 220);
+
+            if (rawText) {
+                message += `: ${rawText}`;
+            }
+        }
+
+        return message;
+    }
+
     async saveAll() {
         const data = this.collectData();
         
         if (data.length === 0) {
-            alert("Saqlash uchun ma'lumot yo'q");
+            this.showRequestAlert("Saqlash uchun ma'lumot yo'q");
             return;
         }
 
         // Mijoz ID sini olamiz
         const clientId = $('#client_id').val();
         if (!clientId) {
-            alert('Saqlashdan oldin mijozni tanlang');
+            this.showRequestAlert('Saqlashdan oldin mijozni tanlang');
             return;
         }
         
@@ -665,150 +855,79 @@ class WizardManager {
         saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saqlanmoqda...';
 
         try {
-            const results = [];
-            let successCount = 0;
-            let errorCount = 0;
+            saveBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>${data.length} ta hujjat yuborilmoqda...`;
 
-            // Har bir wizardni navbatma-navbat yuboramiz
-            for (let i = 0; i < data.length; i++) {
-                const wizardData = data[i];
+            const formData = new FormData();
+            formData.append('client_id', String(clientId));
+            formData.append('items_payload', JSON.stringify(this.buildBatchSavePayload(data, clientId)));
+            this.appendBatchFiles(formData);
 
-                // Jarayonni ko'rsatamiz
-                saveBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Saqlanmoqda ${i + 1} / ${data.length}...`; 
+            const response = await fetch(`${apiBase}/document/save-all`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                body: formData
+            });
 
-                try {
-                    // Fayllarni yuborish uchun FormData yaratamiz
-                    const formData = new FormData();
-                    const appendIfFilled = (key, value) => {
-                        if (value === null || value === undefined) return;
-                        const normalized = String(value).trim();
-                        if (!normalized) return;
-                        const lowered = normalized.toLowerCase();
-                        if (lowered === 'null' || lowered === 'undefined') return;
-                        formData.append(key, normalized);
-                    };
+            const { result, invalidJson, raw } = await this.parseJsonResponse(response);
 
-                    // Mijoz ID sini qo'shamiz
-                    formData.append('client_id', clientId);
+            if (!response.ok || invalidJson) {
+                throw new Error(this.buildBatchErrorMessage(result, response.status, raw, invalidJson));
+            }
 
-                    // Asosiy ma'lumotlarni qo'shamiz
-                    appendIfFilled('document_type_id', wizardData.document_type);
-                    appendIfFilled('direction_type_id', wizardData.direction_type);
-                    formData.append('consulate_enabled', wizardData.consulate.enabled);
-                    formData.append('consulate_price', wizardData.consulate.price);
-                    appendIfFilled('consulate_type_id', wizardData.legalization.id);
-                    appendIfFilled('legalization_price', wizardData.legalization.price);
-                    appendIfFilled('service_id', wizardData.service);
-                    appendIfFilled('discount', wizardData.discount);
-                    appendIfFilled('payment_amount', wizardData.payment_amount);
-                    appendIfFilled('payment_type', wizardData.payment_type);
-                    appendIfFilled('description', wizardData.description);
-                    appendIfFilled('process_mode', wizardData.process_mode);
-                    if (wizardData.process_mode === 'apostil') {
-                        appendIfFilled('apostil_group1_id', wizardData.apostil.group1_id);
-                        appendIfFilled('apostil_group2_id', wizardData.apostil.group2_id);
-                    }
-                    if (wizardData.process_mode === 'consul') {
-                        appendIfFilled('consul_id', wizardData.consul.consul_id);
-                    }
-                    // Tanlangan qo'shimchalarni qo'shamiz
-                    formData.append('selected_addons', JSON.stringify(wizardData.selected_addons));
+            const documents = Array.isArray(result?.data?.documents) ? result.data.documents : [];
+            const results = data.map((_, index) => ({
+                index: index + 1,
+                success: true,
+                data: documents[index] || null,
+            }));
 
-                    // Totallarni qo'shamiz
-                    formData.append('totals', JSON.stringify(wizardData.totals));
+            this.showSaveResults(results, results.length, 0);
 
-                    // Fayllarni qo'shamiz
-                    const wrappers = document.querySelectorAll('.wizard-wrapper');
-                    const fileInput = wrappers[i].querySelector('.file-input');
-                    if (fileInput && fileInput.files.length > 0) {
-                        Array.from(fileInput.files).forEach((file, index) => {
-                            formData.append(`files[${index}]`, file);
-                        });
-                    }
-
-                    // So'rov yuboramiz
-                    const response = await fetch(`${apiBase}/document`, {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
-                        },
-                        body: formData
-                    });
-
-                    const responseText = await response.text();
-                    let result = {};
-                    let invalidJson = false;
-                    try {
-                        result = responseText ? JSON.parse(responseText) : {};
-                    } catch (e) {
-                        invalidJson = true;
-                        result = {
-                            message: `Server JSON qaytarmadi (status ${response.status})`,
-                            raw: responseText
-                        };
-                    }
-
-                    if (!response.ok || invalidJson) {
-                        let errorMessage = result.message || `Hujjatni saqlashda xato ${i + 1} (status ${response.status})`;
-                        if (result.errors) {
-                            const details = Object.values(result.errors).flat().filter(Boolean);
-                            if (details.length) {
-                                errorMessage += ': ' + details.join('; ');
-                            }
-                        } else if (result.raw) {
-                            const rawText = String(result.raw)
-                                .replace(/<[^>]*>/g, ' ')
-                                .replace(/\s+/g, ' ')
-                                .trim()
-                                .slice(0, 200);
-                            if (rawText) {
-                                errorMessage += `: ${rawText}`;
-                            }
-                        }
-                        throw new Error(errorMessage);
-                    }
-
-                    results.push({
-                        index: i + 1,
-                        success: true,
-                        data: result
-                    });
-                    successCount++;
-
-                    console.log(`Hujjat ${i + 1} muvaffaqiyatli saqlandi:`, result);
-
-                } catch (error) {
-                    console.error(`Hujjatni saqlashda xato ${i + 1}:`, error);
-                    results.push({
-                        index: i + 1,
-                        success: false,
-                        error: error.message
-                    });
-                    errorCount++;
+            setTimeout(() => {
+                if (confirm('Barcha hujjatlar saqlandi! Formani tozalaysizmi?')) {
+                    this.clearAllWizards();
                 }
-            }
-
-         
-            this.showSaveResults(results, successCount, errorCount);
-
-           
-            if (errorCount === 0) {
-                setTimeout(() => {
-                    if (confirm('Barcha hujjatlar saqlandi! Formani tozalaysizmi?')) {
-                        this.clearAllWizards();
-                    }
-                }, 1000);
-            }
-
+            }, 1000);
         } catch (error) {
             console.error('Saqlashdagi umumiy xato:', error);
-            alert("Ma'lumotlarni saqlashda xatolik yuz berdi");
+            this.showRequestAlert(error.message || "Ma'lumotlarni saqlashda xatolik yuz berdi");
         } finally {
             // Tugmani tiklaymiz
             saveBtn.disabled = false;
             saveBtn.innerHTML = originalText;
         }
+    }
+
+    showRequestAlert(message) {
+        const escapeHtml = (str) => String(str).replace(/[&<>"']/g, (m) => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[m]));
+
+        const alertHtml = `
+            <div class="alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
+                role="alert" style="z-index: 9999; max-width: 560px;">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong>Saqlashda xato</strong>
+                <div class="mt-2">${escapeHtml(message)}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', alertHtml);
+
+        setTimeout(() => {
+            const alert = document.querySelector('.alert-danger');
+            if (alert) {
+                alert.remove();
+            }
+        }, 6000);
     }
 
     showSaveResults(results, successCount, errorCount) {
@@ -912,6 +1031,77 @@ class WizardController {
         this.initPriceCalculation();   
 
         this.attachRemoveHandler();
+    }
+
+    getProcessState() {
+        const w = this.wrapper;
+        const viewMode = w.querySelector('.process-mode')?.value || '';
+        const selectionMode = w.querySelector('.legalization-mode')?.value || '';
+
+        const hasApostilGroup1 = !!w.querySelector('.apostil-g1:checked');
+        const hasApostilGroup2 = !!w.querySelector('.apostil-g2:checked');
+        const hasDirection = !!w.querySelector('.direction-type')?.value;
+        const hasConsul = !!w.querySelector('.consul-main:checked');
+        const hasLegalization = !!w.querySelector('.legalization')?.value;
+
+        const includeConsul = viewMode === 'consul' && (selectionMode === 'consul' || selectionMode === 'mixed');
+        const includeLegalization = viewMode === 'consul' && (selectionMode === 'legalization' || selectionMode === 'mixed');
+
+        let ready = false;
+
+        if (viewMode === 'apostil') {
+            ready = hasApostilGroup1 && hasApostilGroup2 && hasDirection;
+        } else if (viewMode === 'consul') {
+            if (selectionMode === 'consul') ready = hasConsul;
+            if (selectionMode === 'legalization') ready = hasLegalization;
+            if (selectionMode === 'mixed') ready = hasConsul || hasLegalization;
+        } else if (viewMode === 'service') {
+            ready = true;
+        }
+
+        return {
+            viewMode,
+            selectionMode,
+            includeConsul,
+            includeLegalization,
+            hasApostilGroup1,
+            hasApostilGroup2,
+            hasDirection,
+            hasConsul,
+            hasLegalization,
+            ready
+        };
+    }
+
+    getProcessPayload() {
+        const w = this.wrapper;
+        const state = this.getProcessState();
+        const consulOption = w.querySelector('.consul-main:checked');
+        const legalizationSelect = w.querySelector('.legalization');
+        const legalizationOption = legalizationSelect?.selectedOptions?.[0] || null;
+
+        return {
+            viewMode: state.viewMode,
+            processMode: state.viewMode === 'service' ? '' : state.viewMode,
+            selectionMode: state.selectionMode,
+            ready: state.ready,
+            directionType: state.viewMode === 'apostil' ? (w.querySelector('.direction-type')?.value || '') : '',
+            apostil: {
+                group1_id: state.viewMode === 'apostil' ? (w.querySelector('.apostil-g1:checked')?.value || null) : null,
+                group2_id: state.viewMode === 'apostil' ? (w.querySelector('.apostil-g2:checked')?.value || null) : null,
+            },
+            consul: {
+                consul_id: state.includeConsul ? (consulOption?.value || null) : null,
+                price: state.includeConsul ? parseFloat(consulOption?.dataset.price || 0) : 0,
+            },
+            legalization: {
+                id: state.includeLegalization ? (legalizationSelect?.value || null) : null,
+                price: state.includeLegalization ? parseFloat(legalizationOption?.dataset.price || 0) : 0,
+            },
+            consulateEnabled: state.viewMode === 'consul' && !!state.selectionMode && (state.hasConsul || state.hasLegalization),
+            includeConsul: state.includeConsul,
+            includeLegalization: state.includeLegalization
+        };
     }
 
     attachNavigation() {
@@ -1089,6 +1279,209 @@ class WizardController {
     toggleProcessVisibility();
     hideAll();
 }
+
+    initApostilConsulSwitch() {
+        const w = this.wrapper;
+
+        const uid = 'w' + Math.random().toString(36).slice(2, 9);
+        w.querySelectorAll('input[type="radio"][name*="___U___"]').forEach(r => {
+            r.name = r.name.replace('___U___', uid);
+        });
+
+        const docType = w.querySelector('.doc-type');
+        const processWrapper = w.querySelector('.process-wrapper');
+        const btns = w.querySelectorAll('.btn-process');
+        const modeInput = w.querySelector('.process-mode');
+        const stepOneNext = w.querySelector('.step-1 .btn-next');
+
+        const apostilBlock = w.querySelector('.apostil-block');
+        const consulBlock = w.querySelector('.consul-block');
+        const afterBlock = w.querySelector('.after-choice-block');
+        const directionBlock = w.querySelector('.direction-block');
+        const directionSelect = w.querySelector('.direction-type');
+        const legalizationButtons = w.querySelectorAll('.btn-legalization-mode');
+        const legalizationModeInput = w.querySelector('.legalization-mode');
+        const legalizationReset = w.querySelector('.btn-legalization-reset');
+        const consulOptions = w.querySelector('.consul-options');
+        const legalizationContainer = w.querySelector('.legalization-container');
+        const legalizationSelect = w.querySelector('.legalization');
+        const consulateCheckbox = w.querySelector('.consulate-checkbox');
+
+        const clearRadios = (selector) => w.querySelectorAll(selector).forEach(r => r.checked = false);
+
+        const setActiveBtn = (buttons, activeValue, dataKey) => {
+            buttons.forEach(button => {
+                const active = button.dataset[dataKey] === activeValue && !!activeValue;
+                button.classList.toggle('btn-primary', active);
+                button.classList.toggle('btn-outline-primary', !active);
+                button.classList.toggle('active', active);
+            });
+        };
+
+        const syncConsulateCheckbox = () => {
+            if (!consulateCheckbox) return;
+
+            const payload = this.getProcessPayload();
+            const totalPrice = (payload.consul.price || 0) + (payload.legalization.price || 0);
+
+            consulateCheckbox.checked = payload.consulateEnabled;
+            consulateCheckbox.dataset.price = totalPrice;
+        };
+
+        const syncLegalizationLayout = () => {
+            const choice = legalizationModeInput?.value || '';
+
+            setActiveBtn(legalizationButtons, choice, 'choice');
+
+            if (consulOptions) {
+                consulOptions.style.display = (choice === 'consul' || choice === 'mixed') ? 'block' : 'none';
+            }
+
+            if (legalizationContainer) {
+                legalizationContainer.style.display = (choice === 'legalization' || choice === 'mixed') ? 'block' : 'none';
+            }
+        };
+
+        const showMode = (mode) => {
+            apostilBlock.style.display = mode === 'apostil' ? 'block' : 'none';
+            consulBlock.style.display = mode === 'consul' ? 'block' : 'none';
+            syncLegalizationLayout();
+        };
+
+        const hideAll = () => {
+            apostilBlock.style.display = 'none';
+            consulBlock.style.display = 'none';
+            afterBlock.style.display = 'none';
+            if (directionBlock) directionBlock.style.display = 'none';
+            if (consulOptions) consulOptions.style.display = 'none';
+            if (legalizationContainer) legalizationContainer.style.display = 'none';
+        };
+
+        const clearProcessSelections = () => {
+            clearRadios('.apostil-g1, .apostil-g2, .consul-main');
+
+            if (modeInput) modeInput.value = '';
+            if (directionSelect) directionSelect.value = '';
+            if (legalizationModeInput) legalizationModeInput.value = '';
+            if (legalizationSelect) legalizationSelect.value = '';
+
+            afterBlock.style.display = 'none';
+            if (directionBlock) directionBlock.style.display = 'none';
+
+            this.hideAddons('direction');
+            this.hideAddons('document');
+
+            setActiveBtn(btns, '', 'mode');
+            syncLegalizationLayout();
+            syncConsulateCheckbox();
+        };
+
+        const checkReady = () => {
+            const state = this.getProcessState();
+
+            if (stepOneNext) {
+                stepOneNext.disabled = !state.ready || state.viewMode === 'service';
+            }
+
+            if (directionBlock) {
+                directionBlock.style.display =
+                    state.viewMode === 'apostil' && state.hasApostilGroup1 && state.hasApostilGroup2
+                        ? 'block'
+                        : 'none';
+            }
+
+            if (state.viewMode !== 'apostil') {
+                this.hideAddons('direction');
+            }
+
+            const showAfterBlock = state.ready && state.viewMode !== 'service';
+            afterBlock.style.display = showAfterBlock ? 'block' : 'none';
+
+            if (!showAfterBlock) {
+                this.hideAddons('document');
+            }
+
+            if (state.viewMode === 'apostil' && state.ready) {
+                docType?.dispatchEvent(new Event('change'));
+                directionSelect?.dispatchEvent(new Event('change'));
+            }
+
+            if (state.viewMode === 'consul' && state.ready) {
+                docType?.dispatchEvent(new Event('change'));
+            }
+
+            syncLegalizationLayout();
+            syncConsulateCheckbox();
+            w.querySelector('.discount')?.dispatchEvent(new Event('input'));
+        };
+
+        const toggleProcessVisibility = () => {
+            const hasDoc = !!docType?.value;
+            processWrapper.style.display = hasDoc ? 'block' : 'none';
+
+            if (!hasDoc) {
+                clearProcessSelections();
+                hideAll();
+                if (stepOneNext) {
+                    stepOneNext.disabled = true;
+                }
+                return;
+            }
+
+            setActiveBtn(btns, modeInput?.value || '', 'mode');
+            showMode(modeInput?.value || '');
+            checkReady();
+        };
+
+        docType?.addEventListener('change', toggleProcessVisibility);
+
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.dataset.mode || '';
+
+                modeInput.value = mode;
+                setActiveBtn(btns, mode, 'mode');
+                showMode(mode);
+                checkReady();
+
+                if (mode === 'service') {
+                    this.stepper.next();
+                }
+            });
+        });
+
+        legalizationButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (legalizationModeInput) {
+                    legalizationModeInput.value = btn.dataset.choice || '';
+                }
+
+                syncLegalizationLayout();
+                checkReady();
+            });
+        });
+
+        legalizationReset?.addEventListener('click', () => {
+            if (legalizationModeInput) {
+                legalizationModeInput.value = '';
+            }
+
+            syncLegalizationLayout();
+            checkReady();
+        });
+
+        w.querySelectorAll('.apostil-g1, .apostil-g2, .consul-main').forEach(r => {
+            r.addEventListener('change', checkReady);
+        });
+
+        legalizationSelect?.addEventListener('change', checkReady);
+
+        toggleProcessVisibility();
+        hideAll();
+        if (stepOneNext) {
+            stepOneNext.disabled = true;
+        }
+    }
 
     initFileHandlers() {
         const fileInput = this.element.querySelector('.file-input');
@@ -1365,6 +1758,179 @@ getTotals() {
                     <hr>
 
                     <p class="mb-0"><strong>Yuklangan fayllar:</strong> ${getData('.file-input').files.length}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    initPriceCalculation() {
+        const w = this.wrapper;
+
+        const serviceSelect = w.querySelector('.service');
+        const discountInput = w.querySelector('.discount');
+        const totalAmount = w.querySelector('.total-amount');
+        const finalAmount = w.querySelector('.final-amount');
+
+        const calculate = () => {
+            const servicePrice = parseFloat(serviceSelect?.selectedOptions?.[0]?.dataset?.price || 0);
+            const addonsTotal = this.getAddonsTotal();
+            const processPayload = this.getProcessPayload();
+
+            let apostilPrice = 0;
+            if (processPayload.processMode === 'apostil') {
+                apostilPrice += parseFloat(w.querySelector('.apostil-g1:checked')?.dataset.price || 0);
+                apostilPrice += parseFloat(w.querySelector('.apostil-g2:checked')?.dataset.price || 0);
+            }
+
+            const totalBeforeDiscount =
+                servicePrice +
+                addonsTotal +
+                apostilPrice +
+                (processPayload.consul.price || 0) +
+                (processPayload.legalization.price || 0);
+
+            const discountAmount = parseFloat(discountInput?.value || 0);
+            const final = totalBeforeDiscount - discountAmount;
+
+            if (totalAmount) totalAmount.value = totalBeforeDiscount.toLocaleString();
+            if (finalAmount) finalAmount.value = final.toLocaleString();
+
+            updateGlobalTotals();
+        };
+
+        serviceSelect?.addEventListener('change', calculate);
+        discountInput?.addEventListener('input', calculate);
+        w.querySelectorAll('.apostil-g1, .apostil-g2, .consul-main').forEach(el => el.addEventListener('change', calculate));
+        w.querySelector('.legalization')?.addEventListener('change', calculate);
+        w.querySelectorAll('.btn-process, .btn-legalization-mode').forEach(el => el.addEventListener('click', calculate));
+        w.querySelector('.btn-legalization-reset')?.addEventListener('click', calculate);
+
+        calculate();
+    }
+
+    getTotals() {
+        const w = this.wrapper;
+
+        const serviceSelect = w.querySelector('.service');
+        const discountInput = w.querySelector('.discount');
+        const processPayload = this.getProcessPayload();
+
+        const servicePrice = parseFloat(serviceSelect?.selectedOptions?.[0]?.dataset?.price || 0);
+        const addonsAmount = this.getAddonsTotal();
+
+        let apostilPrice = 0;
+        if (processPayload.processMode === 'apostil') {
+            apostilPrice += parseFloat(w.querySelector('.apostil-g1:checked')?.dataset.price || 0);
+            apostilPrice += parseFloat(w.querySelector('.apostil-g2:checked')?.dataset.price || 0);
+        }
+
+        const consulPrice = processPayload.consul.price || 0;
+        const legalizationPrice = processPayload.legalization.price || 0;
+
+        const totalBeforeDiscount = servicePrice + addonsAmount + apostilPrice + consulPrice + legalizationPrice;
+        const discountAmount = parseFloat(discountInput?.value || 0);
+        const finalAmount = totalBeforeDiscount - discountAmount;
+
+        return {
+            serviceAmount: servicePrice,
+            addonsAmount: addonsAmount,
+            apostilAmount: apostilPrice,
+            consulAmount: consulPrice,
+            legalizationAmount: legalizationPrice,
+            totalAmount: totalBeforeDiscount,
+            discountAmount: discountAmount,
+            finalAmount: finalAmount
+        };
+    }
+
+    updateConfirm() {
+        const getData = sel => this.wrapper.querySelector(sel);
+        const confirmInfo = this.element.querySelector('.confirm-info');
+        const processPayload = this.getProcessPayload();
+
+        const docType = getData('.doc-type')?.selectedOptions[0]?.text || 'Tanlanmagan';
+        const directionType = getData('.direction-type')?.selectedOptions[0]?.text || 'Tanlanmagan';
+        const service = getData('.service')?.selectedOptions[0]?.text || 'Tanlanmagan';
+        const paymentType = getData('.payment-type')?.selectedOptions[0]?.text || 'Tanlanmagan';
+        const paymentAmount = getData('.payment-amount')?.value || '0';
+        const consulName = this.wrapper.querySelector('.consul-main:checked')?.closest('label')?.querySelector('.flex-grow-1')?.textContent?.trim() || 'Tanlanmagan';
+        const legalizationName = getData('.legalization')?.selectedOptions[0]?.text || 'Tanlanmagan';
+
+        const processLabels = {
+            apostil: 'Apostil',
+            consul: 'Legalizatsiya',
+            service: 'Xizmatlar',
+            '': 'Xizmatlar'
+        };
+
+        const selectionLabels = {
+            consul: 'Konsullik',
+            legalization: 'Legalizatsiya',
+            mixed: 'Mix'
+        };
+
+        const totals = this.getTotals();
+
+        const selectedAddons = this.getSelectedAddons();
+        let addonsHtml = '';
+        if (selectedAddons.length > 0) {
+            addonsHtml = `<div class="mt-2"><strong>Qo'shimcha xizmatlar:</strong><ul class="mb-0">`;
+            selectedAddons.forEach(addon => {
+                addonsHtml += `<li>${addon.name} - ${parseFloat(addon.price).toLocaleString()} so'm (${addon.type})</li>`;
+            });
+            addonsHtml += '</ul></div>';
+        }
+
+        let processHtml = `<p class="mb-1"><strong>Jarayon:</strong> ${processLabels[processPayload.viewMode] || 'Tanlanmagan'}</p>`;
+        if (processPayload.processMode === 'apostil') {
+            processHtml += `<p class="mb-1"><strong>Yo'nalish:</strong> ${directionType}</p>`;
+        }
+        if (processPayload.processMode === 'consul') {
+            processHtml += `<p class="mb-1"><strong>Tanlov turi:</strong> ${selectionLabels[processPayload.selectionMode] || 'Tanlanmagan'}</p>`;
+            if (processPayload.consul.consul_id) {
+                processHtml += `<p class="mb-1"><strong>Konsullik:</strong> ${consulName}</p>`;
+            }
+            if (processPayload.legalization.id) {
+                processHtml += `<p class="mb-1"><strong>Legalizatsiya:</strong> ${legalizationName}</p>`;
+            }
+        }
+
+        confirmInfo.innerHTML = `
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-3 text-muted">Hujjat ma'lumoti</h6>
+                    <p class="mb-1"><strong>Hujjat turi:</strong> ${docType}</p>
+                    ${processHtml}
+
+                    <hr>
+
+                    <h6 class="card-subtitle mb-3 text-muted">Xizmat ma'lumoti</h6>
+                    <p class="mb-1"><strong>Xizmat:</strong> ${service}</p>
+
+                    ${addonsHtml}
+
+                    <hr>
+
+                    <h6 class="card-subtitle mb-3 text-muted">Narx tafsilotlari</h6>
+                    <p class="mb-1"><strong>Xizmat narxi:</strong> ${totals.serviceAmount.toLocaleString()} so'm</p>
+                    ${totals.apostilAmount > 0 ? `<p class="mb-1"><strong>Apostil:</strong> ${totals.apostilAmount.toLocaleString()} so'm</p>` : ''}
+                    ${totals.consulAmount > 0 ? `<p class="mb-1"><strong>Konsullik:</strong> ${totals.consulAmount.toLocaleString()} so'm</p>` : ''}
+                    ${totals.legalizationAmount > 0 ? `<p class="mb-1"><strong>Legalizatsiya:</strong> ${totals.legalizationAmount.toLocaleString()} so'm</p>` : ''}
+                    ${totals.addonsAmount > 0 ? `<p class="mb-1"><strong>Qo'shimcha xizmatlar:</strong> ${totals.addonsAmount.toLocaleString()} so'm</p>` : ''}
+                    <p class="mb-1"><strong>Umumiy summa:</strong> ${totals.totalAmount.toLocaleString()} so'm</p>
+                    ${totals.discountAmount > 0 ? `<p class="mb-1 text-danger"><strong>Chegirma:</strong> -${totals.discountAmount.toLocaleString()} so'm</p>` : ''}
+                    <p class="mb-1 text-success"><strong>Yakuniy narx:</strong> ${totals.finalAmount.toLocaleString()} so'm</p>
+
+                    <hr>
+
+                    <h6 class="card-subtitle mb-3 text-muted">To'lov</h6>
+                    <p class="mb-1"><strong>To'lov turi:</strong> ${paymentType}</p>
+                    <p class="mb-1"><strong>To'lov summasi:</strong> ${parseFloat(paymentAmount || 0).toLocaleString()} so'm</p>
+                    ${parseFloat(paymentAmount) < totals.finalAmount ? `<p class="mb-1 text-warning"><strong>Qoldiq:</strong> ${(totals.finalAmount - parseFloat(paymentAmount)).toLocaleString()} so'm</p>` : ''}
+
+                    <hr>
+
+                    <p class="mb-0"><strong>Yuklangan fayllar:</strong> ${getData('.file-input')?.files.length || 0}</p>
                 </div>
             </div>
         `;
@@ -1827,4 +2393,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+@include('partials.document_package_selector_script', ['packageTemplates' => $packageTemplates])
 @endsection

@@ -3,8 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\DocumentTypeModel;
-use Dom\Document;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DocumentTypeSeeder extends Seeder
@@ -16,25 +14,34 @@ class DocumentTypeSeeder extends Seeder
      */
     public function run()
     {
-        DocumentTypeModel::create([
-            'name' => 'Passport',
-            'description' => 'International travel document',
-        ]);
-        DocumentTypeModel::create([
-            'name' => 'Driver License',
-            'description' => 'Official driving permit',
-        ]);
-        DocumentTypeModel::create([
-            'name' => 'ID Card',
-            'description' => 'National identification document',
-        ]);
-          DocumentTypeModel::create([
-            'name' => "Ma'lumotnoma",
-            'description' => 'National identification document',
-        ]);
-          DocumentTypeModel::create([
-            'name' => "Boshqa",
-            'description' => 'National identification document',
-        ]);
+        $records = [
+            [
+                'name' => 'Passport',
+                'description' => 'International travel document',
+            ],
+            [
+                'name' => 'Driver License',
+                'description' => 'Official driving permit',
+            ],
+            [
+                'name' => 'ID Card',
+                'description' => 'National identification document',
+            ],
+            [
+                'name' => "Ma'lumotnoma",
+                'description' => "Turli ma'lumotnomalar uchun hujjat turi",
+            ],
+            [
+                'name' => 'Boshqa',
+                'description' => 'Other document category',
+            ],
+        ];
+
+        foreach ($records as $record) {
+            DocumentTypeModel::updateOrCreate(
+                ['name' => $record['name']],
+                ['description' => $record['description']]
+            );
+        }
     }
 }

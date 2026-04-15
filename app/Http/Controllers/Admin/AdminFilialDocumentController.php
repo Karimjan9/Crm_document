@@ -12,10 +12,12 @@ use App\Models\DirectionTypeModel;
 use App\Models\DocumentsModel;
 use App\Models\DocumentTypeModel;
 use App\Models\PaymentsModel;
+use App\Models\PackageTemplate;
 use App\Models\ServiceAddonModel;
 use App\Models\ServicesModel;
 use App\Models\User;
 use App\Models\DocumentCourier;
+use App\Support\PackageTemplateSupport;
 use App\Support\StoresDocuments;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -112,9 +114,25 @@ class AdminFilialDocumentController extends Controller
 
         $consul_price = 1000;
         $apostilStatics=ApostilStatikModel::all();
+        $packageTemplates = PackageTemplateSupport::buildSelectionPayloads(
+            PackageTemplate::query()
+                ->active()
+                ->whereHas('items')
+                ->ordered()
+                ->with([
+                    'items.documentType:id,name',
+                    'items.service:id,name,price,deadline',
+                    'items.directionType:id,name',
+                    'items.apostilGroup1:id,name,price,days',
+                    'items.apostilGroup2:id,name,price,days',
+                    'items.consul:id,name,amount,day',
+                    'items.consulateType:id,name,amount,day',
+                ])
+                ->get()
+        );
         return view('admin_filial.admin_filial_document.refactor.create',
             compact('services', 'addons', 'documentTypes',
-                'directions', 'consulateTypes', 'consul_price', 'apostilStatics', 'consuls'));
+                'directions', 'consulateTypes', 'consul_price', 'apostilStatics', 'consuls', 'packageTemplates'));
     }
 
     // -------------------------------

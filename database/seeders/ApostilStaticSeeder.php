@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\ApostilStatikModel;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ApostilStaticSeeder extends Seeder
@@ -15,39 +14,44 @@ class ApostilStaticSeeder extends Seeder
      */
     public function run()
     {
-       ApostilStatikModel::insert([
-        [
-            'name' => 'Asliga',
-            'price' => 0,
-            'days' => 0,
-            'group_id' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ],
-        [
-            'name' => 'Notarial tasdiq',
-            'price' => 0,
-            'days' => 0,
-            'group_id' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ],
-        [
-            'name' => 'QR kodli',
-            'price' => 0,
-            'days' => 0,
-            'group_id' => 2,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ],
-         [
-            'name' => 'QR kodsiz',
-            'price' => 0,
-            'days' => 0,
-            'group_id' => 2,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ],
-       ]); 
+        $records = [
+            [
+                'name' => 'Asliga',
+                'price' => 60000,
+                'days' => 1,
+                'group_id' => 1,
+            ],
+            [
+                'name' => 'Notarial tasdiq',
+                'price' => 85000,
+                'days' => 1,
+                'group_id' => 1,
+            ],
+            [
+                'name' => 'QR kodli',
+                'price' => 70000,
+                'days' => 2,
+                'group_id' => 2,
+            ],
+            [
+                'name' => 'QR kodsiz',
+                'price' => 50000,
+                'days' => 1,
+                'group_id' => 2,
+            ],
+        ];
+
+        foreach ($records as $record) {
+            ApostilStatikModel::updateOrCreate(
+                [
+                    'group_id' => $record['group_id'],
+                    'name' => $record['name'],
+                ],
+                [
+                    'price' => $record['price'],
+                    'days' => $record['days'],
+                ]
+            );
+        }
     }
 }

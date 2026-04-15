@@ -9,8 +9,7 @@ class CalendarController extends Controller
 {
     public function index()
     {
-        // dd('Calendar index');
-        return view('calendar.index');
+        return view('calendar.fl.index');
     }
 
         public function create()

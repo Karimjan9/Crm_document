@@ -4,6 +4,7 @@ namespace App\Models;
 
 
 use Carbon\Carbon;
+use App\Support\WorkdayCalendar;
 use App\Models\ClientsModel;
 use App\Models\PaymentsModel;
 use App\Models\ServicesModel;
@@ -95,38 +96,12 @@ class DocumentsModel extends Model
 
 public function getDeadlineRemainingAttribute()
 {
-    $deadline = $this->created_at
-                    ->copy()
-                    ->addDays($this->deadline_time)
-                    ->addHours(2);
+    return WorkdayCalendar::formatRemaining($this->deadline_due_at);
+}
 
-    $now = Carbon::now();
-
-    // Muddat O'TGAN bo'lsa
-    if ($now->greaterThan($deadline)) {
-        $diffHours = floor($deadline->diffInSeconds($now) / 3600);
-
-        // 24 soatdan kam bo'lsa -> soatlarda minus bilan
-        if ($diffHours < 24) {
-            return '-' . $diffHours . " soat o'tgan";
-        }
-
-        // 24 soatdan oshsa -> kunlarda (faqat floor)
-        $days = floor($diffHours / 24);
-        return '-' . $days . " kun o'tgan";
-    }
-
-    // Muddat hali kelmagan bo'lsa
-    $diffHours = floor($deadline->diffInSeconds($now) / 3600);
-
-    // 24 soatdan ko'p bo'lsa -> kunlarda
-    if ($diffHours >= 24) {
-        $days = floor($diffHours / 24);
-        return $days . ' kun';
-    }
-
-    // 24 soatdan kam bo'lsa -> soatlarda
-    return $diffHours . ' soat';
+public function getDeadlineDueAtAttribute(): Carbon
+{
+    return WorkdayCalendar::resolveDueAt($this->created_at, $this->deadline_time);
 }
 
 public function documentType()

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\ConsulationTypeModel;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ConsulationTypeSeeder extends Seeder
@@ -15,29 +14,54 @@ class ConsulationTypeSeeder extends Seeder
      */
     public function run()
     {
-        ConsulationTypeModel::create([
-            'name' => "BAA konsullik xizmati",
-            'description' => 'Consular services related to the United Arab Emirates',
-        ]);
-        ConsulationTypeModel::create([
-            'name' => "AQSh konsullik xizmati",
-            'description' => 'Consular services related to the United States of America',
-        ]);
-        ConsulationTypeModel::create([
-            'name' => "Buyuk Britaniya konsullik xizmati",
-            'description' => 'Consular services related to the United Kingdom',
-        ]);
-          ConsulationTypeModel::create([
-            'name' => "Turkiya konsullik xizmati",
-            'description' => 'Consular services related to Turkey',
-        ]);
-          ConsulationTypeModel::create([
-            'name' => "Rossiya konsullik xizmati",
-            'description' => 'Consular services related to Russia',
-        ]);
-          ConsulationTypeModel::create([
-            'name' => "Boshqa konsullik xizmatlari",
-            'description' => 'Other consular services not categorized',
-        ]);
+        $records = [
+            [
+                'name' => 'BAA konsullik xizmati',
+                'description' => 'Consular services related to the United Arab Emirates',
+                'amount' => 220000,
+                'day' => 6,
+            ],
+            [
+                'name' => 'AQSh konsullik xizmati',
+                'description' => 'Consular services related to the United States of America',
+                'amount' => 260000,
+                'day' => 7,
+            ],
+            [
+                'name' => 'Buyuk Britaniya konsullik xizmati',
+                'description' => 'Consular services related to the United Kingdom',
+                'amount' => 280000,
+                'day' => 7,
+            ],
+            [
+                'name' => 'Turkiya konsullik xizmati',
+                'description' => 'Consular services related to Turkey',
+                'amount' => 170000,
+                'day' => 5,
+            ],
+            [
+                'name' => 'Rossiya konsullik xizmati',
+                'description' => 'Consular services related to Russia',
+                'amount' => 150000,
+                'day' => 4,
+            ],
+            [
+                'name' => 'Boshqa konsullik xizmatlari',
+                'description' => 'Other consular services not categorized',
+                'amount' => 190000,
+                'day' => 6,
+            ],
+        ];
+
+        foreach ($records as $record) {
+            ConsulationTypeModel::updateOrCreate(
+                ['name' => $record['name']],
+                [
+                    'description' => $record['description'],
+                    'amount' => $record['amount'],
+                    'day' => $record['day'],
+                ]
+            );
+        }
     }
 }

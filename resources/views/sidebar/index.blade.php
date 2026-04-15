@@ -298,6 +298,11 @@
                 <i class='bx bx-user-check'></i> Konsullik
             </a>
         </li>
+        <li>
+            <a href="{{ route('superadmin.template_package.index') }}">
+                <i class='bx bx-package'></i> Shablonlar
+            </a>
+        </li>
     </ul>
 </li>
 
@@ -324,7 +329,7 @@
 </li>
 
 
-    <a href="{{ route('superadmin.calendar.index') }}" class="d-flex align-items-center">
+    <a href="{{ route('superadmin.calendar.full.index') }}" class="d-flex align-items-center">
         <div class="parent-icon" style="color:#ff9800;"><i class='bx bx-calendar'></i></div>
         <div class="menu-title">Kalendar</div>
     </a>
