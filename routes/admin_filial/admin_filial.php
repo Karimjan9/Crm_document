@@ -63,7 +63,7 @@ Route::name('admin_filial.')
 
         // Payments
         Route::post('/payment/add', [AdminFilialDocumentController::class, 'add_payment'])->name('add_payment');
-        Route::get('/payments/{document}', [AdminFilialDocumentController::class, 'paymentHistory']);
+        Route::get('/payments/{document}', [AdminFilialDocumentController::class, 'paymentHistory'])->name('payments');
 
         // Expense
         Route::resource('expense_admin', ExpenseAdminController::class);

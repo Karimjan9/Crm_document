@@ -233,18 +233,28 @@ class AdminFilialDocumentController extends Controller
             ->with('success', 'Hujjat muvaffaqiyatli yangilandi!');
     }
 
-        public function doc_summary()
+    public function doc_summary()
     {
         $user = auth()->user();
         $userFilialId = $user->filial_id;
 
-        $query = DocumentsModel::with(['client', 'service', 'addons', 'payments', 'user']);
-
-        $query->whereHas('user', function ($q) use ($userFilialId) {
-            $q->where('filial_id', $userFilialId);
-        });
-
-        $documents = $query->orderBy('id', 'DESC')->get();
+        $documents = DocumentsModel::query()
+            ->select([
+                'id',
+                'document_code',
+                'final_price',
+                'paid_amount',
+                'discount',
+                'description',
+            ])
+            ->with([
+                'payments:id,document_id,amount,payment_type,paid_by_admin_id,created_at',
+            ])
+            ->whereHas('user', function ($q) use ($userFilialId) {
+                $q->where('filial_id', $userFilialId);
+            })
+            ->orderBy('id', 'DESC')
+            ->paginate(25);
 
         return view('admin_filial.summary_doc.index', compact('documents'));
     }

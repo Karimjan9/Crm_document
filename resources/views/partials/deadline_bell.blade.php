@@ -37,7 +37,7 @@
       <div class="deadline-bell__panel-glow"></div>
 
       <div class="deadline-bell__panel-head">
-        <div>
+        <div class="deadline-bell__panel-copy">
           <div class="deadline-bell__panel-kicker">Smart reminder</div>
           <h3>{{ $deadlineBell['title'] ?? 'Deadline' }}</h3>
           <p>{{ $deadlineBell['subtitle'] ?? '' }}</p>
@@ -68,9 +68,23 @@
           @foreach($deadlineItems as $item)
             @php
               $urgency = $item['urgency'] ?? 'normal';
+              $itemUrl = $item['url'] ?? ($deadlineBell['index_url'] ?? '#');
             @endphp
 
-            <a href="{{ $item['url'] ?? ($deadlineBell['index_url'] ?? '#') }}" class="deadline-bell__item urgency-{{ $urgency }}">
+            <button
+              type="button"
+              class="deadline-bell__item urgency-{{ $urgency }}"
+              data-deadline-url="{{ $itemUrl }}"
+              data-deadline-code="{{ $item['doc_code'] ?? '-' }}"
+              data-deadline-flag="{{ $item['flag'] ?? '' }}"
+              data-deadline-title="{{ $item['title'] ?? 'Mijoz' }}"
+              data-deadline-subtitle="{{ $item['subtitle'] ?? 'Xizmat' }}"
+              data-deadline-meta="{{ $item['meta'] ?? '' }}"
+              data-deadline-due-label="{{ $item['due_label'] ?? '' }}"
+              data-deadline-due-at="{{ $item['due_at'] ?? '' }}"
+              data-deadline-remaining="{{ $item['remaining'] ?? '' }}"
+              data-deadline-urgency="{{ $urgency }}"
+            >
               <span class="deadline-bell__item-rail"></span>
 
               <div class="deadline-bell__item-main">
@@ -91,7 +105,7 @@
                 <span class="deadline-bell__date">{{ $item['due_at'] ?? '' }}</span>
                 <span class="deadline-bell__remaining">{{ $item['remaining'] ?? '' }}</span>
               </div>
-            </a>
+            </button>
           @endforeach
         </div>
       @else
@@ -117,6 +131,53 @@
         @if($deadlineRemainingCount > 0)
           <div class="deadline-bell__footer-note">Yana {{ $deadlineRemainingCount }} ta deadline kutmoqda</div>
         @endif
+      </div>
+    </div>
+
+    <div class="deadline-bell__detail-modal" id="deadlineBellDetail" hidden aria-hidden="true">
+      <div class="deadline-bell__detail-backdrop" data-deadline-detail-close></div>
+
+      <div class="deadline-bell__detail-dialog" id="deadlineBellDetailDialog" role="dialog" aria-modal="true" aria-labelledby="deadlineBellDetailTitle">
+        <button type="button" class="deadline-bell__detail-close" id="deadlineBellDetailClose" aria-label="Deadline tafsilotini yopish" data-deadline-detail-close>
+          <i class='bx bx-x'></i>
+        </button>
+
+        <div class="deadline-bell__detail-hero" id="deadlineBellDetailHero">
+          <div class="deadline-bell__detail-badges">
+            <span class="deadline-bell__code" id="deadlineBellDetailCode">DOC</span>
+            <span class="deadline-bell__flag" id="deadlineBellDetailFlag" hidden></span>
+          </div>
+
+          <h3 id="deadlineBellDetailTitle">Deadline tafsiloti</h3>
+          <p id="deadlineBellDetailSubtitle"></p>
+        </div>
+
+        <div class="deadline-bell__detail-grid">
+          <div class="deadline-bell__detail-card">
+            <span class="deadline-bell__detail-label">Holat</span>
+            <strong id="deadlineBellDetailDueLabel">-</strong>
+          </div>
+          <div class="deadline-bell__detail-card">
+            <span class="deadline-bell__detail-label">Deadline vaqti</span>
+            <strong id="deadlineBellDetailDueAt">-</strong>
+          </div>
+          <div class="deadline-bell__detail-card">
+            <span class="deadline-bell__detail-label">Qolgan vaqt</span>
+            <strong id="deadlineBellDetailRemaining">-</strong>
+          </div>
+        </div>
+
+        <div class="deadline-bell__detail-block">
+          <span class="deadline-bell__detail-label">Qo'shimcha ma'lumot</span>
+          <p id="deadlineBellDetailMeta">-</p>
+        </div>
+
+        <div class="deadline-bell__detail-actions">
+          <a href="#" class="deadline-bell__detail-link" id="deadlineBellDetailLink">
+            <span>Tegishli sahifani ochish</span>
+            <i class='bx bx-right-arrow-alt'></i>
+          </a>
+        </div>
       </div>
     </div>
   </div>

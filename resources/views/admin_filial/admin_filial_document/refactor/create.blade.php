@@ -529,7 +529,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bs-stepper/dist/js/bs-stepper.min.js"></script>
 
 <script>
-const apiBase = "{{ url('admin_filial/api') }}";
+const apiBase = @json($apiBase ?? url('admin_filial/api'));
 // Umumiy summalarni kuzatish uchun global o'zgaruvchilar
 let globalTotalAmount = 0;        // Barcha buyurtmalar jami summasi
 let globalTotalDiscount = 0;      // Umumiy chegirma (foiz emas, aniq summa)
@@ -707,7 +707,7 @@ class WizardManager {
                         const sourceType = addon?.sourceType ?? addon?.type ?? addon?.container ?? null;
                         const id = Number(addon?.id || 0);
 
-                        if (!sourceType || !id) {
+                        if (!sourceType || !id || sourceType === 'consulate') {
                             return null;
                         }
 

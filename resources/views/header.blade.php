@@ -672,6 +672,28 @@
     overflow: hidden;
   }
 
+  .profile-content--compact {
+    max-width: 620px;
+  }
+
+  .profile-content--panel {
+    max-width: 860px;
+    max-height: calc(100vh - 44px);
+    overflow-y: auto;
+    padding-top: 24px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(126, 219, 255, 0.35) transparent;
+  }
+
+  .profile-content--panel::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .profile-content--panel::-webkit-scrollbar-thumb {
+    background: rgba(126, 219, 255, 0.28);
+    border-radius: 999px;
+  }
+
   .profile-content::before {
     content: "";
     position: absolute;
@@ -719,6 +741,38 @@
     text-align: left;
     margin-bottom: 22px;
     padding-right: 56px;
+  }
+
+  .profile-panel-header {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 14px;
+    padding-right: 56px;
+  }
+
+  .profile-panel-back {
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    border-radius: 16px;
+    padding: 11px 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.22s ease;
+    flex-shrink: 0;
+  }
+
+  .profile-panel-back:hover {
+    border-color: rgba(0, 209, 255, 0.4);
+    background: rgba(0, 209, 255, 0.12);
+    transform: translateY(-1px);
   }
 
   .profile-header img {
@@ -1169,6 +1223,13 @@
     margin-top: 20px;
   }
 
+  .panel-actions-split {
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
   .panel-submit {
     border: 0;
     border-radius: 14px;
@@ -1184,6 +1245,36 @@
 
   .panel-submit:hover { transform: translateY(-1px); }
   .panel-submit:disabled { opacity: 0.7; cursor: wait; }
+
+  .panel-submit-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+
+  .panel-submit-danger {
+    background: linear-gradient(135deg, #ff5f7a, #ff784f);
+    box-shadow: 0 12px 24px rgba(255, 99, 132, 0.18);
+  }
+
+  .panel-secondary {
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.04);
+    color: #eef7ff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 18px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+  }
+
+  .panel-secondary:hover {
+    border-color: rgba(0, 209, 255, 0.42);
+    background: rgba(0, 209, 255, 0.08);
+    transform: translateY(-1px);
+  }
 
   .settings-card {
     border-radius: 18px;
@@ -1248,6 +1339,14 @@
     color: rgba(221, 235, 255, 0.76);
     font-size: 12px;
     line-height: 1.6;
+  }
+
+  .logout-card {
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(7, 17, 34, 0.42);
   }
 
   .toggle-row {
@@ -1325,11 +1424,16 @@
 
   @media (max-width: 992px) {
     .profile-content { padding: 22px; }
+    .profile-content--panel { max-height: calc(100vh - 28px); }
     .modal-grid,
     .profile-panel-grid,
     .profile-form-grid,
     .account-fields,
     .readonly-grid { grid-template-columns: 1fr; }
+    .profile-panel-header {
+      flex-direction: column;
+      gap: 12px;
+    }
     .deadline-bell__panel {
       width: min(420px, calc(100vw - 32px));
     }
@@ -1344,6 +1448,22 @@
   }
 
   @media (max-width: 768px) {
+    .profile-content--panel {
+      padding: 18px;
+    }
+
+    .panel-actions-split {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .panel-secondary,
+    .panel-submit,
+    .panel-submit-link {
+      width: 100%;
+      text-align: center;
+    }
+
     .weather-date {
       position: static !important;
       transform: none !important;
@@ -1408,6 +1528,337 @@
     0% { transform: translateY(-10px) rotate(0deg); }
     100% { transform: translateY(110vh) rotate(360deg); }
   }
+
+  /* Deadline Bell - refined layout */
+  .deadline-bell__panel {
+    width: min(560px, calc(100vw - 24px));
+    padding: 24px 22px 20px;
+  }
+
+  .deadline-bell__panel-copy {
+    flex: 1;
+    text-align: center;
+    padding-left: 36px;
+  }
+
+  .deadline-bell__panel-head {
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  .deadline-bell__panel-head p {
+    max-width: none;
+    text-align: center;
+  }
+
+  .deadline-bell__stats {
+    margin-bottom: 18px;
+  }
+
+  .deadline-bell__stat {
+    text-align: center;
+  }
+
+  .deadline-bell__list {
+    max-height: min(420px, 52vh);
+    padding-right: 8px;
+    margin-right: -2px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+  }
+
+  .deadline-bell__item {
+    width: 100%;
+    border: 1px solid rgba(255,255,255,0.08);
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: left;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 86px;
+    cursor: pointer;
+  }
+
+  .deadline-bell__item-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-align: center;
+  }
+
+  .deadline-bell__item-top {
+    justify-content: center;
+    margin-bottom: 0;
+  }
+
+  .deadline-bell__item h4,
+  .deadline-bell__item p,
+  .deadline-bell__meta,
+  .deadline-bell__due,
+  .deadline-bell__date,
+  .deadline-bell__remaining {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .deadline-bell__item p {
+    margin-top: 0;
+  }
+
+  .deadline-bell__meta {
+    margin-top: 0;
+  }
+
+  .deadline-bell__item-side {
+    min-width: 150px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .deadline-bell__footer {
+    flex-wrap: nowrap;
+  }
+
+  .deadline-bell__footer-link,
+  .deadline-bell__footer-note {
+    white-space: nowrap;
+  }
+
+  .deadline-bell__detail-modal[hidden] {
+    display: none !important;
+  }
+
+  .deadline-bell__detail-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1700;
+  }
+
+  .deadline-bell__detail-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 10, 23, 0.72);
+    backdrop-filter: blur(10px);
+  }
+
+  .deadline-bell__detail-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(560px, calc(100vw - 24px));
+    max-height: min(82vh, 720px);
+    overflow-y: auto;
+    border-radius: 28px;
+    background: linear-gradient(180deg, rgba(11, 21, 43, 0.99), rgba(4, 10, 25, 0.98));
+    border: 1px solid rgba(116, 184, 255, 0.22);
+    box-shadow: 0 32px 90px rgba(0, 0, 0, 0.42);
+    padding: 24px 22px 22px;
+    color: #edf7ff;
+  }
+
+  .deadline-bell__detail-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    color: #d8ecff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+  }
+
+  .deadline-bell__detail-close:hover {
+    transform: rotate(90deg);
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.22);
+  }
+
+  .deadline-bell__detail-hero {
+    padding: 18px 18px 16px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+    border: 1px solid rgba(255,255,255,0.09);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .deadline-bell__detail-hero.is-overdue {
+    background: linear-gradient(180deg, rgba(255, 107, 136, 0.18), rgba(255, 107, 136, 0.06));
+    border-color: rgba(255, 107, 136, 0.18);
+  }
+
+  .deadline-bell__detail-hero.is-today {
+    background: linear-gradient(180deg, rgba(255, 192, 83, 0.18), rgba(255, 192, 83, 0.06));
+    border-color: rgba(255, 192, 83, 0.18);
+  }
+
+  .deadline-bell__detail-hero.is-soon {
+    background: linear-gradient(180deg, rgba(0, 209, 255, 0.14), rgba(91, 106, 255, 0.08));
+    border-color: rgba(0, 209, 255, 0.18);
+  }
+
+  .deadline-bell__detail-badges {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .deadline-bell__detail-hero h3 {
+    margin: 0;
+    font-size: 26px;
+    line-height: 1.15;
+    color: #ffffff;
+  }
+
+  .deadline-bell__detail-hero p {
+    margin: 8px 0 0;
+    color: rgba(223, 238, 255, 0.76);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .deadline-bell__detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .deadline-bell__detail-card,
+  .deadline-bell__detail-block {
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.05);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .deadline-bell__detail-card {
+    padding: 16px 14px;
+    text-align: center;
+  }
+
+  .deadline-bell__detail-label {
+    display: block;
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(205, 226, 255, 0.68);
+    margin-bottom: 10px;
+  }
+
+  .deadline-bell__detail-card strong {
+    display: block;
+    font-size: 15px;
+    line-height: 1.45;
+    color: #ffffff;
+    word-break: break-word;
+  }
+
+  .deadline-bell__detail-block {
+    padding: 18px 16px;
+    margin-bottom: 16px;
+  }
+
+  .deadline-bell__detail-block p {
+    margin: 0;
+    color: rgba(223, 238, 255, 0.84);
+    font-size: 14px;
+    line-height: 1.7;
+    text-align: center;
+  }
+
+  .deadline-bell__detail-actions {
+    display: flex;
+    justify-content: center;
+  }
+
+  .deadline-bell__detail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #8fe6ff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(143, 230, 255, 0.18);
+    background: rgba(255,255,255,0.04);
+    transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+  }
+
+  .deadline-bell__detail-link:hover {
+    transform: translateY(-1px);
+    background: rgba(0, 209, 255, 0.10);
+    border-color: rgba(143, 230, 255, 0.28);
+    color: #baf2ff;
+  }
+
+  @media (max-width: 768px) {
+    .deadline-bell__panel {
+      width: min(100vw - 16px, 560px);
+      padding: 18px 16px 16px;
+    }
+
+    .deadline-bell__panel-copy {
+      padding-left: 0;
+    }
+
+    .deadline-bell__panel-head {
+      align-items: center;
+    }
+
+    .deadline-bell__panel-head p {
+      text-align: center;
+    }
+
+    .deadline-bell__stats {
+      grid-template-columns: 1fr;
+    }
+
+    .deadline-bell__item {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      text-align: center;
+      padding: 14px 14px 16px 18px;
+    }
+
+    .deadline-bell__item-side {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .deadline-bell__footer {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .deadline-bell__detail-dialog {
+      width: min(100vw - 16px, 560px);
+      padding: 20px 16px 18px;
+    }
+
+    .deadline-bell__detail-grid {
+      grid-template-columns: 1fr;
+    }
+  }
   </style>
 
   <script>
@@ -1469,8 +1920,8 @@
     </nav>
   </div>
 
-  <div class="profile-modal" id="profileModal">
-    <div class="profile-content">
+  <div class="profile-modal" id="profileModal" aria-hidden="true">
+    <div class="profile-content profile-content--compact">
       <button type="button" class="profile-close" id="closeProfileModal" aria-label="Yopish">
         <i class='bx bx-x'></i>
       </button>
@@ -1491,11 +1942,11 @@
       </div>
 
       <div class="modal-grid">
-        <button type="button" class="modal-btn is-active" data-panel-target="panel-profile">
+        <button type="button" class="modal-btn" data-panel-target="panel-profile">
           <i class='bx bx-user-circle'></i>
           <div>
-            <strong>Profil</strong>
-            <span>Rasm, ism va telefon raqamingizni yangilang.</span>
+            <strong>Profil ma'lumotlari</strong>
+            <span>Rasm, ism va telefon raqamingizni alohida oynada boshqaring.</span>
           </div>
         </button>
         <button type="button" class="modal-btn" data-panel-target="panel-password">
@@ -1512,26 +1963,37 @@
             <span>Ob-havo shahri va animatsiya rejimini boshqaring.</span>
           </div>
         </button>
-        @if($canExcelExport)
-          <button type="button" class="modal-btn" data-panel-target="panel-export">
-            <i class='bx bx-spreadsheet'></i>
-            <div>
-              <strong>Excel</strong>
-              <span>Mijozlar, dokumentlar va xodimlar bazasini yuklab oling.</span>
-            </div>
-          </button>
-        @endif
-        <a href="{{ route('destroy') }}" class="modal-btn modal-btn-danger">
+        <button type="button" class="modal-btn modal-btn-danger" data-panel-target="panel-logout">
           <i class='bx bx-log-out-circle'></i>
           <div>
             <strong>Chiqish</strong>
-            <span>Joriy sessiyani xavfsiz yakunlaydi va tizimdan chiqaradi.</span>
+            <span>Joriy sessiyani xavfsiz yakunlash oynasini ochadi.</span>
           </div>
-        </a>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-modal profile-modal--panel" id="profilePanelModal" aria-hidden="true">
+    <div class="profile-content profile-content--panel" id="profilePanelDialog">
+      <button type="button" class="profile-close" id="closeProfilePanelModal" aria-label="Yopish">
+        <i class='bx bx-x'></i>
+      </button>
+
+      <div class="profile-panel-header">
+        <button type="button" class="profile-panel-back" id="profilePanelBack">
+          <i class='bx bx-chevron-left'></i>
+          Ortga
+        </button>
+        <div>
+          <div class="profile-title" id="profilePanelKicker">Bo'lim</div>
+          <h3 id="profilePanelHeading">Profil boshqaruvi</h3>
+          <p id="profilePanelCopy">Kerakli amalni shu oynada yakunlaysiz.</p>
+        </div>
       </div>
 
       <div class="profile-panel-wrap">
-        <section class="profile-panel is-visible" id="panel-profile">
+        <section class="profile-panel" id="panel-profile">
           <div class="profile-panel-title">Profil ma'lumotlari</div>
           <p class="profile-panel-note">Avatar, ism va telefon raqamingiz shu joydan yangilanadi. Login, rol va filial ma'lumotlari ma'lumot uchun ko'rsatiladi.</p>
           <div class="panel-feedback" data-feedback="profile"></div>
@@ -1661,6 +2123,31 @@
           </form>
         </section>
 
+        <section class="profile-panel" id="panel-logout">
+          <div class="profile-panel-title">Chiqishni tasdiqlash</div>
+          <p class="profile-panel-note">Sessiyani xavfsiz tugatish uchun pastdagi tugmani bosing. Umumiy kompyuterda ishlayotgan bo'lsangiz, chiqib ketish tavsiya qilinadi.</p>
+
+          <div class="profile-panel-grid">
+            <div class="profile-stat">
+              <span class="profile-stat-label">Foydalanuvchi</span>
+              <span class="profile-stat-value">{{ $authUser->name }}</span>
+            </div>
+            <div class="profile-stat">
+              <span class="profile-stat-label">Login</span>
+              <span class="profile-stat-value">{{ $authUser->login }}</span>
+            </div>
+          </div>
+
+          <div class="logout-card">
+            <div class="export-note">Chiqilgandan keyin tizimga qayta kirish uchun login va parolingiz talab qilinadi.</div>
+
+            <div class="panel-actions panel-actions-split">
+              <button type="button" class="panel-secondary" data-profile-panel-back>Ortga</button>
+              <a href="{{ route('destroy') }}" class="panel-submit panel-submit-link panel-submit-danger">Tizimdan chiqish</a>
+            </div>
+          </div>
+        </section>
+
         @if($canExcelExport)
           <section class="profile-panel" id="panel-export">
             <div class="profile-panel-title">Excel eksportlari</div>
@@ -1760,8 +2247,15 @@
     const openProfile = document.getElementById('openProfile');
     const profileModal = document.getElementById('profileModal');
     const closeProfileModal = document.getElementById('closeProfileModal');
-    const panelButtons = document.querySelectorAll('[data-panel-target]');
-    const panels = document.querySelectorAll('.profile-panel');
+    const profilePanelModal = document.getElementById('profilePanelModal');
+    const closeProfilePanelModal = document.getElementById('closeProfilePanelModal');
+    const profilePanelBack = document.getElementById('profilePanelBack');
+    const profilePanelBackButtons = document.querySelectorAll('[data-profile-panel-back]');
+    const profilePanelKicker = document.getElementById('profilePanelKicker');
+    const profilePanelHeading = document.getElementById('profilePanelHeading');
+    const profilePanelCopy = document.getElementById('profilePanelCopy');
+    const panelButtons = Array.from(document.querySelectorAll('#profileModal [data-panel-target]'));
+    const panels = Array.from(document.querySelectorAll('#profilePanelModal .profile-panel'));
     const weatherInfo = document.getElementById('weatherInfo');
     const topbarAvatar = document.getElementById('topbarAvatar');
     const topbarUserName = document.getElementById('topbarUserName');
@@ -1784,12 +2278,53 @@
     const deadlineBellTrigger = document.getElementById('deadlineBellTrigger');
     const deadlineBellPanel = document.getElementById('deadlineBellPanel');
     const deadlineBellClose = document.getElementById('deadlineBellClose');
+    const deadlineBellDetail = document.getElementById('deadlineBellDetail');
+    const deadlineBellDetailDialog = document.getElementById('deadlineBellDetailDialog');
+    const deadlineBellDetailClose = document.getElementById('deadlineBellDetailClose');
+    const deadlineBellItems = Array.from(document.querySelectorAll('.deadline-bell__item'));
+    const deadlineBellDetailHero = document.getElementById('deadlineBellDetailHero');
+    const deadlineBellDetailCode = document.getElementById('deadlineBellDetailCode');
+    const deadlineBellDetailFlag = document.getElementById('deadlineBellDetailFlag');
+    const deadlineBellDetailTitle = document.getElementById('deadlineBellDetailTitle');
+    const deadlineBellDetailSubtitle = document.getElementById('deadlineBellDetailSubtitle');
+    const deadlineBellDetailDueLabel = document.getElementById('deadlineBellDetailDueLabel');
+    const deadlineBellDetailDueAt = document.getElementById('deadlineBellDetailDueAt');
+    const deadlineBellDetailRemaining = document.getElementById('deadlineBellDetailRemaining');
+    const deadlineBellDetailMeta = document.getElementById('deadlineBellDetailMeta');
+    const deadlineBellDetailLink = document.getElementById('deadlineBellDetailLink');
     const profileRoleLabel = document.getElementById('profileRoleLabel');
     const profileFilialLabel = document.getElementById('profileFilialLabel');
     const badgeRole = document.getElementById('badgeRole');
     const badgeFilial = document.getElementById('badgeFilial');
     const badgeLogin = document.getElementById('badgeLogin');
     const profileLogin = document.getElementById('profileLogin');
+    const profilePanelMeta = {
+      'panel-profile': {
+        kicker: 'Profil',
+        title: 'Profil ma\'lumotlari',
+        copy: 'Avatar, ism va telefon raqamingizni shu oynada yangilang.',
+      },
+      'panel-password': {
+        kicker: 'Xavfsizlik',
+        title: 'Parolni yangilash',
+        copy: 'Joriy parolni tasdiqlab, yangi parolni xavfsiz tarzda saqlang.',
+      },
+      'panel-settings': {
+        kicker: 'Sozlamalar',
+        title: 'Shaxsiy sozlamalar',
+        copy: 'Ob-havo shahri va harakat effektlarini profilingizga moslang.',
+      },
+      'panel-logout': {
+        kicker: 'Chiqish',
+        title: 'Sessiyani yakunlash',
+        copy: 'Tizimdan chiqishdan oldin ushbu oynada tasdiqlang.',
+      },
+      'panel-export': {
+        kicker: 'Excel',
+        title: 'Excel eksportlari',
+        copy: 'Bazalarni tayyor workbook ko\'rinishida shu yerdan yuklab oling.',
+      },
+    };
     let avatarObjectUrl = null;
     const avatarCropCanvas = document.createElement('canvas');
     avatarCropCanvas.width = 512;
@@ -1860,13 +2395,64 @@
       }
     }
 
+    function setProfileModalOpen(open) {
+      profileModal.style.display = open ? 'flex' : 'none';
+      profileModal.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+
+    function setProfilePanelModalOpen(open) {
+      if (!profilePanelModal) {
+        return;
+      }
+
+      profilePanelModal.style.display = open ? 'flex' : 'none';
+      profilePanelModal.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+
+    function syncProfilePanelMeta(targetId) {
+      const meta = profilePanelMeta[targetId] || profilePanelMeta['panel-profile'];
+
+      if (profilePanelKicker) {
+        profilePanelKicker.textContent = meta.kicker;
+      }
+
+      if (profilePanelHeading) {
+        profilePanelHeading.textContent = meta.title;
+      }
+
+      if (profilePanelCopy) {
+        profilePanelCopy.textContent = meta.copy;
+      }
+    }
+
     function openProfileModal() {
       setDeadlineBellOpen(false);
-      profileModal.style.display = 'flex';
+      activatePanel(null);
+      setProfilePanelModalOpen(false);
+      setProfileModalOpen(true);
     }
 
     function closeProfile() {
-      profileModal.style.display = 'none';
+      setProfileModalOpen(false);
+    }
+
+    function closeProfilePanel(returnToProfile = false) {
+      setProfilePanelModalOpen(false);
+
+      if (returnToProfile) {
+        setProfileModalOpen(true);
+      }
+    }
+
+    function openProfilePanel(targetId) {
+      if (!document.getElementById(targetId)) {
+        return;
+      }
+
+      activatePanel(targetId);
+      syncProfilePanelMeta(targetId);
+      setProfileModalOpen(false);
+      setProfilePanelModalOpen(true);
     }
 
     function setDeadlineBellOpen(open) {
@@ -1879,13 +2465,60 @@
       deadlineBellPanel.hidden = !open;
     }
 
+    function setDeadlineBellDetailOpen(open) {
+      if (!deadlineBellDetail) {
+        return;
+      }
+
+      deadlineBellDetail.hidden = !open;
+      deadlineBellDetail.setAttribute('aria-hidden', open ? 'false' : 'true');
+    }
+
+    function setDeadlineDetailValue(element, value, fallback = '-') {
+      if (!element) {
+        return;
+      }
+
+      element.textContent = value && String(value).trim() ? String(value).trim() : fallback;
+    }
+
+    function populateDeadlineBellDetail(button) {
+      if (!button || !deadlineBellDetailHero) {
+        return;
+      }
+
+      const urgency = button.dataset.deadlineUrgency || 'normal';
+      deadlineBellDetailHero.classList.remove('is-overdue', 'is-today', 'is-soon', 'is-normal');
+      deadlineBellDetailHero.classList.add(`is-${urgency}`);
+
+      setDeadlineDetailValue(deadlineBellDetailCode, button.dataset.deadlineCode, 'DOC');
+      setDeadlineDetailValue(deadlineBellDetailTitle, button.dataset.deadlineTitle, 'Deadline tafsiloti');
+      setDeadlineDetailValue(deadlineBellDetailSubtitle, button.dataset.deadlineSubtitle, 'Xizmat ko‘rsatilmagan');
+      setDeadlineDetailValue(deadlineBellDetailDueLabel, button.dataset.deadlineDueLabel);
+      setDeadlineDetailValue(deadlineBellDetailDueAt, button.dataset.deadlineDueAt);
+      setDeadlineDetailValue(deadlineBellDetailRemaining, button.dataset.deadlineRemaining, 'Hisoblanmagan');
+      setDeadlineDetailValue(deadlineBellDetailMeta, button.dataset.deadlineMeta, "Qo'shimcha ma'lumot yo'q.");
+
+      if (deadlineBellDetailFlag) {
+        const flag = button.dataset.deadlineFlag || '';
+        deadlineBellDetailFlag.hidden = !flag;
+        deadlineBellDetailFlag.textContent = flag;
+      }
+
+      if (deadlineBellDetailLink) {
+        deadlineBellDetailLink.href = button.dataset.deadlineUrl || '#';
+      }
+    }
+
     function activatePanel(targetId) {
+      const normalizedTargetId = targetId || '';
+
       panelButtons.forEach(button => {
-        button.classList.toggle('is-active', button.dataset.panelTarget === targetId);
+        button.classList.toggle('is-active', button.dataset.panelTarget === normalizedTargetId);
       });
 
       panels.forEach(panel => {
-        panel.classList.toggle('is-visible', panel.id === targetId);
+        panel.classList.toggle('is-visible', panel.id === normalizedTargetId);
       });
     }
 
@@ -2298,8 +2931,8 @@
 
     if (openExcelPanel) {
       openExcelPanel.addEventListener('click', () => {
-        openProfileModal();
-        activatePanel('panel-export');
+        setDeadlineBellOpen(false);
+        openProfilePanel('panel-export');
       });
     }
 
@@ -2324,8 +2957,39 @@
       });
     }
 
+    if (deadlineBellDetail && deadlineBellDetailDialog) {
+      deadlineBellItems.forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          populateDeadlineBellDetail(button);
+          setDeadlineBellOpen(false);
+          setDeadlineBellDetailOpen(true);
+        });
+      });
+
+      deadlineBellDetail.addEventListener('click', (event) => {
+        if (event.target.closest('[data-deadline-detail-close]') || !deadlineBellDetailDialog.contains(event.target)) {
+          setDeadlineBellDetailOpen(false);
+        }
+      });
+
+      deadlineBellDetailDialog.addEventListener('click', (event) => {
+        event.stopPropagation();
+      });
+
+      deadlineBellDetailClose?.addEventListener('click', () => {
+        setDeadlineBellDetailOpen(false);
+      });
+    }
+
     openProfile.addEventListener('click', openProfileModal);
     closeProfileModal.addEventListener('click', closeProfile);
+    closeProfilePanelModal?.addEventListener('click', () => closeProfilePanel());
+    profilePanelBack?.addEventListener('click', () => closeProfilePanel(true));
+    profilePanelBackButtons.forEach((button) => {
+      button.addEventListener('click', () => closeProfilePanel(true));
+    });
 
     profileModal.addEventListener('click', (event) => {
       if (event.target === profileModal) {
@@ -2333,9 +2997,23 @@
       }
     });
 
+    profilePanelModal?.addEventListener('click', (event) => {
+      if (event.target === profilePanelModal) {
+        closeProfilePanel();
+      }
+    });
+
     document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !deadlineBellDetail?.hidden) {
+        setDeadlineBellDetailOpen(false);
+      }
+
       if (event.key === 'Escape' && !deadlineBellPanel?.hidden) {
         setDeadlineBellOpen(false);
+      }
+
+      if (event.key === 'Escape' && profilePanelModal?.style.display === 'flex') {
+        closeProfilePanel();
       }
 
       if (event.key === 'Escape' && profileModal.style.display === 'flex') {
@@ -2344,7 +3022,7 @@
     });
 
     panelButtons.forEach((button) => {
-      button.addEventListener('click', () => activatePanel(button.dataset.panelTarget));
+      button.addEventListener('click', () => openProfilePanel(button.dataset.panelTarget));
     });
 
     profilePhone.addEventListener('focus', () => {
@@ -2497,7 +3175,7 @@
 
     applyReducedMotion(headerAccountConfig.reducedMotion);
     applyPhoneMask(profilePhone.value);
-    activatePanel(panelButtons[0]?.dataset.panelTarget || 'panel-profile');
+    activatePanel(null);
     updateDate();
     setInterval(updateDate, 60000);
     getWeather();

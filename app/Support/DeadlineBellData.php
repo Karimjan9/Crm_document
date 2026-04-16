@@ -184,6 +184,17 @@ class DeadlineBellData
     protected static function baseDocumentsQuery(): Builder
     {
         return DocumentsModel::query()
+            ->select([
+                'id',
+                'client_id',
+                'service_id',
+                'user_id',
+                'filial_id',
+                'document_code',
+                'deadline_time',
+                'created_at',
+                'status_doc',
+            ])
             ->with([
                 'client:id,name',
                 'service:id,name',

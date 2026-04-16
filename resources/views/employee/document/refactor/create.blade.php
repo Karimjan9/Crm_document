@@ -707,7 +707,7 @@ class WizardManager {
                         const sourceType = addon?.sourceType ?? addon?.type ?? addon?.container ?? null;
                         const id = Number(addon?.id || 0);
 
-                        if (!sourceType || !id) {
+                        if (!sourceType || !id || sourceType === 'consulate') {
                             return null;
                         }
 

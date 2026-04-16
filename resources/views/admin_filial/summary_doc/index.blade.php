@@ -93,7 +93,6 @@
         border-top: none;
     }
 
-    /* Sort iconlar */
     th.sortable {
         cursor: pointer;
         position: relative;
@@ -120,11 +119,14 @@
 @endsection
 
 @section('body')
+@php
+    $documentsCount = method_exists($documents, 'total') ? $documents->total() : $documents->count();
+@endphp
+
 <div class="page-wrapper">
     <div class="page-content">
         <div class="container-fluid py-4">
 
-            {{-- Flash message --}}
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
@@ -132,12 +134,11 @@
                 </div>
             @endif
 
-            {{-- Documents Table --}}
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="mb-0"><i class="fas fa-layer-group me-2"></i>Hujjatlar Ro'yxati</h4>
                     <span class="badge bg-light text-dark px-3 py-2 shadow-sm">
-                        Jami: {{ $documents->count() }} ta hujjat
+                        Jami: {{ $documentsCount }} ta hujjat
                     </span>
                 </div>
 
@@ -148,7 +149,7 @@
                                 <th class="sortable" data-column="id">ID</th>
                                 <th class="sortable" data-column="document_code">Hujjat Raqami</th>
                                 <th class="sortable" data-column="final_price">Jami</th>
-                                <th class="sortable" data-column="paid_amount">To‘langan</th>
+                                <th class="sortable" data-column="paid_amount">To'langan</th>
                                 <th class="sortable" data-column="balance">Qoldiq</th>
                                 <th>Chegirma</th>
                                 <th>Izoh</th>
@@ -161,8 +162,8 @@
                             @foreach($documents as $doc)
                                 @php
                                     $balance = $doc->final_price - $doc->paid_amount;
-                                    $status = $balance <= 0 ? "To‘langan" : ($doc->paid_amount > 0 ? "Qisman" : "Qarzdor");
-                                    $badge = $balance <= 0 ? "success" : ($doc->paid_amount > 0 ? "warning" : "danger");
+                                    $status = $balance <= 0 ? "To'langan" : ($doc->paid_amount > 0 ? 'Qisman' : 'Qarzdor');
+                                    $badge = $balance <= 0 ? 'success' : ($doc->paid_amount > 0 ? 'warning' : 'danger');
                                 @endphp
                                 <tr class="document-row"
                                     data-document-id="{{ $doc->id }}"
@@ -173,24 +174,26 @@
                                     data-balance="{{ $balance }}">
                                     <td>#{{ $doc->id }}</td>
                                     <td><span class="badge bg-info text-dark">{{ $doc->document_code }}</span></td>
-                                    <td><b>{{ number_format($doc->final_price) }} so‘m</b></td>
-                                    <td class="text-success fw-bold">{{ number_format($doc->paid_amount) }} so‘m</td>
+                                    <td><b>{{ number_format($doc->final_price) }} so'm</b></td>
+                                    <td class="text-success fw-bold">{{ number_format($doc->paid_amount) }} so'm</td>
                                     <td>
                                         <span class="{{ $balance > 0 ? 'balance-negative' : 'balance-positive' }}">
-                                            {{ number_format($balance) }} so‘m
+                                            {{ number_format($balance) }} so'm
                                         </span>
                                     </td>
                                     <td>
                                         @if($doc->discount > 0)
-                                            <span class="badge bg-warning text-dark">{{ number_format($doc->discount) }} so‘m</span>
+                                            <span class="badge bg-warning text-dark">{{ number_format($doc->discount) }} so'm</span>
                                         @else
-                                            <span class="text-muted">—</span>
+                                            <span class="text-muted">-</span>
                                         @endif
                                     </td>
                                     <td>
                                         @if($doc->description)
                                             <button class="btn btn-sm btn-info description-btn" data-description="{{ $doc->description }}">Ko'rish</button>
-                                        @else - @endif
+                                        @else
+                                            -
+                                        @endif
                                     </td>
                                     <td><span class="badge bg-{{ $badge }} status-badge">{{ $status }}</span></td>
                                     <td>
@@ -208,45 +211,16 @@
                                         </button>
                                     </td>
                                 </tr>
-                                <tr class="payment-details-row" id="payment-details-{{ $doc->id }}" style="display:none;">
-                                    <td colspan="10">
-                                        <div class="payment-details">
-                                            <h6 class="mb-3"><i class="fas fa-credit-card me-2"></i>To‘lovlar Tarixi</h6>
-                                            @if($doc->payments->count() > 0)
-                                                <table class="table table-sm table-bordered mb-0">
-                                                    <thead class="table-light">
-                                                        <tr>
-                                                            <th>ID</th>
-                                                            <th>Sana</th>
-                                                            <th>Summasi</th>
-                                                            <th>Turi</th>
-                                                            <th>Izoh</th>
-                                                            <th>Qo‘shilgan</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach($doc->payments as $payment)
-                                                            <tr>
-                                                                <td>#{{ $payment->id }}</td>
-                                                                <td>{{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format("d.m.Y") : 'N/A' }}</td>
-                                                                <td class="text-success fw-bold">{{ number_format($payment->amount) }} so‘m</td>
-                                                                <td><span class="badge bg-primary">{{ $payment->payment_type ?? 'Naqd' }}</span></td>
-                                                                <td>{{ $payment->description ?? '—' }}</td>
-                                                                <td>{{ $payment->created_at->format("d.m.Y H:i") }}</td>
-                                                            </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
-                                            @else
-                                                <div class="alert alert-warning mb-0">Hech qanday to‘lov topilmadi.</div>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
+
+                @if(method_exists($documents, 'links'))
+                    <div class="p-3">
+                        {{ $documents->links() }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -255,7 +229,6 @@
 @include('partials.payment_modal')
 @include('partials.description_modal')
 @include('partials.history_modal')
-
 @endsection
 
 @section('script')
@@ -265,15 +238,6 @@
 <script>
 $(document).ready(function(){
 
-    // Toggle payment details
-    $('.document-row').click(function(){
-        const id = $(this).data('document-id');
-        const openRow = $('#payment-details-' + id);
-        $('.payment-details-row').not(openRow).slideUp(200);
-        openRow.slideToggle(250);
-    });
-
-    // Sorting
     $('th.sortable').click(function() {
         const table = $(this).closest('table');
         const tbody = table.find('tbody');
@@ -289,9 +253,10 @@ $(document).ready(function(){
                 valA = parseFloat(valA);
                 valB = parseFloat(valB);
             } else {
-                valA = valA.toString().toLowerCase();
-                valB = valB.toString().toLowerCase();
+                valA = String(valA).toLowerCase();
+                valB = String(valB).toLowerCase();
             }
+
             return asc ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
         });
 
@@ -300,12 +265,12 @@ $(document).ready(function(){
         $(this).addClass(asc ? 'asc' : 'desc');
     });
 
-    // Payment modal
     $('.make-payment-btn').click(function(e){
         e.stopPropagation();
-        let id = $(this).data('document-id');
-        let code = $(this).data('document-code');
-        let balance = $(this).data('balance');
+
+        const id = $(this).data('document-id');
+        const code = $(this).data('document-code');
+        const balance = $(this).data('balance');
 
         $('#document_id').val(id);
         $('#document_code').val(code);
@@ -314,51 +279,53 @@ $(document).ready(function(){
         $('#paymentModal').modal('show');
     });
 
-    // Description modal
     $('.description-btn').click(function(e){
         e.stopPropagation();
-        let desc = $(this).data('description');
-        $('#descriptionContent').text(desc);
+        $('#descriptionContent').text($(this).data('description'));
         $('#descriptionModal').modal('show');
     });
 
     const paymentHistoryBase = "{{ route('admin_filial.payments', ['document' => '__id__']) }}";
 
-    // Payment history modal
     $('.payment-history-btn').click(function(e){
         e.stopPropagation();
-        let docId = $(this).data('document-id');
+
+        const docId = $(this).data('document-id');
+
         $.ajax({
             url: paymentHistoryBase.replace('__id__', docId),
             method: "GET",
             success: function(res){
                 let tbody = '';
+
                 res.forEach(function(payment, index){
-                    let date = new Date(payment.created_at);
+                    const date = new Date(payment.created_at);
                     const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-                    let day = date.getDate().toString().padStart(2,'0');
-                    let month = monthNames[date.getMonth()];
-                    let year = date.getFullYear();
-                    let hours = date.getHours().toString().padStart(2,'0');
-                    let minutes = date.getMinutes().toString().padStart(2,'0');
-                    let formatted = `${day} ${month} ${year}, ${hours}:${minutes}`;
+                    const day = date.getDate().toString().padStart(2, '0');
+                    const month = monthNames[date.getMonth()];
+                    const year = date.getFullYear();
+                    const hours = date.getHours().toString().padStart(2, '0');
+                    const minutes = date.getMinutes().toString().padStart(2, '0');
+                    const formatted = `${day} ${month} ${year}, ${hours}:${minutes}`;
+
                     tbody += `<tr>
-                        <td>${index+1}</td>
+                        <td>${index + 1}</td>
                         <td>${Number(payment.amount).toLocaleString()} so'm</td>
                         <td>${payment.payment_type}</td>
                         <td>${payment.paid_by_admin_id}</td>
                         <td>${formatted}</td>
                     </tr>`;
                 });
+
                 $('#historyTableBody').html(tbody);
                 $('#historyModal').modal('show');
             }
         });
     });
 
-    // Payment AJAX
     $('#paymentForm').submit(function(e){
         e.preventDefault();
+
         $.ajax({
             url: "{{ route('admin_filial.add_payment') }}",
             method: "POST",
@@ -369,14 +336,15 @@ $(document).ready(function(){
                 payment_type: $('select[name="payment_type"]').val()
             },
             success: function(res){
-                if(res.status==='success') location.reload();
+                if (res.status === 'success') {
+                    location.reload();
+                }
             },
             error: function(xhr){
-                alert(xhr.status===422 ? xhr.responseJSON.message : "Xatolik! Server to'lovni qabul qilmadi.");
+                alert(xhr.status === 422 ? xhr.responseJSON.message : "Xatolik! Server to'lovni qabul qilmadi.");
             }
         });
     });
-
 });
 </script>
 @endsection

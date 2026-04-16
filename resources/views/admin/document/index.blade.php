@@ -136,7 +136,7 @@ body {
 
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h4 style="color: var(--blue-main); font-weight: 600;">📑 Hujjat boshqaruvi — Admin panel</h4>
-      <button class="btn-custom">+ Yangi hujjat qo‘shish</button>
+      <a href="{{ route('superadmin.document.create') }}" class="btn-custom text-decoration-none">+ Yangi hujjat qo‘shish</a>
     </div>
 
     <!-- 🔍 Filtr qismi -->

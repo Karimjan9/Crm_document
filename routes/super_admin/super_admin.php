@@ -15,12 +15,22 @@ use App\Http\Controllers\Admin\DirectionTypeController;
 use App\Http\Controllers\Admin\SMSMessageTextController;
 use App\Http\Controllers\Admin\ConsulationTypeController;
 use App\Http\Controllers\Admin\FCalendar\HolidayController;
+use App\Http\Controllers\Admin\Api\ClientController;
+use App\Http\Controllers\Admin\Api\DocumentController as ApiDocumentController;
 use App\Http\Controllers\SuperAdmin\ExcelExportController;
 use App\Http\Controllers\SuperAdmin\StaticApostilController;
 use App\Http\Controllers\SuperAdmin\PackageTemplateController;
 use App\Http\Controllers\Admin\FCalendar\CalendarController as FCalendarController;
 
 Route::name('superadmin.')->prefix('superadmin')->group(function(){
+
+    Route::prefix('api')->group(function () {
+        Route::post('/document', [ApiDocumentController::class, 'store']);
+        Route::get('/clients/search', [ClientController::class, 'search']);
+        Route::apiResource('/clients', ClientController::class);
+        Route::post('/document/save-all', [ApiDocumentController::class, 'storeAll']);
+        Route::get('/get-addons/{type}/{id}', [ApiDocumentController::class, 'getAddons']);
+    });
 
     Route::prefix('fl')->group(function () {
 

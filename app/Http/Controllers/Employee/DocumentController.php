@@ -219,10 +219,21 @@ class DocumentController extends Controller
     {
         $user = auth()->user();
 
-        $documents = DocumentsModel::with(['client', 'service', 'addons', 'payments', 'user'])
+        $documents = DocumentsModel::query()
+            ->select([
+                'id',
+                'document_code',
+                'final_price',
+                'paid_amount',
+                'discount',
+                'description',
+            ])
+            ->with([
+                'payments:id,document_id,amount,payment_type,paid_by_admin_id,created_at',
+            ])
             ->where('user_id', $user->id)
             ->orderBy('id', 'DESC')
-            ->get();
+            ->paginate(25);
 
         return view('employee.document.summary', compact('documents'));
     }
