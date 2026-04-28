@@ -35,7 +35,15 @@ class HolidayController extends Controller
             }
 
             $sortBy = $request->get('sort_by', 'date');
-            $sortOrder = $request->get('sort_order', 'asc');
+            if (!in_array($sortBy, ['title', 'date', 'type', 'is_active', 'created_at'], true)) {
+                $sortBy = 'date';
+            }
+
+            $sortOrder = strtolower((string) $request->get('sort_order', 'asc'));
+            if (!in_array($sortOrder, ['asc', 'desc'], true)) {
+                $sortOrder = 'asc';
+            }
+
             $query->orderBy($sortBy, $sortOrder);
 
             $perPage = $request->get('per_page', 15);

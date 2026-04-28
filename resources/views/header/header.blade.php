@@ -315,7 +315,6 @@
                 <a class="d-flex align-items-center nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{ url('avatar-2.png') }}" class="user-img" alt="user avatar">
                     <div class="user-info ps-3">
-                        @dd(auth()->user())
                         <p class="user-name mb-0">{{ auth()->user()->name }}</p>
                         <p class="designattion mb-0">{{ __(auth()->user()->user_level->name) }}</p>
                     </div>

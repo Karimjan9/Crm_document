@@ -9,7 +9,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('documents', function (Blueprint $table) {
-            $table->enum('process_mode', ['apostil', 'consul'])
+            $table->enum('process_mode', ['apostil', 'consul', 'service'])
                 ->nullable()
                 ->after('consulate_type_id');
 

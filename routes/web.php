@@ -56,7 +56,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     })->name('calendar.index');
 
     Route::get('/calendar/create', function () {
-        return view('admin.calendar.create');
+        return view('calendar.create');
     })->name('calendar.create');
 });
 
@@ -79,7 +79,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 
-    Route::get('/change-password', [AuthenticatedSessionController::class, 'change-password'])->name('change-password');
+    Route::get('/change-password', [AuthenticatedSessionController::class, 'changePassword'])->name('change-password');
 
         Route::any('/destroy', [AuthenticatedSessionController::class, 'destroy'])->name('destroy');
     
@@ -91,6 +91,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Route::get('/change_session', [PrixodController::class, 'clear_session'])->name('clear_session');
 
         Route::get('/clear_cache', function () {
+            abort_unless(app()->environment('local') && config('app.debug'), 404);
 
             Artisan::call('migrate');
 
@@ -120,15 +121,13 @@ Route::middleware(['guest'])->group(function () {
 
 
 Route::get("/load_script", function () {
+    abort_unless(app()->environment('local') && config('app.debug'), 404);
 
-    if (env('APP_DEBUG')) {
-        
-        Artisan::call('migrate:fresh');
-    
-        Artisan::call('db:seed');
-    
-        return view("reload_script");
-    }
+    Artisan::call('migrate:fresh');
+
+    Artisan::call('db:seed');
+
+    return view("reload_script");
 
 })->name("load_script");
 
