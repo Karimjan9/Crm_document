@@ -1900,6 +1900,9 @@
         <div class="date"><i class='bx bx-calendar'></i><span id="dateInfo"></span></div>
       </div> --}}
 
+      <!-- 🌙 Theme toggle -->
+
+
       <div class="topbar-actions">
         @if($canExcelExport)
           <button type="button" class="topbar-shortcut" id="openExcelPanel">
@@ -1907,6 +1910,14 @@
             <span>Excel</span>
           </button>
         @endif
+        
+        <button id="themeToggle" class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center"
+        style="width:38px;height:38px;border-radius:10px;">
+
+    <i id="themeIcon" class="fa-solid fa-moon" style="font-size:16px; transition:0.3s;"></i>
+
+</button>
+
 
         @include('partials.deadline_bell')
 
