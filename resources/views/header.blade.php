@@ -111,11 +111,11 @@
     background: linear-gradient(145deg, rgba(18, 35, 68, 0.94), rgba(9, 18, 38, 0.98));
     color: #eef7ff;
     border-radius: 20px;
-    min-width: 188px;
-    padding: 10px 14px;
+    /* min-width: 188px; */
+    padding: 1px;
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 1px;
     cursor: pointer;
     box-shadow: 0 18px 36px rgba(6, 13, 29, 0.24);
     transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease, background 0.24s ease;
@@ -1895,10 +1895,10 @@
     <nav class="navbar navbar-expand">
       <div class="brand-animated" id="brandName">Global Voice</div>
 
-      <div class="weather-date" id="weatherDate">
+      {{-- <div class="weather-date" id="weatherDate">
         <div class="weather"><i class='bx bx-cloud'></i><span id="weatherInfo">Yuklanmoqda...</span></div>
         <div class="date"><i class='bx bx-calendar'></i><span id="dateInfo"></span></div>
-      </div>
+      </div> --}}
 
       <div class="topbar-actions">
         @if($canExcelExport)
@@ -2238,8 +2238,6 @@
       const days = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
       const months = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'];
 
-      document.getElementById('dateInfo').innerText =
-        `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
     }
 
     const API_KEY = '6d325d5ac3fbc4b0a3f6e1021e50896c';

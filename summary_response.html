@@ -214,7 +214,7 @@
 }
 
 /* ===================== ICON ANIMATIONS ===================== */
-/* Asosiy bo‘lim ikonlari */
+/* Asosiy boï¿½lim ikonlari */
 .parent-icon i {
     font-size: 28px;
     margin-right: 10px;
@@ -2413,7 +2413,7 @@
           };
 
           desc = translate[desc] || desc;
-          document.getElementById('weatherInfo').innerText = `${city}: ${temp}°C, ${desc}`;
+          document.getElementById('weatherInfo').innerText = `${city}: ${temp}ï¿½C, ${desc}`;
         } else {
           document.getElementById('weatherInfo').innerText = "Ob-havo olinmadi";
         }
@@ -2497,7 +2497,7 @@
         const temp = Math.round(data.main.temp);
         const rawDescription = data.weather?.[0]?.description || '';
         const description = weatherTranslations[rawDescription] || rawDescription;
-        weatherInfo.innerText = `${city}: ${temp}°C, ${description}`;
+        weatherInfo.innerText = `${city}: ${temp}ï¿½C, ${description}`;
       } catch (error) {
         weatherInfo.innerText = 'Ob-havo olinmadi';
       }
@@ -3787,13 +3787,13 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">To‘lov summasi</label>
+            <label class="form-label">Toï¿½lov summasi</label>
             <input type="number" class="form-control" name="amount" min="1" step="1" required placeholder="Masalan: 100000">
             <small class="text-muted">Summani qoldiqdan oshirmang.</small>
           </div>
 
           <div class="mb-1">
-            <label class="form-label">To‘lov turi</label>
+            <label class="form-label">Toï¿½lov turi</label>
             <select class="form-select" name="payment_type" required>
               <option value="Naqd">Naqd</option>
               <option value="Karta">Karta</option>
@@ -3829,7 +3829,7 @@
 
       <div class="modal-body">
         <div class="p-3 rounded" style="background:#f5f7fb;">
-          <div id="descriptionContent" style="white-space: pre-wrap;">—</div>
+          <div id="descriptionContent" style="white-space: pre-wrap;">ï¿½</div>
         </div>
       </div>
 
@@ -3846,7 +3846,7 @@
 
       <div class="modal-header">
         <h5 class="modal-title" id="historyModalLabel">
-          <i class="fas fa-history me-2"></i>To‘lovlar tarixi
+          <i class="fas fa-history me-2"></i>Toï¿½lovlar tarixi
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Yopish"></button>
       </div>
@@ -4004,7 +4004,7 @@ $(document).ready(function(){
     
 
     <div class="footer-content">
-        <p class="footer-copy">Copyright © <span>2026</span>. All rights reserved.</p>
+        <p class="footer-copy">Copyright ï¿½ <span>2026</span>. All rights reserved.</p>
     </div>
 </footer>
 

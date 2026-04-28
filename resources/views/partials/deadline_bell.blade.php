@@ -15,7 +15,7 @@
     <button
       type="button"
       class="deadline-bell__trigger"
-      id="deadlineBellTrigger"
+      id="deadlineBellTrigger"  
       aria-haspopup="dialog"
       aria-expanded="false"
       aria-controls="deadlineBellPanel"
