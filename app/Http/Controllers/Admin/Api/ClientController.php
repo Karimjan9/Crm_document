@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClientsModel as Client;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -69,7 +70,13 @@ class ClientController extends Controller
      */
     public function destroy(Client $client)
     {
-        $client->delete();
+        try {
+            $client->delete();
+        } catch (QueryException) {
+            return response()->json([
+                'message' => 'Client has related documents and cannot be deleted.'
+            ], 409);
+        }
 
         return response()->json([
             'message' => 'Client deleted successfully'

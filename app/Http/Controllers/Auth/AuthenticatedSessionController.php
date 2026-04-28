@@ -68,6 +68,11 @@ class AuthenticatedSessionController extends Controller
 
     }
 
+    public function changePassword(): RedirectResponse
+    {
+        return redirect()->back();
+    }
+
     /**
      * Destroy an authenticated session.
      */

@@ -122,12 +122,6 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
     Route::resource('document_type/{document_type}/type_addition',TypeAdditionController::class)->except(['show']);
 
-    Route::post('/store_document_direction', [DirectionTypeController::class, 'store_type_direction'])->name('store_direction_addition');
-
-    Route::delete('/delete_document_additional/{addition}', [DocumentTypeController::class, 'delete_type_additional'])->name('addition.destroy');
-
-    Route::delete('/delete_document_direction/{addition}', [DirectionTypeController::class, 'delete_type_direction'])->name('delete_direction_addition');
-
     // Direction Type Comment Routes
     // Route::post('/superadmin/store-comment', [DocumentTypeController::class, 'store_direction_type_comment'])->name('superadmin.store_comment');
 

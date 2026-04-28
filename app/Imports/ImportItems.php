@@ -22,8 +22,6 @@ class ImportItems implements ToCollection
             if ($key>=3 && $key<=18) {
                 // dd($collection[$key][10]);
                 return(ItemsModel::create(["name"=>strval($value[10]),"bodily"=>1,"first"=>1,"second"=>1,"unity_id"=>2]));
-
-                dd(strval($collection[$key][10]));
                 // dd($collection[$key][10]);
                 // dd($collection[$key][11]=="дона");
                 if($collection[$key][11]=="дона"){

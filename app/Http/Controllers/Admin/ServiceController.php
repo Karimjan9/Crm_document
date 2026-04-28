@@ -7,6 +7,7 @@ use App\Models\ServicesModel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ServiceRequest;
 use App\Http\Requests\ServiceEditRequest;
+use Illuminate\Database\QueryException;
 
 class ServiceController extends Controller
 {
@@ -52,7 +53,13 @@ class ServiceController extends Controller
     public function destroy($id)
     {
         $service=ServicesModel::findOrFail($id);
-        $service->delete();
+        try {
+            $service->delete();
+        } catch (QueryException) {
+            return redirect()->route('superadmin.service.index')
+                ->with('error', 'Bu xizmat hujjatlarga boglangan, ochirib bolmaydi.');
+        }
+
         return redirect()->route('superadmin.service.index')->with('success','Service muvaffaqiyatli o\'chirildi.');
     }
 }

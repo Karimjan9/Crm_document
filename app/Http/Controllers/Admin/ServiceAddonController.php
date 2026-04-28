@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ServiceEditRequest;
 use App\Http\Requests\ServiceRequest;
 use App\Models\ServiceAddonModel;
+use Illuminate\Database\QueryException;
 
 class ServiceAddonController extends Controller
 {
@@ -48,7 +49,13 @@ class ServiceAddonController extends Controller
     public function destroy($service_id, $id)
     {
         $addon = ServiceAddonModel::findOrFail($id);
-        $addon->delete();
+        try {
+            $addon->delete();
+        } catch (QueryException) {
+            return redirect()->route('superadmin.service.index', ['service' => $service_id])
+                ->with('error', "Bu qoshimcha servis hujjatlarga boglangan, ochirib bolmaydi.");
+        }
+
         return redirect()->route('superadmin.service.index', ['service' => $service_id])->with('success', "Qo'shimcha servis muvaffaqiyatli o\'chirildi.");
     }
 
