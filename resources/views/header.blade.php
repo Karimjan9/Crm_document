@@ -37,8 +37,8 @@
     font-family: 'Poppins', sans-serif !important;
     font-size: 30px !important;
     font-weight: 700 !important;
-    color: #00d1ff !important;
-    transition: color 0.5s ease !important;
+    color: #b31b1b;
+    /* transition: color 0.5s ease !important; */
   }
 
   .weather-date {

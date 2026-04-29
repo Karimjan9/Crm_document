@@ -431,8 +431,8 @@
     font-family: 'Poppins', sans-serif !important;
     font-size: 30px !important;
     font-weight: 700 !important;
-    color: #00d1ff !important;
-    transition: color 0.5s ease !important;
+    /* color: #00d1ff !important; */
+    /* transition: color 0.5s ease !important; */
   }
 
   .weather-date {
@@ -503,7 +503,7 @@
     overflow: hidden;
     border: 1px solid rgba(121, 186, 255, 0.22);
     background: linear-gradient(145deg, rgba(18, 35, 68, 0.94), rgba(9, 18, 38, 0.98));
-    color: #eef7ff;
+    color: #ffc505;
     border-radius: 20px;
     min-width: 188px;
     padding: 10px 14px;
@@ -527,7 +527,7 @@
   .deadline-bell__trigger:hover,
   .deadline-bell.is-open .deadline-bell__trigger {
     transform: translateY(-2px);
-    border-color: rgba(0, 209, 255, 0.42);
+    border-color: rgba(136, 255, 0, 0.42);
     box-shadow: 0 22px 44px rgba(0, 209, 255, 0.14);
   }
 
@@ -552,8 +552,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06));
-    border: 1px solid rgba(255,255,255,0.14);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(226, 241, 2, 0.06));
+    border: 1px solid rgba(234, 238, 9, 0.14);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
   }
 
@@ -597,7 +597,7 @@
     min-width: 32px;
     padding: 6px 8px;
     border-radius: 999px;
-    background: rgba(255,255,255,0.12);
+    background: rgba(219, 243, 4, 0.12);
     border: 1px solid rgba(255,255,255,0.10);
     font-size: 12px;
     font-weight: 800;
@@ -609,8 +609,8 @@
   }
 
   .deadline-bell.is-critical .deadline-bell__trigger {
-    border-color: rgba(255, 115, 138, 0.34);
-    background: linear-gradient(145deg, rgba(61, 24, 49, 0.95), rgba(13, 18, 39, 0.98));
+    border-color: rgba(255, 253, 115, 0.34);
+    background: linear-gradient(145deg, rgba(58, 61, 24, 0.95), rgba(39, 39, 13, 0.98));
     box-shadow: 0 22px 44px rgba(255, 99, 132, 0.16);
   }
 
@@ -619,8 +619,8 @@
   }
 
   .deadline-bell.is-critical .deadline-bell__badge {
-    background: linear-gradient(135deg, rgba(255, 121, 141, 0.88), rgba(255, 164, 86, 0.92));
-    border-color: rgba(255,255,255,0.10);
+    background: linear-gradient(135deg, rgba(255, 188, 3, 0.979), rgba(226, 111, 10, 0.92));
+    border-color: rgba(214, 40, 40, 0.1);
     animation: bellBadgePulse 2.2s ease-in-out infinite;
   }
 
@@ -630,12 +630,12 @@
     right: 0;
     width: min(430px, calc(100vw - 24px));
     border-radius: 28px;
-    background: linear-gradient(180deg, rgba(11, 21, 43, 0.98), rgba(4, 10, 25, 0.99));
+    background: linear-gradient(180deg, rgba(43, 38, 11, 0.98), rgba(4, 10, 25, 0.99));
     border: 1px solid rgba(116, 184, 255, 0.22);
     box-shadow: 0 28px 80px rgba(0, 0, 0, 0.44);
     backdrop-filter: blur(18px);
     padding: 20px;
-    color: #edf7ff;
+    color: #f09205;
     z-index: 1400;
     overflow: hidden;
     animation: deadlinePanelIn 0.24s cubic-bezier(0.22, 1, 0.36, 1);
@@ -649,7 +649,7 @@
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(circle at top right, rgba(0, 209, 255, 0.18), transparent 30%),
+      radial-gradient(circle at top right, rgba(255, 251, 0, 0.925), transparent 30%),
       radial-gradient(circle at bottom left, rgba(91, 106, 255, 0.16), transparent 26%);
     pointer-events: none;
   }
