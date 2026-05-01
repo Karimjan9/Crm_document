@@ -25,7 +25,14 @@
         radial-gradient(1200px 500px at 0% -10%, rgba(14, 165, 164, 0.12), transparent 60%),
         linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
     min-height: 100vh;
-    padding-bottom: 40px;
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-wrapper-inner {
+    flex: 1;
+    padding-bottom: 24px;
 }
 
 .page-wrapper h1 {
@@ -100,6 +107,7 @@
 .file-remove:hover { color: #bb2d3b; }
 .selected-files-list { border: 1px solid var(--border); border-radius: 0.75rem; padding: 15px; min-height: 100px; max-height: 200px; overflow-y: auto; background: var(--surface); }
 .no-files-message { text-align: center; padding: 20px; color: var(--muted); font-style: italic; }
+
 .additional-services,
 .additional-services-document,
 .additional-services-direction,
@@ -109,6 +117,7 @@
     border-radius: 10px;
     border: 1px solid var(--border);
 }
+
 .service-addon-item {
     display: flex;
     justify-content: space-between;
@@ -126,6 +135,90 @@
 .service-addon-name { font-weight: 600; }
 .service-addon-price { color: #16a34a; font-weight: 700; }
 .service-addon-checkbox { margin-right: 10px; cursor: pointer; }
+
+/* ============ STICKY BOTTOM BAR ============ */
+/*
+    position: sticky ishlatildi — fixed emas.
+    Chunki fixed sidebar/navbar bilan
+    overlap qiladi va noto'g'ri joyga tushadi.
+    sticky esa faqat o'z oqimida pastda qoladi.
+*/
+.sticky-action-bar {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.07);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    /* margin-top auto pushes it to the very bottom */
+    margin-top: auto;
+}
+
+.sticky-totals {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    flex: 1;
+}
+
+.total-pill-item {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.total-pill-item strong {
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.total-pill-item.final {
+    border-color: #16a34a;
+    background: #f0fdf4;
+}
+
+.total-pill-item.final strong {
+    color: #16a34a;
+}
+
+.sticky-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.sticky-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 10px;
+}
+
+.sticky-actions .btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+/* ============================================ */
 </style>
 @include('partials.document_package_styles')
 @endsection
@@ -137,14 +230,8 @@
     @endphp
 
     <div class="container mt-4">
-        <div class="card">
-            <div class="card-body">
-                <button class="btn btn-outline-primary mb-3" id="addWizard">+ Yana qo'shish</button>
-                <button class="btn btn-success mb-3" id="saveAllWizards">Barchasini saqlash</button>
-            </div>
-        </div>
 
-        <div class="card">
+        <div class="card mb-3">
             <div class="card-body">
                 <div class="row">
                     <div class="col-12">
@@ -153,28 +240,52 @@
                     <div class="col-12">
                         <select id="client_id" style="width:100%"></select>
                     </div>
-                    <div class="col-12">
-                        <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createClientModal"> + Yangi mijoz</button>
+                    <div class="col-12 mt-2">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createClientModal">
+                            + Yangi mijoz
+                        </button>
                     </div>
                 </div>
-
             </div>
         </div>
 
         @include('partials.document_package_selector', ['packageTemplates' => $packageTemplates])
 
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-12"><h1>Xizmat : <span id="totalService">0</span> so'm</h1></div>
-                    <div class="col-12"><h1>Diskont : <span id="totalDiscount">0</span> so'm</h1></div>
-                    <div class="col-12"><h1>Final narx : <span id="finalPrice">0</span> so'm</h1></div>
-                </div>
+        <div id="wizardContainer"></div>
+
+    </div>
+
+    {{-- ============ STICKY BOTTOM ACTION BAR ============ --}}
+    <div class="sticky-action-bar">
+        <div class="sticky-totals">
+            <div class="total-pill-item">
+                Xizmat: <strong><span id="totalService">0</span> so'm</strong>
+            </div>
+            <div class="total-pill-item">
+                Diskont: <strong><span id="totalDiscount">0</span> so'm</strong>
+            </div>
+            <div class="total-pill-item final">
+                Final: <strong><span id="finalPrice">0</span> so'm</strong>
             </div>
         </div>
-
-        <div id="wizardContainer"></div>
+        <div class="sticky-actions">
+            <button class="btn btn-outline-primary" id="addWizard">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <line x1="8" y1="2" x2="8" y2="14"/>
+                    <line x1="2" y1="8" x2="14" y2="8"/>
+                </svg>
+                Yana qo'shish
+            </button>
+            <button class="btn btn-success" id="saveAllWizards">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="2,9 6,13 14,4"/>
+                </svg>
+                Barchasini saqlash
+            </button>
+        </div>
     </div>
+    {{-- =================================================== --}}
+
 </div>
 
 <template id="wizardTemplate">
@@ -205,12 +316,6 @@
                     </button>
                 </div>
                 <div class="line"></div>
-                <!-- <div class="step" data-target=".step-4">
-                    <button type="button" class="step-trigger">
-                        <span class="bs-stepper-circle">4</span>
-                        <span class="bs-stepper-label">Tasdiqlash</span>
-                    </button>
-                </div> -->
             </div>
 
             <div class="file-upload-section">
@@ -233,173 +338,162 @@
             <div class="bs-stepper-content">
                 <div class="content step-1">
                     <div class="mb-3">
-    <label class="form-label">Hujjat turi</label>
-    <select class="form-select doc-type" style="width: 100%">
-        <option value="">Tanlang...</option>
-        @foreach($documentTypes as $t)
-            <option value="{{ $t->id }}">{{ $t->name }}</option>
-        @endforeach
-    </select>
-</div>
-
-{{-- ✅ Yo'nalish tugmalari: faqat doc-type tanlangandan keyin ko‘rinadi --}}
-<div class="mb-3 process-wrapper" style="display:none;">
-    <label class="form-label d-block">Yo'nalish</label>
-
-    <div class="d-flex flex-wrap gap-2" role="group" aria-label="Yo'nalish tanlovi">
-        <button type="button" class="btn btn-outline-primary btn-process flex-fill" data-mode="apostil">
-            Apostil
-        </button>
-        <button type="button" class="btn btn-outline-primary btn-process flex-fill" data-mode="consul">
-            Legalizatsiya
-        </button>
-        <button type="button" class="btn btn-outline-primary btn-process flex-fill" data-mode="service">
-            Xizmatlar
-        </button>
-    </div>
-
-    <input type="hidden" class="process-mode" value="">
-</div>
-
-{{-- ✅ APOSTIL --}}
-<div class="mb-3 apostil-block" style="display:none;">
-    <div class="border rounded p-3 mb-2">
-        <div class="fw-semibold mb-2">Apostil - 1-guruh</div>
-        <div class="row g-2">
-            @foreach($apostilStatics->where('group_id', 1) as $a)
-                <div class="col-12 col-md-6">
-                    <label class="border rounded p-2 w-100 d-flex align-items-center gap-2">
-                        <input type="radio"
-                               name="apostil_g1___U___"
-                               class="form-check-input apostil-g1"
-                               value="{{ $a->id }}"
-                               data-price="{{ $a->price }}"
-                               data-days="{{ $a->days }}">
-                        <span class="flex-grow-1">{{ $a->name }}</span>
-                        <span class="text-success fw-semibold">{{ number_format($a->price,0,'',' ') }} so'm</span>
-                    </label>
-                </div>
-            @endforeach
-        </div>
-    </div>
-
-    <div class="border rounded p-3">
-        <div class="fw-semibold mb-2">Apostil - 2-guruh</div>
-        <div class="row g-2">
-            @foreach($apostilStatics->where('group_id', 2) as $a)
-                <div class="col-12 col-md-6">
-                    <label class="border rounded p-2 w-100 d-flex align-items-center gap-2">
-                        <input type="radio"
-                               name="apostil_g2___U___"
-                               class="form-check-input apostil-g2"
-                               value="{{ $a->id }}"
-                               data-price="{{ $a->price }}"
-                               data-days="{{ $a->days }}">
-                        <span class="flex-grow-1">{{ $a->name }}</span>
-                        <span class="text-success fw-semibold">{{ number_format($a->price,0,'',' ') }} so'm</span>
-                    </label>
-                </div>
-            @endforeach
-        </div>
-    </div>
-</div>
-
-<div class="mt-3 direction-block" style="display:none;">
-    <label class="form-label">Yo'nalish (Direction)</label>
-    <select class="form-select direction-type" style="width:100%">
-        <option value="">Tanlang...</option>
-        @foreach($directions as $d)
-            <option value="{{ $d->id }}"
-                    data-price="{{ $d->price ?? $d->amount ?? 0 }}"
-                    data-days="{{ $d->day ?? 0 }}">
-                {{ $d->name }}
-            </option>
-        @endforeach
-    </select>
-</div>
-
-{{-- ✅ KONSULLIK --}}
-<div class="mb-3 consul-block" style="display:none;">
-    <div class="border rounded p-3">
-        <div class="fw-semibold mb-3">Legalizatsiya</div>
-
-        <div class="mb-3">
-            <label class="form-label d-block">Tanlov turi</label>
-            <div class="d-flex flex-wrap gap-2" role="group" aria-label="Legalizatsiya tanlovi">
-                <button type="button" class="btn btn-outline-primary btn-legalization-mode flex-fill" data-choice="consul">
-                    Konsullik
-                </button>
-                <button type="button" class="btn btn-outline-primary btn-legalization-mode flex-fill" data-choice="legalization">
-                    Legalizatsiya
-                </button>
-                <button type="button" class="btn btn-outline-primary btn-legalization-mode flex-fill" data-choice="mixed">
-                    Mix
-                </button>
-            </div>
-            <button type="button" class="btn btn-link btn-sm px-0 mt-2 btn-legalization-reset">
-                Tanlovni tozalash
-            </button>
-            <input type="hidden" class="legalization-mode" value="">
-            <div class="form-text">
-                Boshlang'ich holat bo'sh bo'ladi. Kerakli rejimni tanlang.
-            </div>
-        </div>
-
-        <div class="consul-options" style="display:none;">
-            <div class="fw-semibold mb-2">Konsullik</div>
-            <div class="row g-2">
-                @foreach($consuls as $c)
-                    <div class="col-12 col-md-6">
-                        <label class="border rounded p-2 w-100 d-flex align-items-center gap-2">
-                            <input type="radio"
-                                   name="consul_main___U___"
-                                   class="form-check-input consul-main"
-                                   value="{{ $c->id }}"
-                                   data-price="{{ $c->amount }}"
-                                   data-days="{{ $c->day }}">
-                            <span class="flex-grow-1">{{ $c->name }}</span>
-                            <span class="text-success fw-semibold">{{ number_format($c->amount,0,'',' ') }} so'm</span>
-                        </label>
+                        <label class="form-label">Hujjat turi</label>
+                        <select class="form-select doc-type" style="width: 100%">
+                            <option value="">Tanlang...</option>
+                            @foreach($documentTypes as $t)
+                                <option value="{{ $t->id }}">{{ $t->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                @endforeach
-            </div>
-        </div>
 
-        <div class="mt-3 legalization-container" style="display:none;">
-            <label class="form-label">Legalizatsiya turi</label>
-            <select class="form-select legalization" style="width:100%">
-                <option value="">Tanlang...</option>
-                @foreach($consulateTypes as $ct)
-                    <option value="{{ $ct->id }}" data-price="{{ $ct->amount ?? 0 }}">
-                        {{ $ct->name }} - {{ number_format($ct->amount ?? 0,0,'',' ') }} so'm
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        <input type="checkbox" class="consulate-checkbox d-none" data-price="0">
-    </div>
-</div>
+                    <div class="mb-3 process-wrapper" style="display:none;">
+                        <label class="form-label d-block">Yo'nalish</label>
+                        <div class="d-flex flex-wrap gap-2" role="group" aria-label="Yo'nalish tanlovi">
+                            <button type="button" class="btn btn-outline-primary btn-process flex-fill" data-mode="apostil">
+                                Apostil
+                            </button>
+                            <button type="button" class="btn btn-outline-primary btn-process flex-fill" data-mode="consul">
+                                Legalizatsiya
+                            </button>
+                            <button type="button" class="btn btn-outline-primary btn-process flex-fill" data-mode="service">
+                                Xizmatlar
+                            </button>
+                        </div>
+                        <input type="hidden" class="process-mode" value="">
+                    </div>
 
-{{-- ✅ Addonlar faqat yo'nalish tanlovi tugaganda ko‘rinadi --}}
-<div class="after-choice-block" style="display:none;">
-    <div class="additional-services-direction mb-3" style="display:none;">
-        <h6>Qo'shimcha xizmatlar (yo'nalish):</h6>
-        <div class="services-list-direction"></div>
-        <div class="text-muted small mt-2">
-            Tanlangan xizmatlar: <strong class="selected-count-direction">0</strong> |
-            Umumiy qiymat: <strong class="addon-total-direction">0</strong> so'm
-        </div>
-    </div>
-    <div class="additional-services-document mb-3" style="display:none;">
-        <h6>Qo'shimcha xizmatlar (hujjat):</h6>
-        <div class="services-list-document"></div>
-        <div class="text-muted small mt-2">
-            Tanlangan xizmatlar: <strong class="selected-count-document">0</strong> |
-            Umumiy qiymat: <strong class="addon-total-document">0</strong> so'm
-        </div>
-    </div>
-</div>
-                  
+                    <div class="mb-3 apostil-block" style="display:none;">
+                        <div class="border rounded p-3 mb-2">
+                            <div class="fw-semibold mb-2">Apostil - 1-guruh</div>
+                            <div class="row g-2">
+                                @foreach($apostilStatics->where('group_id', 1) as $a)
+                                    <div class="col-12 col-md-6">
+                                        <label class="border rounded p-2 w-100 d-flex align-items-center gap-2">
+                                            <input type="radio"
+                                                   name="apostil_g1___U___"
+                                                   class="form-check-input apostil-g1"
+                                                   value="{{ $a->id }}"
+                                                   data-price="{{ $a->price }}"
+                                                   data-days="{{ $a->days }}">
+                                            <span class="flex-grow-1">{{ $a->name }}</span>
+                                            <span class="text-success fw-semibold">{{ number_format($a->price,0,'',' ') }} so'm</span>
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="border rounded p-3">
+                            <div class="fw-semibold mb-2">Apostil - 2-guruh</div>
+                            <div class="row g-2">
+                                @foreach($apostilStatics->where('group_id', 2) as $a)
+                                    <div class="col-12 col-md-6">
+                                        <label class="border rounded p-2 w-100 d-flex align-items-center gap-2">
+                                            <input type="radio"
+                                                   name="apostil_g2___U___"
+                                                   class="form-check-input apostil-g2"
+                                                   value="{{ $a->id }}"
+                                                   data-price="{{ $a->price }}"
+                                                   data-days="{{ $a->days }}">
+                                            <span class="flex-grow-1">{{ $a->name }}</span>
+                                            <span class="text-success fw-semibold">{{ number_format($a->price,0,'',' ') }} so'm</span>
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 direction-block" style="display:none;">
+                        <label class="form-label">Yo'nalish (Direction)</label>
+                        <select class="form-select direction-type" style="width:100%">
+                            <option value="">Tanlang...</option>
+                            @foreach($directions as $d)
+                                <option value="{{ $d->id }}"
+                                        data-price="{{ $d->price ?? $d->amount ?? 0 }}"
+                                        data-days="{{ $d->day ?? 0 }}">
+                                    {{ $d->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3 consul-block" style="display:none;">
+                        <div class="border rounded p-3">
+                            <div class="fw-semibold mb-3">Legalizatsiya</div>
+                            <div class="mb-3">
+                                <label class="form-label d-block">Tanlov turi</label>
+                                <div class="d-flex flex-wrap gap-2" role="group" aria-label="Legalizatsiya tanlovi">
+                                    <button type="button" class="btn btn-outline-primary btn-legalization-mode flex-fill" data-choice="consul">
+                                        Konsullik
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-legalization-mode flex-fill" data-choice="legalization">
+                                        Legalizatsiya
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-legalization-mode flex-fill" data-choice="mixed">
+                                        Mix
+                                    </button>
+                                </div>
+                                <button type="button" class="btn btn-link btn-sm px-0 mt-2 btn-legalization-reset">
+                                    Tanlovni tozalash
+                                </button>
+                                <input type="hidden" class="legalization-mode" value="">
+                                <div class="form-text">
+                                    Boshlang'ich holat bo'sh bo'ladi. Kerakli rejimni tanlang.
+                                </div>
+                            </div>
+                            <div class="consul-options" style="display:none;">
+                                <div class="fw-semibold mb-2">Konsullik</div>
+                                <div class="row g-2">
+                                    @foreach($consuls as $c)
+                                        <div class="col-12 col-md-6">
+                                            <label class="border rounded p-2 w-100 d-flex align-items-center gap-2">
+                                                <input type="radio"
+                                                       name="consul_main___U___"
+                                                       class="form-check-input consul-main"
+                                                       value="{{ $c->id }}"
+                                                       data-price="{{ $c->amount }}"
+                                                       data-days="{{ $c->day }}">
+                                                <span class="flex-grow-1">{{ $c->name }}</span>
+                                                <span class="text-success fw-semibold">{{ number_format($c->amount,0,'',' ') }} so'm</span>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="mt-3 legalization-container" style="display:none;">
+                                <label class="form-label">Legalizatsiya turi</label>
+                                <select class="form-select legalization" style="width:100%">
+                                    <option value="">Tanlang...</option>
+                                    @foreach($consulateTypes as $ct)
+                                        <option value="{{ $ct->id }}" data-price="{{ $ct->amount ?? 0 }}">
+                                            {{ $ct->name }} - {{ number_format($ct->amount ?? 0,0,'',' ') }} so'm
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <input type="checkbox" class="consulate-checkbox d-none" data-price="0">
+                        </div>
+                    </div>
+
+                    <div class="after-choice-block" style="display:none;">
+                        <div class="additional-services-direction mb-3" style="display:none;">
+                            <h6>Qo'shimcha xizmatlar (yo'nalish):</h6>
+                            <div class="services-list-direction"></div>
+                            <div class="text-muted small mt-2">
+                                Tanlangan xizmatlar: <strong class="selected-count-direction">0</strong> |
+                                Umumiy qiymat: <strong class="addon-total-direction">0</strong> so'm
+                            </div>
+                        </div>
+                        <div class="additional-services-document mb-3" style="display:none;">
+                            <h6>Qo'shimcha xizmatlar (hujjat):</h6>
+                            <div class="services-list-document"></div>
+                            <div class="text-muted small mt-2">
+                                Tanlangan xizmatlar: <strong class="selected-count-document">0</strong> |
+                                Umumiy qiymat: <strong class="addon-total-document">0</strong> so'm
+                            </div>
+                        </div>
+                    </div>
 
                     <button class="btn btn-primary btn-next">Keyingi</button>
                 </div>
@@ -415,12 +509,9 @@
                         </select>
                     </div>
 
-                    <!-- Xizmatdan qo'shimcha xizmatlar konteyneri -->
                     <div class="additional-services-service mb-3" style="display: none;">
                         <h6>Qo'shimcha xizmatlar (Xizmat):</h6>
-                        <div class="services-list-service">
-                            <!-- Xizmatlar ro'yxati dinamik qo'shiladi -->
-                        </div>
+                        <div class="services-list-service"></div>
                         <div class="text-muted small mt-2">
                             Tanlangan xizmatlar: <strong class="selected-count-service">0</strong> |
                             Umumiy qiymat: <strong class="addon-total-service">0</strong> so'm
@@ -466,7 +557,6 @@
                     </div>
                     <div class="mt-3">
                         <button class="btn btn-secondary btn-prev">Orqaga</button>
-                        <!-- <button class="btn btn-primary btn-next">Keyingi</button> -->
                     </div>
                 </div>
 
@@ -498,14 +588,12 @@
                         <input type="text" class="form-control" id="clientName" name="name" required>
                         <div class="invalid-feedback"></div>
                     </div>
-
                     <div class="mb-3">
                         <label for="clientPhone" class="form-label">Telefon raqami <span class="text-danger">*</span></label>
                         <input type="tel" class="form-control" id="clientPhone" name="phone_number"
                                placeholder="+998 90 123 45 67" required>
                         <div class="invalid-feedback"></div>
                     </div>
-
                     <div class="mb-3">
                         <label for="clientNotes" class="form-label">Izoh</label>
                         <textarea class="form-control" id="clientNotes" name="notes" rows="2"></textarea>
@@ -530,18 +618,16 @@
 
 <script>
 const apiBase = @json($apiBase ?? url('admin_filial/api'));
-// Umumiy summalarni kuzatish uchun global o'zgaruvchilar
-let globalTotalAmount = 0;        // Barcha buyurtmalar jami summasi
-let globalTotalDiscount = 0;      // Umumiy chegirma (foiz emas, aniq summa)
-let globalFinalAmount = 0;        // Chegirma hisobga olingan yakuniy summa
 
-// Umumiy summalarni yangilash funksiyasi
+let globalTotalAmount = 0;
+let globalTotalDiscount = 0;
+let globalFinalAmount = 0;
+
 function updateGlobalTotals() {
     globalTotalAmount = 0;
     globalTotalDiscount = 0;
     globalFinalAmount = 0;
 
-    // Barcha wizardlar bo'yicha yurib, yig'amiz
     document.querySelectorAll('.wizard-wrapper').forEach(wrapper => {
         const controller = wrapper._wizardController;
         if (controller) {
@@ -552,7 +638,6 @@ function updateGlobalTotals() {
         }
     });
 
-    // Ko'rinishni yangilaymiz
     document.getElementById('totalService').textContent = globalTotalAmount.toLocaleString();
     document.getElementById('totalDiscount').textContent = globalTotalDiscount.toLocaleString();
     document.getElementById('finalPrice').textContent = globalFinalAmount.toLocaleString();
@@ -596,32 +681,26 @@ class WizardManager {
 
         this.wizardIndex++;
 
-        // Avval DOMga qo'shamiz
         const container = document.getElementById('wizardContainer');
         container.appendChild(clone);
 
-        // Endi qo'shilgan wrapperni topamiz (ro'yxatdagi oxirgisi)
         const wrappers = container.querySelectorAll('.wizard-wrapper');
         const wrapper = wrappers[wrappers.length - 1];
 
-        // Hujjat raqamini o'rnatamiz
         wrapper.querySelector('.doc-number').textContent = this.wizardIndex;
 
-        // Kontrollerni ishga tushiramiz
         const stepperEl = wrapper.querySelector('.wizard');
         const controller = new WizardController(stepperEl);
 
-        // Metodlarga kirish uchun kontrollerga havolani saqlaymiz
         wrapper._wizardController = controller;
     }
 
     collectData() {
-        
         const data = [];
-        
+
         document.querySelectorAll('.wizard-wrapper').forEach((w, i) => {
             const getData = sel => w.querySelector(sel)?.value || '';
-            
+
             const controller = w._wizardController;
             const processPayload = controller
                 ? controller.getProcessPayload()
@@ -677,20 +756,11 @@ class WizardManager {
     }
 
     normalizeSaveValue(value) {
-        if (value === null || value === undefined) {
-            return null;
-        }
-
+        if (value === null || value === undefined) return null;
         const normalized = String(value).trim();
-        if (!normalized) {
-            return null;
-        }
-
+        if (!normalized) return null;
         const lowered = normalized.toLowerCase();
-        if (lowered === 'null' || lowered === 'undefined') {
-            return null;
-        }
-
+        if (lowered === 'null' || lowered === 'undefined') return null;
         return normalized;
     }
 
@@ -706,15 +776,8 @@ class WizardManager {
                     .map((addon) => {
                         const sourceType = addon?.sourceType ?? addon?.type ?? addon?.container ?? null;
                         const id = Number(addon?.id || 0);
-
-                        if (!sourceType || !id || sourceType === 'consulate') {
-                            return null;
-                        }
-
-                        return {
-                            id,
-                            sourceType: String(sourceType),
-                        };
+                        if (!sourceType || !id || sourceType === 'consulate') return null;
+                        return { id, sourceType: String(sourceType) };
                     })
                     .filter(Boolean)
                 : [];
@@ -752,10 +815,7 @@ class WizardManager {
     appendBatchFiles(formData) {
         document.querySelectorAll('.wizard-wrapper').forEach((wrapper, index) => {
             const fileInput = wrapper.querySelector('.file-input');
-            if (!fileInput?.files?.length) {
-                return;
-            }
-
+            if (!fileInput?.files?.length) return;
             Array.from(fileInput.files).forEach((file) => {
                 formData.append(`files[${index}][]`, file);
             });
@@ -764,18 +824,11 @@ class WizardManager {
 
     async parseJsonResponse(response) {
         const responseText = await response.text();
-
         try {
-            return {
-                result: responseText ? JSON.parse(responseText) : {},
-                invalidJson: false,
-                raw: responseText,
-            };
+            return { result: responseText ? JSON.parse(responseText) : {}, invalidJson: false, raw: responseText };
         } catch (error) {
             return {
-                result: {
-                    message: `Server JSON qaytarmadi (status ${response.status})`,
-                },
+                result: { message: `Server JSON qaytarmadi (status ${response.status})` },
                 invalidJson: true,
                 raw: responseText,
             };
@@ -801,33 +854,18 @@ class WizardManager {
                     grouped.set(itemIndex, current.concat(normalizedMessages));
                     return;
                 }
-
                 general.push(...normalizedMessages);
             });
 
             const detailParts = [];
-
             grouped.forEach((messages, index) => {
                 detailParts.push(`Hujjat ${index}: ${messages.join('; ')}`);
             });
-
-            if (general.length) {
-                detailParts.push(general.join('; '));
-            }
-
-            if (detailParts.length) {
-                message += `: ${detailParts.join(' | ')}`;
-            }
+            if (general.length) detailParts.push(general.join('; '));
+            if (detailParts.length) message += `: ${detailParts.join(' | ')}`;
         } else if (invalidJson && raw) {
-            const rawText = String(raw)
-                .replace(/<[^>]*>/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim()
-                .slice(0, 220);
-
-            if (rawText) {
-                message += `: ${rawText}`;
-            }
+            const rawText = String(raw).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 220);
+            if (rawText) message += `: ${rawText}`;
         }
 
         return message;
@@ -835,20 +873,18 @@ class WizardManager {
 
     async saveAll() {
         const data = this.collectData();
-        
+
         if (data.length === 0) {
             this.showRequestAlert("Saqlash uchun ma'lumot yo'q");
             return;
         }
 
-        // Mijoz ID sini olamiz
         const clientId = $('#client_id').val();
         if (!clientId) {
             this.showRequestAlert('Saqlashdan oldin mijozni tanlang');
             return;
         }
-        
-        // Saqlash tugmasini bloklaymiz
+
         const saveBtn = document.getElementById('saveAllWizards');
         const originalText = saveBtn.innerHTML;
         saveBtn.disabled = true;
@@ -895,7 +931,6 @@ class WizardManager {
             console.error('Saqlashdagi umumiy xato:', error);
             this.showRequestAlert(error.message || "Ma'lumotlarni saqlashda xatolik yuz berdi");
         } finally {
-            // Tugmani tiklaymiz
             saveBtn.disabled = false;
             saveBtn.innerHTML = originalText;
         }
@@ -903,11 +938,7 @@ class WizardManager {
 
     showRequestAlert(message) {
         const escapeHtml = (str) => String(str).replace(/[&<>"']/g, (m) => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;'
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
         }[m]));
 
         const alertHtml = `
@@ -919,38 +950,17 @@ class WizardManager {
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         `;
-
         document.body.insertAdjacentHTML('beforeend', alertHtml);
-
         setTimeout(() => {
             const alert = document.querySelector('.alert-danger');
-            if (alert) {
-                alert.remove();
-            }
+            if (alert) alert.remove();
         }, 6000);
     }
 
     showSaveResults(results, successCount, errorCount) {
         const total = results.length;
-        let message = `Qayta ishlangan hujjatlar: ${total}\n`;
-        message += `Muvaffaqiyatli: ${successCount}\n`;
-
-        if (errorCount > 0) {
-            message += `Xatolar: ${errorCount}\n\n`;
-            message += 'Xatoli hujjatlar:\n';
-            results.forEach(result => {
-                if (!result.success) {
-                    message += `- Hujjat ${result.index}: ${result.error}\n`;
-                }
-            });
-        }
-
         const escapeHtml = (str) => String(str).replace(/[&<>"']/g, (m) => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;'
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
         }[m]));
 
         const errorItems = results
@@ -962,7 +972,6 @@ class WizardManager {
             ? `<div class="mt-2"><div class="text-danger">Xatolar:</div><ul class="mb-0">${errorItems}</ul></div>`
             : '';
 
-        // Chiroyli bildirishnomani ko'rsatamiz
         const alertType = errorCount === 0 ? 'success' : (successCount === 0 ? 'danger' : 'warning');
         const alertIcon = errorCount === 0 ? 'check-circle-fill' : (successCount === 0 ? 'x-circle-fill' : 'exclamation-triangle-fill');
 
@@ -973,42 +982,27 @@ class WizardManager {
                 <strong>${errorCount === 0 ? 'Muvaffaqiyat!' : 'Xatolar bilan yakunlandi'}</strong>
                 <div class="mt-2">
                     <div>Jami hujjatlar: ${total}</div>
-                    <div class="text-success">? Muvaffaqiyatli: ${successCount}</div>
-                    ${errorCount > 0 ? `<div class="text-danger">? Xatolar: ${errorCount}</div>` : ''}
+                    <div class="text-success">✓ Muvaffaqiyatli: ${successCount}</div>
+                    ${errorCount > 0 ? `<div class="text-danger">✗ Xatolar: ${errorCount}</div>` : ''}
                 </div>
                 ${errorListHtml}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         `;
-
         document.body.insertAdjacentHTML('beforeend', alertHtml);
-
-        // 5 soniyadan keyin avtomatik olib tashlaymiz
         setTimeout(() => {
             const alert = document.querySelector('.alert');
-            if (alert) {
-                alert.remove();
-            }
+            if (alert) alert.remove();
         }, 5000);
 
-        // Xatolar bo'lsa, tafsilotlarni konsolga chiqaramiz
-        if (errorCount > 0) {
-            console.log('Saqlash tafsilotlari:', results);
-        }
+        if (errorCount > 0) console.log('Saqlash tafsilotlari:', results);
     }
 
     clearAllWizards() {
-        // Barcha wizardlarni o'chiramiz
         const container = document.getElementById('wizardContainer');
         container.innerHTML = '';
-
-        // Hisoblagichni nolga tushiramiz
         this.wizardIndex = 0;
-
-        // Mijoz tanlovini tozalaymiz
         $('#client_id').val(null).trigger('change');
-
-        // Umumiy summalarni yangilaymiz
         updateGlobalTotals();
     }
 }
@@ -1018,18 +1012,15 @@ class WizardController {
         this.element = element;
         this.wrapper = element.closest('.wizard-wrapper');
         this.stepper = new Stepper(element);
-
         this.init();
     }
 
     init() {
         this.attachNavigation();
         this.initFileHandlers();
-
-        this.initApostilConsulSwitch(); 
-        this.initAddonTracking();       
-        this.initPriceCalculation();   
-
+        this.initApostilConsulSwitch();
+        this.initAddonTracking();
+        this.initPriceCalculation();
         this.attachRemoveHandler();
     }
 
@@ -1048,7 +1039,6 @@ class WizardController {
         const includeLegalization = viewMode === 'consul' && (selectionMode === 'legalization' || selectionMode === 'mixed');
 
         let ready = false;
-
         if (viewMode === 'apostil') {
             ready = hasApostilGroup1 && hasApostilGroup2 && hasDirection;
         } else if (viewMode === 'consul') {
@@ -1059,18 +1049,7 @@ class WizardController {
             ready = true;
         }
 
-        return {
-            viewMode,
-            selectionMode,
-            includeConsul,
-            includeLegalization,
-            hasApostilGroup1,
-            hasApostilGroup2,
-            hasDirection,
-            hasConsul,
-            hasLegalization,
-            ready
-        };
+        return { viewMode, selectionMode, includeConsul, includeLegalization, hasApostilGroup1, hasApostilGroup2, hasDirection, hasConsul, hasLegalization, ready };
     }
 
     getProcessPayload() {
@@ -1111,174 +1090,7 @@ class WizardController {
         this.element.querySelectorAll('.btn-prev').forEach(btn =>
             btn.onclick = () => this.stepper.previous()
         );
-        // this.element.querySelector('[data-target=".step-4"]').addEventListener('click', () =>
-        //     this.updateConfirm()
-        // );
     }
-    initApostilConsulSwitch() {
-    const w = this.wrapper;
-
-    // ✅ unik radio name (har wizard mustaqil)
-    const uid = 'w' + Math.random().toString(36).slice(2, 9);
-    w.querySelectorAll('input[type="radio"][name*="___U___"]').forEach(r => {
-        r.name = r.name.replace('___U___', uid);
-    });
-
-    const docType = w.querySelector('.doc-type');
-
-    const processWrapper = w.querySelector('.process-wrapper');
-    const btns = w.querySelectorAll('.btn-process');
-    const modeInput = w.querySelector('.process-mode');
-
-    const apostilBlock = w.querySelector('.apostil-block');
-    const consulBlock  = w.querySelector('.consul-block');
-    const afterBlock   = w.querySelector('.after-choice-block');
-    const directionBlock = w.querySelector('.direction-block');
-    const directionSelect = w.querySelector('.direction-type');
-    const serviceSelect = w.querySelector('.service');
-    const legalizationContainer = w.querySelector('.legalization-container');
-    const legalizationSelect = w.querySelector('.legalization');
-    const consulateCheckbox = w.querySelector('.consulate-checkbox');
-
-    const clearRadios = (selector) => w.querySelectorAll(selector).forEach(r => r.checked = false);
-
-    const setActiveBtn = (mode) => {
-        btns.forEach(b => {
-            const active = b.dataset.mode === mode;
-            b.classList.toggle('btn-primary', active);
-            b.classList.toggle('btn-outline-primary', !active);
-            b.classList.toggle('active', active);
-        });
-    };
-
-    const showMode = (mode) => {
-        apostilBlock.style.display = (mode === 'apostil') ? 'block' : 'none';
-        consulBlock.style.display  = (mode === 'consul')  ? 'block' : 'none';
-    };
-
-    const hideAll = () => {
-        apostilBlock.style.display = 'none';
-        consulBlock.style.display  = 'none';
-        afterBlock.style.display   = 'none';
-        if (directionBlock) directionBlock.style.display = 'none';
-    };
-
-    const resetAll = () => {
-        clearRadios('.apostil-g1, .apostil-g2, .consul-main');
-        afterBlock.style.display = 'none';
-        if (directionBlock) directionBlock.style.display = 'none';
-        if (directionSelect) directionSelect.value = '';
-        this.hideAddons('direction');
-        if (legalizationContainer) legalizationContainer.style.display = 'none';
-        if (legalizationSelect) legalizationSelect.value = '';
-        if (consulateCheckbox) consulateCheckbox.checked = false;
-
-        // ✅ totals qayta hisob
-        w.querySelector('.discount')?.dispatchEvent(new Event('input'));
-        updateGlobalTotals();
-    };
-
-    const checkReady = () => {
-        const mode = modeInput.value;
-
-        if (mode === 'apostil') {
-            const ok = !!w.querySelector('.apostil-g1:checked') && !!w.querySelector('.apostil-g2:checked');
-            if (directionBlock) directionBlock.style.display = ok ? 'block' : 'none';
-
-            const hasDirection = !!directionSelect?.value;
-            afterBlock.style.display = ok && hasDirection ? 'block' : 'none';
-            if (!hasDirection) {
-                this.hideAddons('direction');
-                this.hideAddons('document');
-            }
-
-            if (ok && hasDirection) {
-                docType?.dispatchEvent(new Event('change'));
-                directionSelect?.dispatchEvent(new Event('change'));
-            }
-
-            if (legalizationContainer) legalizationContainer.style.display = 'none';
-            if (legalizationSelect) legalizationSelect.value = '';
-            if (consulateCheckbox) consulateCheckbox.checked = false;
-        } else if (mode === 'consul') {
-            const hasConsul = !!w.querySelector('.consul-main:checked');
-            const hasLegalization = !!(legalizationSelect && legalizationSelect.value);
-            const ok = hasConsul || hasLegalization;
-            afterBlock.style.display = ok ? 'block' : 'none';
-            if (directionBlock) directionBlock.style.display = 'none';
-            if (directionSelect) directionSelect.value = '';
-            this.hideAddons('direction');
-            if (legalizationContainer) legalizationContainer.style.display = 'block';
-            if (consulateCheckbox) consulateCheckbox.checked = ok;
-            if (hasConsul && !hasLegalization && legalizationSelect) {
-                const firstOption = legalizationSelect.querySelector('option[value]:not([value=\"\"])');
-                if (firstOption) {
-                    legalizationSelect.value = firstOption.value;
-                    legalizationSelect.dispatchEvent(new Event('change'));
-                }
-            }
-        } else {
-            afterBlock.style.display = 'none';
-            if (directionBlock) directionBlock.style.display = 'none';
-            if (directionSelect) directionSelect.value = '';
-            this.hideAddons('direction');
-            if (legalizationContainer) legalizationContainer.style.display = 'none';
-            if (legalizationSelect) legalizationSelect.value = '';
-            if (consulateCheckbox) consulateCheckbox.checked = false;
-        }
-
-        // ✅ totals qayta hisob
-        w.querySelector('.discount')?.dispatchEvent(new Event('input'));
-    };
-
-    // ✅ doc-type tanlanmaguncha tugmalar ko‘rinmasin
-    const toggleProcessVisibility = () => {
-        const hasDoc = !!docType?.value;
-        processWrapper.style.display = hasDoc ? 'block' : 'none';
-
-        if (!hasDoc) {
-            modeInput.value = '';
-            setActiveBtn('__none__');
-            hideAll();
-            resetAll();
-        }
-    };
-
-    docType?.addEventListener('change', () => {
-        toggleProcessVisibility();
-    });
-
-    btns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const mode = btn.dataset.mode;
-
-            resetAll();              // eski tanlov tozalanadi
-            modeInput.value = mode;  // yangi mode
-            setActiveBtn(mode);
-            showMode(mode);
-            checkReady();
-        });
-    });
-
-    w.querySelectorAll('.apostil-g1, .apostil-g2, .consul-main').forEach(r => {
-        r.addEventListener('change', checkReady);
-    });
-
-
-    legalizationSelect?.addEventListener('change', () => {
-        if (consulateCheckbox) {
-            const price = parseFloat(legalizationSelect.selectedOptions[0]?.dataset.price || 0);
-            consulateCheckbox.dataset.price = price;
-            consulateCheckbox.checked = !!legalizationSelect.value && modeInput.value === 'consul';
-        }
-        checkReady();
-        w.querySelector('.discount')?.dispatchEvent(new Event('input'));
-    });
-
-    // start state
-    toggleProcessVisibility();
-    hideAll();
-}
 
     initApostilConsulSwitch() {
         const w = this.wrapper;
@@ -1320,26 +1132,17 @@ class WizardController {
 
         const syncConsulateCheckbox = () => {
             if (!consulateCheckbox) return;
-
             const payload = this.getProcessPayload();
             const totalPrice = (payload.consul.price || 0) + (payload.legalization.price || 0);
-
             consulateCheckbox.checked = payload.consulateEnabled;
             consulateCheckbox.dataset.price = totalPrice;
         };
 
         const syncLegalizationLayout = () => {
             const choice = legalizationModeInput?.value || '';
-
             setActiveBtn(legalizationButtons, choice, 'choice');
-
-            if (consulOptions) {
-                consulOptions.style.display = (choice === 'consul' || choice === 'mixed') ? 'block' : 'none';
-            }
-
-            if (legalizationContainer) {
-                legalizationContainer.style.display = (choice === 'legalization' || choice === 'mixed') ? 'block' : 'none';
-            }
+            if (consulOptions) consulOptions.style.display = (choice === 'consul' || choice === 'mixed') ? 'block' : 'none';
+            if (legalizationContainer) legalizationContainer.style.display = (choice === 'legalization' || choice === 'mixed') ? 'block' : 'none';
         };
 
         const showMode = (mode) => {
@@ -1359,18 +1162,14 @@ class WizardController {
 
         const clearProcessSelections = () => {
             clearRadios('.apostil-g1, .apostil-g2, .consul-main');
-
             if (modeInput) modeInput.value = '';
             if (directionSelect) directionSelect.value = '';
             if (legalizationModeInput) legalizationModeInput.value = '';
             if (legalizationSelect) legalizationSelect.value = '';
-
             afterBlock.style.display = 'none';
             if (directionBlock) directionBlock.style.display = 'none';
-
             this.hideAddons('direction');
             this.hideAddons('document');
-
             setActiveBtn(btns, '', 'mode');
             syncLegalizationLayout();
             syncConsulateCheckbox();
@@ -1379,27 +1178,20 @@ class WizardController {
         const checkReady = () => {
             const state = this.getProcessState();
 
-            if (stepOneNext) {
-                stepOneNext.disabled = !state.ready || state.viewMode === 'service';
-            }
+            if (stepOneNext) stepOneNext.disabled = !state.ready || state.viewMode === 'service';
 
             if (directionBlock) {
                 directionBlock.style.display =
                     state.viewMode === 'apostil' && state.hasApostilGroup1 && state.hasApostilGroup2
-                        ? 'block'
-                        : 'none';
+                        ? 'block' : 'none';
             }
 
-            if (state.viewMode !== 'apostil') {
-                this.hideAddons('direction');
-            }
+            if (state.viewMode !== 'apostil') this.hideAddons('direction');
 
             const showAfterBlock = state.ready && state.viewMode !== 'service';
             afterBlock.style.display = showAfterBlock ? 'block' : 'none';
 
-            if (!showAfterBlock) {
-                this.hideAddons('document');
-            }
+            if (!showAfterBlock) this.hideAddons('document');
 
             if (state.viewMode === 'apostil' && state.ready) {
                 docType?.dispatchEvent(new Event('change'));
@@ -1422,9 +1214,7 @@ class WizardController {
             if (!hasDoc) {
                 clearProcessSelections();
                 hideAll();
-                if (stepOneNext) {
-                    stepOneNext.disabled = true;
-                }
+                if (stepOneNext) stepOneNext.disabled = true;
                 return;
             }
 
@@ -1438,34 +1228,24 @@ class WizardController {
         btns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const mode = btn.dataset.mode || '';
-
                 modeInput.value = mode;
                 setActiveBtn(btns, mode, 'mode');
                 showMode(mode);
                 checkReady();
-
-                if (mode === 'service') {
-                    this.stepper.next();
-                }
+                if (mode === 'service') this.stepper.next();
             });
         });
 
         legalizationButtons.forEach(btn => {
             btn.addEventListener('click', () => {
-                if (legalizationModeInput) {
-                    legalizationModeInput.value = btn.dataset.choice || '';
-                }
-
+                if (legalizationModeInput) legalizationModeInput.value = btn.dataset.choice || '';
                 syncLegalizationLayout();
                 checkReady();
             });
         });
 
         legalizationReset?.addEventListener('click', () => {
-            if (legalizationModeInput) {
-                legalizationModeInput.value = '';
-            }
-
+            if (legalizationModeInput) legalizationModeInput.value = '';
             syncLegalizationLayout();
             checkReady();
         });
@@ -1478,9 +1258,7 @@ class WizardController {
 
         toggleProcessVisibility();
         hideAll();
-        if (stepOneNext) {
-            stepOneNext.disabled = true;
-        }
+        if (stepOneNext) stepOneNext.disabled = true;
     }
 
     initFileHandlers() {
@@ -1569,200 +1347,6 @@ class WizardController {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-   initPriceCalculation() {
-    const w = this.wrapper;
-
-    const serviceSelect = w.querySelector('.service');
-    const discountInput = w.querySelector('.discount');
-    const legalizationSelect = w.querySelector('.legalization');
-    const totalAmount   = w.querySelector('.total-amount');
-    const finalAmount   = w.querySelector('.final-amount');
-
-    const getMode = () => w.querySelector('.process-mode')?.value || '';
-
-    const calculate = () => {
-        const servicePrice = parseFloat(serviceSelect?.selectedOptions?.[0]?.dataset?.price || 0);
-        const addonsTotal  = this.getAddonsTotal();
-
-        // ✅ Apostil/Konsullik narxlari
-        const mode = getMode();
-
-        let apostilPrice = 0;
-        if (mode === 'apostil') {
-            apostilPrice += parseFloat(w.querySelector('.apostil-g1:checked')?.dataset.price || 0);
-            apostilPrice += parseFloat(w.querySelector('.apostil-g2:checked')?.dataset.price || 0);
-        }
-
-        let consulRadioPrice = 0;
-        if (mode === 'consul') {
-            consulRadioPrice += parseFloat(w.querySelector('.consul-main:checked')?.dataset.price || 0);
-        }
-
-        let legalizationPrice = 0;
-        if (mode === 'consul') {
-            legalizationPrice += parseFloat(legalizationSelect?.selectedOptions?.[0]?.dataset.price || 0);
-        }
-
-        const totalBeforeDiscount = servicePrice + addonsTotal + apostilPrice + consulRadioPrice + legalizationPrice;
-
-        const discountAmount = parseFloat(discountInput?.value || 0);
-        const final = totalBeforeDiscount - discountAmount;
-
-        if (totalAmount) totalAmount.value = totalBeforeDiscount.toLocaleString();
-        if (finalAmount) finalAmount.value = final.toLocaleString();
-
-        updateGlobalTotals();
-    };
-
-    serviceSelect?.addEventListener('change', calculate);
-    discountInput?.addEventListener('input', calculate);
-
-    // radio / tugma o'zgarsa ham qayta hisoblash
-    w.querySelectorAll('.apostil-g1, .apostil-g2, .consul-main, .btn-process')
-        .forEach(el => el.addEventListener('change', calculate));
-
-    calculate();
-}
-
-
-    getAddonsTotal() {
-        // Ikkala konteynerdagi addonlarni jamlaymiz
-        let total = 0;
-
-        // Hujjat addonlari
-        const documentCheckboxes = this.wrapper.querySelectorAll('.service-addon-checkbox-document:checked');
-        documentCheckboxes.forEach(cb => {
-            total += parseFloat(cb.dataset.price || 0);
-        });
-
-        // Xizmat addonlari
-        const directionCheckboxes = this.wrapper.querySelectorAll('.service-addon-checkbox-direction:checked');
-        directionCheckboxes.forEach(cb => {
-            total += parseFloat(cb.dataset.price || 0);
-        });
-
-        const serviceCheckboxes = this.wrapper.querySelectorAll('.service-addon-checkbox-service:checked');
-        serviceCheckboxes.forEach(cb => {
-            total += parseFloat(cb.dataset.price || 0);
-        });
-
-        return total;
-    }
-
-getTotals() {
-    const w = this.wrapper;
-
-    const serviceSelect = w.querySelector('.service');
-    const discountInput = w.querySelector('.discount');
-    const legalizationSelect = w.querySelector('.legalization');
-
-    const servicePrice = parseFloat(serviceSelect?.selectedOptions?.[0]?.dataset?.price || 0);
-    const addonsAmount = this.getAddonsTotal();
-
-    const mode = w.querySelector('.process-mode')?.value || '';
-
-    let apostilPrice = 0;
-    if (mode === 'apostil') {
-        apostilPrice += parseFloat(w.querySelector('.apostil-g1:checked')?.dataset.price || 0);
-        apostilPrice += parseFloat(w.querySelector('.apostil-g2:checked')?.dataset.price || 0);
-    }
-
-    let consulPrice = 0;
-    if (mode === 'consul') {
-        consulPrice += parseFloat(w.querySelector('.consul-main:checked')?.dataset.price || 0);
-    }
-
-    let legalizationPrice = 0;
-    if (mode === 'consul') {
-        legalizationPrice += parseFloat(legalizationSelect?.selectedOptions?.[0]?.dataset.price || 0);
-    }
-
-    const totalBeforeDiscount = servicePrice + addonsAmount + apostilPrice + consulPrice + legalizationPrice;
-    const discountAmount = parseFloat(discountInput?.value || 0);
-    const finalAmount = totalBeforeDiscount - discountAmount;
-
-    return {
-        serviceAmount: servicePrice,
-        addonsAmount: addonsAmount,
-        apostilAmount: apostilPrice,
-        consulAmount: consulPrice,
-        legalizationAmount: legalizationPrice,
-        totalAmount: totalBeforeDiscount,
-        discountAmount: discountAmount,
-        finalAmount: finalAmount
-    };
-}
-
-    updateConfirm() {
-        const getData = sel => this.wrapper.querySelector(sel);
-        const confirmInfo = this.element.querySelector('.confirm-info');
-
-        // Barcha ma'lumotlarni olamiz
-        const docType = getData('.doc-type').selectedOptions[0]?.text || 'Tanlanmagan';
-        const directionType = getData('.direction-type').selectedOptions[0]?.text || 'Tanlanmagan';
-        const consulateChecked = getData('.consulate-checkbox').checked;
-        const legalization = getData('.legalization').selectedOptions[0]?.text || 'Tanlanmagan';
-        const service = getData('.service').selectedOptions[0]?.text || 'Tanlanmagan';
-        const finalAmount = getData('.final-amount').value || '0';
-        const paymentType = getData('.payment-type').selectedOptions[0]?.text || 'Tanlanmagan';
-        const paymentAmount = getData('.payment-amount').value || '0';
-
-        // Narx tafsilotlarini olamiz
-        const totals = this.getTotals();
-
-        // Tanlangan addonlarni olamiz
-        const selectedAddons = this.getSelectedAddons();
-        let addonsHtml = '';
-        if (selectedAddons.length > 0) {
-            addonsHtml = `<div class="mt-2"><strong>Qo'shimcha xizmatlar:</strong><ul class="mb-0">`;
-            selectedAddons.forEach(addon => {
-                addonsHtml += `<li>${addon.name} - ${parseFloat(addon.price).toLocaleString()} so'm (${addon.type})</li>`;
-            });
-            addonsHtml += '</ul></div>';
-        }
-
-        confirmInfo.innerHTML = `
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="card-subtitle mb-3 text-muted">Hujjat ma'lumoti</h6>
-                    <p class="mb-1"><strong>Hujjat turi:</strong> ${docType}</p>
-                    <p class="mb-1"><strong>Apostil:</strong> ${directionType}</p>
-                    <p class="mb-1"><strong>Konsullik:</strong> ${consulateChecked ? "Ha" : "Yo'q"}</p>
-                    ${consulateChecked && legalization !== 'Tanlanmagan' ? `<p class="mb-1"><strong>Legallashtirish:</strong> ${legalization}</p>` : ''}
-
-                    <hr>
-
-                    <h6 class="card-subtitle mb-3 text-muted">Xizmat ma'lumoti</h6>
-                    <p class="mb-1"><strong>Xizmat:</strong> ${service}</p>
-
-                    ${addonsHtml}
-
-                    <hr>
-
-                    <h6 class="card-subtitle mb-3 text-muted">Narx tafsilotlari</h6>
-                    <p class="mb-1"><strong>Xizmat narxi:</strong> ${totals.serviceAmount.toLocaleString()} so'm</p>
-                    ${totals.consulateAmount > 0 ? `<p class="mb-1"><strong>Konsullik:</strong> ${totals.consulateAmount.toLocaleString()} so'm</p>` : ''}
-                    ${totals.legalizationAmount > 0 ? `<p class="mb-1"><strong>Legallashtirish:</strong> ${totals.legalizationAmount.toLocaleString()} so'm</p>` : ''}
-                    ${totals.addonsAmount > 0 ? `<p class="mb-1"><strong>Qo'shimcha xizmatlar:</strong> ${totals.addonsAmount.toLocaleString()} so'm</p>` : ''}
-                    <p class="mb-1"><strong>Umumiy summa:</strong> ${totals.totalAmount.toLocaleString()} so'm</p>
-                    ${totals.discountAmount > 0 ? `<p class="mb-1 text-danger"><strong>Chegirma:</strong> -${totals.discountAmount.toLocaleString()} so'm</p>` : ''}
-                    <p class="mb-1 text-success"><strong>Yakuniy narx:</strong> ${totals.finalAmount.toLocaleString()} so'm</p>
-
-                    <hr>
-
-                    <h6 class="card-subtitle mb-3 text-muted">To'lov</h6>
-                    <p class="mb-1"><strong>To'lov turi:</strong> ${paymentType}</p>
-                    <p class="mb-1"><strong>To'lov summasi:</strong> ${parseFloat(paymentAmount || 0).toLocaleString()} so'm</p>
-                    ${parseFloat(paymentAmount) < totals.finalAmount ? `<p class="mb-1 text-warning"><strong>Qoldiq:</strong> ${(totals.finalAmount - parseFloat(paymentAmount)).toLocaleString()} so'm</p>` : ''}
-
-                    <hr>
-
-                    <p class="mb-0"><strong>Yuklangan fayllar:</strong> ${getData('.file-input').files.length}</p>
-                </div>
-            </div>
-        `;
-    }
-
     initPriceCalculation() {
         const w = this.wrapper;
 
@@ -1808,9 +1392,22 @@ getTotals() {
         calculate();
     }
 
+    getAddonsTotal() {
+        let total = 0;
+        this.wrapper.querySelectorAll('.service-addon-checkbox-document:checked').forEach(cb => {
+            total += parseFloat(cb.dataset.price || 0);
+        });
+        this.wrapper.querySelectorAll('.service-addon-checkbox-direction:checked').forEach(cb => {
+            total += parseFloat(cb.dataset.price || 0);
+        });
+        this.wrapper.querySelectorAll('.service-addon-checkbox-service:checked').forEach(cb => {
+            total += parseFloat(cb.dataset.price || 0);
+        });
+        return total;
+    }
+
     getTotals() {
         const w = this.wrapper;
-
         const serviceSelect = w.querySelector('.service');
         const discountInput = w.querySelector('.discount');
         const processPayload = this.getProcessPayload();
@@ -1826,7 +1423,6 @@ getTotals() {
 
         const consulPrice = processPayload.consul.price || 0;
         const legalizationPrice = processPayload.legalization.price || 0;
-
         const totalBeforeDiscount = servicePrice + addonsAmount + apostilPrice + consulPrice + legalizationPrice;
         const discountAmount = parseFloat(discountInput?.value || 0);
         const finalAmount = totalBeforeDiscount - discountAmount;
@@ -1856,18 +1452,8 @@ getTotals() {
         const consulName = this.wrapper.querySelector('.consul-main:checked')?.closest('label')?.querySelector('.flex-grow-1')?.textContent?.trim() || 'Tanlanmagan';
         const legalizationName = getData('.legalization')?.selectedOptions[0]?.text || 'Tanlanmagan';
 
-        const processLabels = {
-            apostil: 'Apostil',
-            consul: 'Legalizatsiya',
-            service: 'Xizmatlar',
-            '': 'Xizmatlar'
-        };
-
-        const selectionLabels = {
-            consul: 'Konsullik',
-            legalization: 'Legalizatsiya',
-            mixed: 'Mix'
-        };
+        const processLabels = { apostil: 'Apostil', consul: 'Legalizatsiya', service: 'Xizmatlar', '': 'Xizmatlar' };
+        const selectionLabels = { consul: 'Konsullik', legalization: 'Legalizatsiya', mixed: 'Mix' };
 
         const totals = this.getTotals();
 
@@ -1887,12 +1473,8 @@ getTotals() {
         }
         if (processPayload.processMode === 'consul') {
             processHtml += `<p class="mb-1"><strong>Tanlov turi:</strong> ${selectionLabels[processPayload.selectionMode] || 'Tanlanmagan'}</p>`;
-            if (processPayload.consul.consul_id) {
-                processHtml += `<p class="mb-1"><strong>Konsullik:</strong> ${consulName}</p>`;
-            }
-            if (processPayload.legalization.id) {
-                processHtml += `<p class="mb-1"><strong>Legalizatsiya:</strong> ${legalizationName}</p>`;
-            }
+            if (processPayload.consul.consul_id) processHtml += `<p class="mb-1"><strong>Konsullik:</strong> ${consulName}</p>`;
+            if (processPayload.legalization.id) processHtml += `<p class="mb-1"><strong>Legalizatsiya:</strong> ${legalizationName}</p>`;
         }
 
         confirmInfo.innerHTML = `
@@ -1901,16 +1483,11 @@ getTotals() {
                     <h6 class="card-subtitle mb-3 text-muted">Hujjat ma'lumoti</h6>
                     <p class="mb-1"><strong>Hujjat turi:</strong> ${docType}</p>
                     ${processHtml}
-
                     <hr>
-
                     <h6 class="card-subtitle mb-3 text-muted">Xizmat ma'lumoti</h6>
                     <p class="mb-1"><strong>Xizmat:</strong> ${service}</p>
-
                     ${addonsHtml}
-
                     <hr>
-
                     <h6 class="card-subtitle mb-3 text-muted">Narx tafsilotlari</h6>
                     <p class="mb-1"><strong>Xizmat narxi:</strong> ${totals.serviceAmount.toLocaleString()} so'm</p>
                     ${totals.apostilAmount > 0 ? `<p class="mb-1"><strong>Apostil:</strong> ${totals.apostilAmount.toLocaleString()} so'm</p>` : ''}
@@ -1920,16 +1497,12 @@ getTotals() {
                     <p class="mb-1"><strong>Umumiy summa:</strong> ${totals.totalAmount.toLocaleString()} so'm</p>
                     ${totals.discountAmount > 0 ? `<p class="mb-1 text-danger"><strong>Chegirma:</strong> -${totals.discountAmount.toLocaleString()} so'm</p>` : ''}
                     <p class="mb-1 text-success"><strong>Yakuniy narx:</strong> ${totals.finalAmount.toLocaleString()} so'm</p>
-
                     <hr>
-
                     <h6 class="card-subtitle mb-3 text-muted">To'lov</h6>
                     <p class="mb-1"><strong>To'lov turi:</strong> ${paymentType}</p>
                     <p class="mb-1"><strong>To'lov summasi:</strong> ${parseFloat(paymentAmount || 0).toLocaleString()} so'm</p>
                     ${parseFloat(paymentAmount) < totals.finalAmount ? `<p class="mb-1 text-warning"><strong>Qoldiq:</strong> ${(totals.finalAmount - parseFloat(paymentAmount)).toLocaleString()} so'm</p>` : ''}
-
                     <hr>
-
                     <p class="mb-0"><strong>Yuklangan fayllar:</strong> ${getData('.file-input')?.files.length || 0}</p>
                 </div>
             </div>
@@ -1940,132 +1513,100 @@ getTotals() {
         this.wrapper.querySelector('.btn-remove-wizard').onclick = () => {
             if (confirm("Ushbu wizardni o'chirasizmi?")) {
                 this.wrapper.remove();
-                updateGlobalTotals(); // Global summalarni yangilaymiz
+                updateGlobalTotals();
             }
         };
     }
 
-   initAddonTracking() {
-    const w = this.wrapper;
-    const serviceSelect = w.querySelector('.service');
+    initAddonTracking() {
+        const w = this.wrapper;
+        const serviceSelect = w.querySelector('.service');
+        const docType = w.querySelector('.doc-type');
+        const afterBlock = w.querySelector('.after-choice-block');
+        const directionSelect = w.querySelector('.direction-type');
 
-    const docType = w.querySelector('.doc-type');
-    const afterBlock = w.querySelector('.after-choice-block'); // faqat tanlov tugaganda ko'rinadi
-    const directionSelect = w.querySelector('.direction-type');
+        const loadDocumentAddons = async () => {
+            if (afterBlock.style.display === 'none') { this.hideAddons('document'); return; }
+            const docTypeVal = docType?.value || '';
+            if (!docTypeVal) { this.hideAddons('document'); return; }
 
-    const loadDocumentAddons = async () => {
-        // afterBlock yopiq bo'lsa ? addon ham kerak emas
-        if (afterBlock.style.display === 'none') {
-            this.hideAddons('document');
-            return;
-        }
+            const container = w.querySelector('.additional-services-document');
+            const servicesList = container.querySelector('.services-list-document');
+            servicesList.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> Yuklanmoqda...</div>';
+            container.style.display = 'block';
 
-        const docTypeVal = docType?.value || '';
-        if (!docTypeVal) {
-            this.hideAddons('document');
-            return;
-        }
+            try {
+                const addons = await this.fetchAddonsByType('document', docTypeVal);
+                this.renderAddons(addons.map(a => Object.assign({}, a, { sourceType: 'document' })), 'document');
+            } catch (e) {
+                console.error(e);
+                servicesList.innerHTML = "<div class=\"text-danger small\">Ma'lumotlarni yuklashda xatolik</div>";
+            }
+        };
 
-        const container = w.querySelector('.additional-services-document');
-        const servicesList = container.querySelector('.services-list-document');
+        docType?.addEventListener('change', loadDocumentAddons);
 
-        servicesList.innerHTML =
-            '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> Yuklanmoqda...</div>';
-        container.style.display = 'block';
+        const loadDirectionAddons = async () => {
+            if (afterBlock.style.display === 'none') { this.hideAddons('direction'); return; }
+            const directionVal = directionSelect?.value || '';
+            if (!directionVal) { this.hideAddons('direction'); return; }
 
-        try {
-            const addons = await this.fetchAddonsByType('document', docTypeVal);
-            const addonsWithType = addons.map(a => Object.assign({}, a, { sourceType: 'document' }));
-            this.renderAddons(addonsWithType, 'document');
-        } catch (e) {
-            console.error(e);
-            servicesList.innerHTML = "<div class=\"text-danger small\">Ma'lumotlarni yuklashda xatolik</div>";
-        }
-    };
+            const container = w.querySelector('.additional-services-direction');
+            const servicesList = container.querySelector('.services-list-direction');
+            servicesList.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> Yuklanmoqda...</div>';
+            container.style.display = 'block';
 
-    docType?.addEventListener('change', loadDocumentAddons);
+            try {
+                const addons = await this.fetchAddonsByType('direction', directionVal);
+                this.renderAddons(addons.map(a => Object.assign({}, a, { sourceType: 'direction' })), 'direction');
+            } catch (e) {
+                console.error(e);
+                servicesList.innerHTML = '<div class="text-danger small">Ma\'lumotlarni yuklashda xatolik</div>';
+            }
+        };
 
-    const loadDirectionAddons = async () => {
-        // afterBlock yopiq bo'lsa ? addon ham kerak emas
-        if (afterBlock.style.display === 'none') {
-            this.hideAddons('direction');
-            return;
-        }
-
-        const directionVal = directionSelect?.value || '';
-        if (!directionVal) {
-            this.hideAddons('direction');
-            return;
-        }
-
-        const container = w.querySelector('.additional-services-direction');
-        const servicesList = container.querySelector('.services-list-direction');
-
-        servicesList.innerHTML =
-            '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> Yuklanmoqda...</div>';
-        container.style.display = 'block';
-
-        try {
-            const addons = await this.fetchAddonsByType('direction', directionVal);
-            const addonsWithType = addons.map(a => Object.assign({}, a, { sourceType: 'direction' }));
-            this.renderAddons(addonsWithType, 'direction');
-        } catch (e) {
-            console.error(e);
-            servicesList.innerHTML = '<div class="text-danger small">Ma\'lumotlarni yuklashda xatolik</div>';
-        }
-    };
-
-    directionSelect?.addEventListener('change', () => {
-        const mode = w.querySelector('.process-mode')?.value || '';
-        if (mode === 'apostil') {
-            const ok = !!w.querySelector('.apostil-g1:checked') && !!w.querySelector('.apostil-g2:checked');
-            const hasDirection = !!directionSelect?.value;
-            afterBlock.style.display = ok && hasDirection ? 'block' : 'none';
-        }
-
-        loadDirectionAddons();
-        loadDocumentAddons();
-    });
-
-    const loadServiceAddons = async () => {
-        const serviceVal = serviceSelect?.value || '';
-        if (!serviceVal) {
-            this.hideAddons('service');
-            return;
-        }
-
-        const container = w.querySelector('.additional-services-service');
-        const servicesList = container.querySelector('.services-list-service');
-
-         servicesList.innerHTML =
-            '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> Yuklanmoqda...</div>';
-        container.style.display = 'block';
-
-        try {
-            const addons = await this.fetchAddonsByType('service', serviceVal);
-            const addonsWithType = addons.map(a => Object.assign({}, a, { sourceType: 'service' }));
-            this.renderAddons(addonsWithType, 'service');
-        } catch (e) {
-            console.error(e);
-            servicesList.innerHTML = '<div class="text-danger small">Ma\'lumotlarni yuklashda xatolik</div>';
-        }
-    };
-
-    serviceSelect?.addEventListener('change', loadServiceAddons);
-
-    // ✅ afterBlock ochilganda ham addon yuklansin
-    // (tanlov tugaganda initPriceCalculation input trigger qiladi; shu yerda ham hook)
-    w.addEventListener('change', (e) => {
-        if (e.target.classList.contains('apostil-g1') ||
-            e.target.classList.contains('apostil-g2') ||
-            e.target.classList.contains('consul-main') ||
-            e.target.classList.contains('legalization')) {
+        directionSelect?.addEventListener('change', () => {
+            const mode = w.querySelector('.process-mode')?.value || '';
+            if (mode === 'apostil') {
+                const ok = !!w.querySelector('.apostil-g1:checked') && !!w.querySelector('.apostil-g2:checked');
+                const hasDirection = !!directionSelect?.value;
+                afterBlock.style.display = ok && hasDirection ? 'block' : 'none';
+            }
+            loadDirectionAddons();
             loadDocumentAddons();
-        }
-    });
+        });
 
-    loadServiceAddons();
-}
+        const loadServiceAddons = async () => {
+            const serviceVal = serviceSelect?.value || '';
+            if (!serviceVal) { this.hideAddons('service'); return; }
+
+            const container = w.querySelector('.additional-services-service');
+            const servicesList = container.querySelector('.services-list-service');
+            servicesList.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> Yuklanmoqda...</div>';
+            container.style.display = 'block';
+
+            try {
+                const addons = await this.fetchAddonsByType('service', serviceVal);
+                this.renderAddons(addons.map(a => Object.assign({}, a, { sourceType: 'service' })), 'service');
+            } catch (e) {
+                console.error(e);
+                servicesList.innerHTML = '<div class="text-danger small">Ma\'lumotlarni yuklashda xatolik</div>';
+            }
+        };
+
+        serviceSelect?.addEventListener('change', loadServiceAddons);
+
+        w.addEventListener('change', (e) => {
+            if (e.target.classList.contains('apostil-g1') ||
+                e.target.classList.contains('apostil-g2') ||
+                e.target.classList.contains('consul-main') ||
+                e.target.classList.contains('legalization')) {
+                loadDocumentAddons();
+            }
+        });
+
+        loadServiceAddons();
+    }
 
     async fetchAddonsByType(type, id) {
         try {
@@ -2076,9 +1617,7 @@ getTotals() {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
                 }
             });
-
             if (!response.ok) throw new Error(`Yuklashda xato: ${type}`);
-
             const data = await response.json();
             return Array.isArray(data) ? data : [];
         } catch (error) {
@@ -2092,17 +1631,12 @@ getTotals() {
         const container = this.wrapper.querySelector(`.additional-services${suffix}`);
         const servicesList = container.querySelector(`.services-list${suffix}`);
 
-        if (!addons || addons.length === 0) {
-            this.hideAddons(containerType);
-            return;
-        }
+        if (!addons || addons.length === 0) { this.hideAddons(containerType); return; }
 
         let html = '';
-
         addons.forEach((addon, index) => {
             const uniqueId = `addon-${containerType}-${Date.now()}-${index}`;
-            const sourceType = addon.sourceType || containerType; // sourceType bo'lsa ishlatamiz
-
+            const sourceType = addon.sourceType || containerType;
             html += `
                 <div class="service-addon-item" data-price="${addon.amount}" data-id="${addon.id || index}" data-source-type="${sourceType}">
                     <div class="d-flex align-items-center flex-grow-1">
@@ -2127,12 +1661,10 @@ getTotals() {
         servicesList.innerHTML = html;
         container.style.display = 'block';
 
-        // Checkboxlar uchun handler qo'shamiz
         servicesList.querySelectorAll('.service-addon-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', () => this.updateAddonTotal(containerType));
         });
 
-        // Butun elementga bosish handlerlarini qo'shamiz
         servicesList.querySelectorAll('.service-addon-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 if (e.target.type !== 'checkbox') {
@@ -2159,7 +1691,6 @@ getTotals() {
             cb.closest('.service-addon-item').classList.add('selected');
         });
 
-        // Tanlanmaganlardan selected klassini olib tashlaymiz
         container.querySelectorAll(`.service-addon-checkbox-${containerType}:not(:checked)`).forEach(cb => {
             cb.closest('.service-addon-item').classList.remove('selected');
         });
@@ -2167,7 +1698,6 @@ getTotals() {
         totalSpan.textContent = total.toLocaleString();
         countSpan.textContent = checkboxes.length;
 
-        // Buyurtma umumiy summasini qayta hisoblaymiz
         const serviceSelect = this.wrapper.querySelector('.service');
         if (serviceSelect.value) {
             const discountInput = this.wrapper.querySelector('.discount');
@@ -2179,18 +1709,15 @@ getTotals() {
 
     getSelectedAddons() {
         const selected = [];
-
-        // Ikkala konteynerdan addonlarni yig'amiz
         this.wrapper.querySelectorAll('.service-addon-checkbox:checked').forEach(cb => {
             selected.push({
                 id: cb.dataset.id,
                 name: cb.dataset.name,
                 price: cb.dataset.price,
-                type: cb.dataset.container, // 'document' yoki 'service'
-                sourceType: cb.dataset.sourceType // 'document', 'direction', 'consulate', 'service'
+                type: cb.dataset.container,
+                sourceType: cb.dataset.sourceType
             });
         });
-
         return selected;
     }
 
@@ -2202,42 +1729,6 @@ getTotals() {
         container.querySelector(`.addon-total${suffix}`).textContent = '0';
         container.querySelector(`.selected-count${suffix}`).textContent = '0';
     }
-
-    initConsulateToggle() {
-        const consulateCheckbox = this.wrapper.querySelector('.consulate-checkbox');
-        const legalizationContainer = this.wrapper.querySelector('.legalization-container');
-        const legalizationSelect = this.wrapper.querySelector('.legalization');
-
-        if (!consulateCheckbox || !legalizationContainer || !legalizationSelect) {
-            console.warn('Consulate toggle elements not found');
-            return;
-        }
-
-        const toggleLegalization = () => {
-            if (consulateCheckbox.checked) {
-                legalizationContainer.style.display = 'block';
-            } else {
-                legalizationContainer.style.display = 'none';
-                // Yopilganda select qiymatini tozalaymiz
-                legalizationSelect.value = '';
-
-                // Addonlarni qayta yuklaymiz
-                const docTypeSelect = this.wrapper.querySelector('.doc-type');
-                if (docTypeSelect) {
-                    docTypeSelect.dispatchEvent(new Event('change'));
-                }
-
-                // Narxlarni qayta hisoblaymiz (legallashtirish tozalangani uchun)
-                const discountInput = this.wrapper.querySelector('.discount');
-                if (discountInput) {
-                    discountInput.dispatchEvent(new Event('input'));
-                }
-            }
-        };
-
-        consulateCheckbox.addEventListener('change', toggleLegalization);
-        toggleLegalization();
-    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -2248,29 +1739,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveBtn = document.getElementById('saveClientBtn');
     const spinner = saveBtn.querySelector('.spinner-border');
 
-    // Modal oynasi ochilganda formani tozalash
     modal.addEventListener('show.bs.modal', function() {
         form.reset();
         clearValidationErrors();
     });
 
-    // Saqlash tugmasi handleri
     saveBtn.addEventListener('click', async function() {
         if (!form.checkValidity()) {
             form.classList.add('was-validated');
             return;
         }
-
         await createClient();
     });
 
-    // Mijoz yaratish funksiyasi
     async function createClient() {
-        // Tugmani o'chirib spinnerni ko'rsatamiz
         saveBtn.disabled = true;
         spinner.classList.remove('d-none');
 
-        // Forma ma'lumotlarini yig'amiz
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
@@ -2288,7 +1773,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (!response.ok) {
-                // Validatsiya xatolarini qayta ishlash
                 if (result.errors) {
                     displayValidationErrors(result.errors);
                 } else {
@@ -2297,38 +1781,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Muvaffaqiyatli yaratildi
             showSuccessMessage('Mijoz muvaffaqiyatli yaratildi!');
-
-            // Yangi mijozni Select2ga qo'shamiz
-            // if (window.$ && $('#client_id').length) {
-            //     const newOption = new Option(
-            //         `${result.data.name} (${result.data.phone_number})`,
-            //         result.data.id,
-            //         true,
-            //         true
-            //     );
-            //     $('#client_id').append(newOption).trigger('change');
-            // }
-
-            // Modal oynani yopamiz
             const bootstrapModal = bootstrap.Modal.getInstance(modal);
             bootstrapModal.hide();
-
         } catch (error) {
             console.error('Error:', error);
             showErrorMessage(error.message || 'Mijoz yaratishda xatolik yuz berdi');
         } finally {
-            // Tugmani yoqib spinnerni yashiramiz
             saveBtn.disabled = false;
             spinner.classList.add('d-none');
         }
     }
 
-    // Validatsiya xatolarini ko'rsatish funksiyasi
     function displayValidationErrors(errors) {
         clearValidationErrors();
-
         for (const [field, messages] of Object.entries(errors)) {
             const input = form.querySelector(`[name="${field}"]`);
             if (input) {
@@ -2341,20 +1807,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Validatsiya xatolarini tozalash funksiyasi
     function clearValidationErrors() {
         form.classList.remove('was-validated');
-        form.querySelectorAll('.is-invalid').forEach(el => {
-            el.classList.remove('is-invalid');
-        });
-        form.querySelectorAll('.invalid-feedback').forEach(el => {
-            el.textContent = '';
-        });
+        form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        form.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
     }
 
-    // Muvaffaqiyat xabarini ko'rsatish funksiyasi
     function showSuccessMessage(message) {
-        // Bootstrap alert yoki toast ishlatamiz
         const alertHtml = `
             <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
                  role="alert" style="z-index: 9999;">
@@ -2363,17 +1822,12 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         document.body.insertAdjacentHTML('beforeend', alertHtml);
-
-        // 3 soniyadan keyin avtomatik olib tashlaymiz
         setTimeout(() => {
             const alert = document.querySelector('.alert-success');
-            if (alert) {
-                alert.remove();
-            }
+            if (alert) alert.remove();
         }, 3000);
     }
 
-    // Xato xabarini ko'rsatish funksiyasi
     function showErrorMessage(message) {
         const alertHtml = `
             <div class="alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
@@ -2383,12 +1837,9 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         document.body.insertAdjacentHTML('beforeend', alertHtml);
-
         setTimeout(() => {
             const alert = document.querySelector('.alert-danger');
-            if (alert) {
-                alert.remove();
-            }
+            if (alert) alert.remove();
         }, 5000);
     }
 });
