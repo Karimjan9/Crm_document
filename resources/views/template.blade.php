@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="semi-dark">
+<html id="htmlRoot" class="semi-dark">
 
 <head>
 	
@@ -122,6 +122,9 @@
         <p class="footer-copy">Copyright © <span>2026</span>. All rights reserved.</p>
     </div>
 </footer>
+	
+		
+
 
 	</div>
 	<!--end wrapper-->
@@ -147,6 +150,54 @@
 	<script src="{{ url('assets/js/app.js') }}"></script>
 	@stack('script_include_end_body')
 	@yield('script_include_end_body')
+	
+	<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const html = document.getElementById("htmlRoot");
+    const btn = document.getElementById("themeToggle");
+    const icon = document.getElementById("themeIcon");
+
+    if (!html || !btn || !icon) return;
+
+    let theme = localStorage.getItem("theme");
+
+    if (theme === "dark") {
+        html.classList.remove("semi-dark");
+        html.classList.add("dark-theme");
+
+        icon.classList.remove("fa-moon");
+        icon.classList.add("fa-sun");
+    }
+
+    btn.addEventListener("click", function () {
+
+        if (html.classList.contains("dark-theme")) {
+
+            html.classList.remove("dark-theme");
+            html.classList.add("semi-dark");
+
+            localStorage.setItem("theme", "semi");
+
+            icon.classList.remove("fa-sun");
+            icon.classList.add("fa-moon");
+
+        } else {
+
+            html.classList.remove("semi-dark");
+            html.classList.add("dark-theme");
+
+            localStorage.setItem("theme", "dark");
+
+            icon.classList.remove("fa-moon");
+            icon.classList.add("fa-sun");
+        }
+
+    });
+
+});
+</script>
+
 </body>
 
 </html>
