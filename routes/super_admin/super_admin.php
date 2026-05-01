@@ -83,6 +83,9 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
     Route::get('/document_static', [DocumentController::class, 'statistika'])->name('document.statistika');
 
+    Route::post('/payment/add', [DocumentController::class, 'add_payment'])->name('add_payment');
+    Route::get('/payments/{document}', [DocumentController::class, 'paymentHistory'])->name('payments');
+
     Route::get('/calendar/index', [CalendarController::class, 'index'])->name('calendar.index');
 
     Route::resource('/service',ServiceController::class)->except(['show']);

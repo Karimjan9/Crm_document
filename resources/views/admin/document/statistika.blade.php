@@ -2,304 +2,641 @@
 
 @section('style')
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+    .stats-shell {
+        background: #f5f7fb;
+        min-height: calc(100vh - 64px);
+        color: #172033;
+    }
 
-:root {
-  --blue: #1e3a8a;
-  --blue-light: #2563eb;
-  --gray: #f3f4f6;
-  --white: #fff;
-  --border: #e5e7eb;
-  --text: #111827;
-  --green: #16a34a;
-  --red: #dc2626;
-  --orange: #f59e0b;
-}
+    .stats-shell .page-content {
+        padding: 22px;
+    }
 
-body {
-  font-family: "Inter", sans-serif;
-  background: var(--gray);
-  color: var(--text);
-  font-size: 15px;
-}
+    .stats-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
 
-.page-wrapper { padding: 24px; }
+    .stats-title h4 {
+        margin: 0;
+        color: #102a56;
+        font-weight: 700;
+        font-size: 24px;
+    }
 
-/* CARD STYLE */
-.card {
-  background: var(--white);
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease;
-}
-.card:hover { transform: translateY(-3px); }
+    .stats-title p {
+        margin: 6px 0 0;
+        color: #64748b;
+        font-size: 14px;
+    }
 
-/* CARD HEADER */
-.card-header {
-  font-weight: 600;
-  font-size: 16px;
-  color: var(--white);
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border);
-  background: var(--blue);
-  border-top-left-radius: 14px;
-  border-top-right-radius: 14px;
-}
+    .stats-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 8px;
+        padding: 10px 14px;
+        background: #1d4ed8;
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+    }
 
-/* CARD BODY */
-.card-body { padding: 18px; }
+    .stats-link:hover {
+        background: #1e40af;
+        color: #fff;
+    }
 
-/* FILTER BOX */
-.filter-box select,
-.filter-box input {
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  padding: 9px 12px;
-  width: 100%;
-  font-size: 14px;
-}
-.filter-box button {
-  border: none;
-  background: var(--blue-light);
-  color: var(--white);
-  border-radius: 8px;
-  padding: 10px 14px;
-  width: 100%;
-  font-weight: 500;
-  transition: background 0.2s;
-}
-.filter-box button:hover { background: var(--blue); }
+    .filter-panel,
+    .stat-panel,
+    .table-panel {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    }
 
-/* SUMMARY CARD */
-.summary-card {
-  background: var(--white);
-  padding: 18px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: 0.2s;
-}
-.summary-card:hover { transform: scale(1.02); }
-.summary-card h5 { color: var(--blue); margin-bottom: 6px; font-size: 15px; }
-.summary-card h3 { margin: 0; font-size: 22px; font-weight: 600; }
+    .filter-panel {
+        padding: 16px;
+        margin-bottom: 18px;
+    }
 
-/* TABLES - KO'K RANG SARRALAVIHA & HOVER */
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-  border-radius: 12px;
-  overflow: hidden;
-  width: 100%;
-}
-table th {
-  background: var(--blue);
-  color: white;
-  text-align: center;
-  vertical-align: middle;
-  font-weight: 500;
-  padding: 12px;
-}
-table td {
-  text-align: center;
-  vertical-align: middle;
-  font-size: 14px;
-  background: #fff;
-  border: 1px solid var(--border);
-  padding: 10px;
-  transition: background 0.2s;
-}
-table tbody tr:hover { 
-  background-color: rgba(37, 99, 235, 0.1);
-}
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(150px, 1fr));
+        gap: 12px;
+        align-items: end;
+    }
 
-/* Jadval burchaklarini yumaloqlash */
-table th:first-child { border-top-left-radius: 12px; }
-table th:last-child  { border-top-right-radius: 12px; }
-table tr:last-child td:first-child { border-bottom-left-radius: 12px; }
-table tr:last-child td:last-child  { border-bottom-right-radius: 12px; }
+    .filter-field label {
+        display: block;
+        margin-bottom: 6px;
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
 
-/* BADGES */
-.badge {
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 13px;
-}
-.bg-success { background: var(--green); color: #fff; }
-.bg-warning { background: var(--orange); color: #fff; }
-.bg-danger  { background: var(--red); color: #fff; }
+    .filter-field input,
+    .filter-field select {
+        width: 100%;
+        height: 40px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 0 10px;
+        background: #fff;
+    }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .filter-box label { font-size: 13px; }
-  .summary-card h3 { font-size: 18px; }
-  .card-header { font-size: 14px; }
-  .btn { font-size: 13px; }
-}
+    .filter-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .filter-actions .btn {
+        height: 40px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(160px, 1fr));
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .summary-tile {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+    }
+
+    .summary-tile span {
+        display: block;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .summary-tile strong {
+        display: block;
+        margin-top: 8px;
+        color: #0f172a;
+        font-size: 22px;
+        line-height: 1.2;
+    }
+
+    .chart-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .stat-panel {
+        overflow: hidden;
+    }
+
+    .panel-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .panel-header h5 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        color: #102a56;
+    }
+
+    .panel-header span {
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .chart-box {
+        height: 320px;
+        padding: 16px;
+    }
+
+    .table-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+        gap: 14px;
+    }
+
+    .table-panel {
+        overflow: hidden;
+    }
+
+    .stats-table {
+        width: 100%;
+        margin: 0;
+    }
+
+    .stats-table thead th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 12px;
+        white-space: nowrap;
+    }
+
+    .stats-table td {
+        padding: 12px;
+        border-bottom: 1px solid #eef2f7;
+        vertical-align: middle;
+    }
+
+    .money {
+        white-space: nowrap;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .muted {
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    @media (max-width: 1200px) {
+        .filter-grid { grid-template-columns: repeat(3, minmax(150px, 1fr)); }
+        .summary-grid { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+        .chart-grid,
+        .table-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+        .stats-shell .page-content { padding: 14px; }
+        .stats-header { flex-direction: column; }
+        .stats-link { width: 100%; justify-content: center; }
+        .filter-grid,
+        .summary-grid { grid-template-columns: 1fr; }
+        .chart-box { height: 280px; }
+    }
 </style>
 @endsection
 
 @section('body')
-<div class="page-wrapper">
-  <div class="page-content">
+@php
+    $money = fn ($amount) => number_format((float) $amount, 0, '.', ' ');
+    $paidRate = $summary['final_price'] > 0 ? min(100, round(($summary['paid_amount'] / $summary['final_price']) * 100)) : 0;
+    $monthlyLabels = collect($monthlyStats)->pluck('label')->all();
+    $monthlyDocuments = collect($monthlyStats)->pluck('documents')->all();
+    $monthlyFinal = collect($monthlyStats)->pluck('final_price')->all();
+    $monthlyPaid = collect($monthlyStats)->pluck('paid_amount')->all();
+    $yearlyLabels = collect($yearlyStats)->pluck('year')->all();
+    $yearlyDocuments = collect($yearlyStats)->pluck('documents')->all();
+    $yearlyFinal = collect($yearlyStats)->pluck('final_price')->all();
+@endphp
 
-    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap">
-      <h4 class="fw-semibold mb-2">📁 Hujjatlar statistikasi</h4>
-      <button class="btn btn-primary px-3 py-2">+ Yangi hujjat</button>
-    </div>
-
-    <!-- 🔍 Filter qismi -->
-    <div class="filter-box row g-3 mb-4">
-      <div class="col-md-3">
-        <label>Filial</label>
-        <select>
-          <option>Barchasi</option>
-          <option>Toshkent</option>
-          <option>Samarqand</option>
-          <option>Andijon</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <label>Foydalanuvchi</label>
-        <select>
-          <option>Barchasi</option>
-          <option>Ali Karimov</option>
-          <option>Dilnoza Nur</option>
-          <option>Aziz Rustamov</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <label>Sana oralig‘i</label>
-        <input type="date">
-      </div>
-      <div class="col-md-3 d-flex align-items-end">
-        <button>Filtrlash</button>
-      </div>
-    </div>
-
-    <!-- 📊 Umumiy statistika -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-4">
-        <div class="summary-card">
-          <h5>Joriy oyda hujjatlar</h5>
-          <h3 style="color: var(--blue-light);">320 ta</h3>
+<div class="page-wrapper stats-shell">
+    <div class="page-content">
+        <div class="stats-header">
+            <div class="stats-title">
+                <h4>Hujjatlar statistikasi</h4>
+                <p>Oy, yil, filial va xodim bo'yicha real monitoring ko'rsatkichlari.</p>
+            </div>
+            <a href="{{ route($routePrefix . '.document.index') }}" class="stats-link">
+                <i class="bx bx-table"></i>
+                Monitoring
+            </a>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="summary-card">
-          <h5>Umumiy hujjatlar</h5>
-          <h3 style="color: var(--green);">4 850 ta</h3>
+
+        <form method="GET" action="{{ route($routePrefix . '.document.statistika') }}" class="filter-panel">
+            <div class="filter-grid">
+                <div class="filter-field">
+                    <label>Filial</label>
+                    <select name="filial_id">
+                        <option value="">Barchasi</option>
+                        @foreach($filials as $filial)
+                            <option value="{{ $filial->id }}" @selected((string) request('filial_id') === (string) $filial->id)>{{ $filial->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label>Foydalanuvchi</label>
+                    <select name="user_id">
+                        <option value="">Barchasi</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}" @selected((string) request('user_id') === (string) $user->id)>{{ $user->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label>Jarayon</label>
+                    <select name="process_mode">
+                        <option value="">Barchasi</option>
+                        @foreach($processLabels as $value => $label)
+                            <option value="{{ $value }}" @selected(request('process_mode') === $value)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label>Holat</label>
+                    <select name="status_doc">
+                        <option value="">Barchasi</option>
+                        @foreach($statusLabels as $value => $label)
+                            <option value="{{ $value }}" @selected(request('status_doc') === $value)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label>To'lov</label>
+                    <select name="payment_status">
+                        <option value="">Barchasi</option>
+                        <option value="paid" @selected(request('payment_status') === 'paid')>To'langan</option>
+                        <option value="partial" @selected(request('payment_status') === 'partial')>Qisman</option>
+                        <option value="debt" @selected(request('payment_status') === 'debt')>Qarzdor</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label>Yil</label>
+                    <select name="year">
+                        @foreach($yearOptions as $year)
+                            <option value="{{ $year }}" @selected((int) $selectedYear === (int) $year)>{{ $year }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label>Oy</label>
+                    <select name="month">
+                        <option value="">Barcha oylar</option>
+                        @foreach($monthNames as $value => $label)
+                            <option value="{{ $value }}" @selected((int) $selectedMonth === (int) $value)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label>Sana dan</label>
+                    <input type="date" name="date_from" value="{{ request('date_from') }}">
+                </div>
+                <div class="filter-field">
+                    <label>Sana gacha</label>
+                    <input type="date" name="date_to" value="{{ request('date_to') }}">
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary">Ko'rish</button>
+                    <a href="{{ route($routePrefix . '.document.statistika') }}" class="btn btn-light">Tozalash</a>
+                </div>
+            </div>
+        </form>
+
+        <div class="summary-grid">
+            <div class="summary-tile">
+                <span>Hujjatlar</span>
+                <strong>{{ $summary['documents'] }}</strong>
+            </div>
+            <div class="summary-tile">
+                <span>Jami summa</span>
+                <strong>{{ $money($summary['final_price']) }}</strong>
+            </div>
+            <div class="summary-tile">
+                <span>To'langan</span>
+                <strong>{{ $money($summary['paid_amount']) }}</strong>
+            </div>
+            <div class="summary-tile">
+                <span>Qoldiq</span>
+                <strong>{{ $money($summary['balance']) }}</strong>
+            </div>
+            <div class="summary-tile">
+                <span>Yopilish foizi</span>
+                <strong>{{ $paidRate }}%</strong>
+            </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="summary-card">
-          <h5>Eng faol filial</h5>
-          <h3 style="color: var(--orange);">Toshkent (34%)</h3>
+
+        <div class="chart-grid">
+            <div class="stat-panel">
+                <div class="panel-header">
+                    <h5>{{ $selectedYear }} yil oylar kesimi</h5>
+                    <span>Hujjat soni va tushum dinamikasi</span>
+                </div>
+                <div class="chart-box">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+            <div class="stat-panel">
+                <div class="panel-header">
+                    <h5>To'lov holati</h5>
+                    <span>Tanlangan davr</span>
+                </div>
+                <div class="chart-box">
+                    <canvas id="paymentChart"></canvas>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- 🏢 Filiallar bo‘yicha jadval -->
-    <div class="card mb-4">
-      <div class="card-header">🏢 Filiallar bo‘yicha hujjatlar statistikasi</div>
-      <div class="card-body table-responsive">
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Filial</th>
-              <th>Jami</th>
-              <th>Tasdiqlangan</th>
-              <th>Rad etilgan</th>
-              <th>Jarayonda</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Toshkent</td><td>1800</td><td>1420</td><td>150</td><td>230</td></tr>
-            <tr><td>Samarqand</td><td>950</td><td>720</td><td>80</td><td>150</td></tr>
-            <tr><td>Andijon</td><td>710</td><td>540</td><td>60</td><td>110</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+        <div class="stat-panel mb-3">
+            <div class="panel-header">
+                <h5>Yillar kesimi</h5>
+                <span>Filtrlangan ma'lumotlarning yillik taqqoslanishi</span>
+            </div>
+            <div class="chart-box">
+                <canvas id="yearlyChart"></canvas>
+            </div>
+        </div>
 
-    <!-- 👤 Eng faol foydalanuvchilar -->
-    <div class="card mb-4">
-      <div class="card-header">👤 Eng faol foydalanuvchilar</div>
-      <div class="card-body table-responsive">
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Foydalanuvchi</th>
-              <th>Filial</th>
-              <th>Yuklagan</th>
-              <th>Tasdiqlangan</th>
-              <th>Faoliyat (%)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Ali Karimov</td><td>Toshkent</td><td>420</td><td>390</td><td>93%</td></tr>
-            <tr><td>Dilnoza Nur</td><td>Samarqand</td><td>320</td><td>290</td><td>90%</td></tr>
-            <tr><td>Aziz Rustamov</td><td>Andijon</td><td>280</td><td>250</td><td>89%</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+        <div class="table-grid">
+            <div class="table-panel">
+                <div class="panel-header">
+                    <h5>Filiallar bo'yicha</h5>
+                    <span>Top 12</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table stats-table">
+                        <thead>
+                            <tr>
+                                <th>Filial</th>
+                                <th>Hujjat</th>
+                                <th>Tugallangan</th>
+                                <th>Qoldiq</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($filialStats as $row)
+                                <tr>
+                                    <td>{{ $row['label'] }}</td>
+                                    <td>{{ $row['documents'] }}</td>
+                                    <td>{{ $row['finished'] }}</td>
+                                    <td><span class="money">{{ $money($row['balance']) }}</span></td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="4" class="text-center text-muted py-4">Ma'lumot yo'q.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-    <!-- 📄 Hujjat turlari -->
-    <div class="card mb-4">
-      <div class="card-header">📄 Hujjat turlari bo‘yicha taqsimot</div>
-      <div class="card-body table-responsive">
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Hujjat turi</th>
-              <th>Umumiy</th>
-              <th>Tasdiqlangan</th>
-              <th>Rad etilgan</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Shartnoma</td><td>1500</td><td>1300</td><td>200</td></tr>
-            <tr><td>Hisobot</td><td>950</td><td>820</td><td>130</td></tr>
-            <tr><td>Faktura</td><td>850</td><td>770</td><td>80</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+            <div class="table-panel">
+                <div class="panel-header">
+                    <h5>Xodimlar bo'yicha</h5>
+                    <span>Top 12</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table stats-table">
+                        <thead>
+                            <tr>
+                                <th>Xodim</th>
+                                <th>Hujjat</th>
+                                <th>To'langan</th>
+                                <th>Qoldiq</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($userStats as $row)
+                                <tr>
+                                    <td>{{ $row['label'] }}</td>
+                                    <td>{{ $row['documents'] }}</td>
+                                    <td><span class="money">{{ $money($row['paid_amount']) }}</span></td>
+                                    <td><span class="money">{{ $money($row['balance']) }}</span></td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="4" class="text-center text-muted py-4">Ma'lumot yo'q.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-    <!-- 📋 Barcha hujjatlar -->
-    <div class="card">
-      <div class="card-header">📋 Barcha hujjatlar ro‘yxati</div>
-      <div class="card-body table-responsive">
-        <table class="table table-bordered align-middle">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Filial</th>
-              <th>Foydalanuvchi</th>
-              <th>Hujjat nomi</th>
-              <th>Turi</th>
-              <th>Sana</th>
-              <th>Holat</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>1</td><td>Toshkent</td><td>Ali Karimov</td><td>Shartnoma #125</td><td>Shartnoma</td><td>2025-10-17</td><td><span class="badge bg-success">Tasdiqlangan</span></td></tr>
-            <tr><td>2</td><td>Samarqand</td><td>Dilnoza Nur</td><td>Faktura #458</td><td>Faktura</td><td>2025-10-16</td><td><span class="badge bg-warning">Jarayonda</span></td></tr>
-            <tr><td>3</td><td>Andijon</td><td>Aziz Rustamov</td><td>Hisobot #773</td><td>Hisobot</td><td>2025-10-14</td><td><span class="badge bg-danger">Rad etilgan</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+            <div class="table-panel">
+                <div class="panel-header">
+                    <h5>Hujjat turlari</h5>
+                    <span>Top 12</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table stats-table">
+                        <thead>
+                            <tr>
+                                <th>Tur</th>
+                                <th>Hujjat</th>
+                                <th>Jami</th>
+                                <th>To'langan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($typeStats as $row)
+                                <tr>
+                                    <td>{{ $row['label'] }}</td>
+                                    <td>{{ $row['documents'] }}</td>
+                                    <td><span class="money">{{ $money($row['final_price']) }}</span></td>
+                                    <td><span class="money">{{ $money($row['paid_amount']) }}</span></td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="4" class="text-center text-muted py-4">Ma'lumot yo'q.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-  </div>
+            <div class="table-panel">
+                <div class="panel-header">
+                    <h5>To'lov xulosasi</h5>
+                    <span>Tanlangan davr</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table stats-table">
+                        <thead>
+                            <tr>
+                                <th>Holat</th>
+                                <th>Soni</th>
+                                <th>Izoh</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>To'langan</td>
+                                <td>{{ $summary['paid_documents'] }}</td>
+                                <td class="muted">Qoldiq yopilgan hujjatlar</td>
+                            </tr>
+                            <tr>
+                                <td>Qisman</td>
+                                <td>{{ $summary['partial_documents'] }}</td>
+                                <td class="muted">To'lov boshlangan, lekin yopilmagan</td>
+                            </tr>
+                            <tr>
+                                <td>Qarzdor</td>
+                                <td>{{ $summary['debt_documents'] }}</td>
+                                <td class="muted">Hali to'lov kiritilmagan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
-@section('script')
+@section('script_include_end_body')
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("📊 Hujjatlar statistikasi yuklandi!");
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof Chart === 'undefined') {
+        return;
+    }
+
+    const moneyFormatter = (value) => Number(value || 0).toLocaleString('uz-UZ') + " so'm";
+
+    new Chart(document.getElementById('monthlyChart'), {
+        type: 'bar',
+        data: {
+            labels: @json($monthlyLabels),
+            datasets: [
+                {
+                    label: 'Hujjatlar',
+                    data: @json($monthlyDocuments),
+                    backgroundColor: '#2563eb',
+                    borderRadius: 6,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Jami summa',
+                    data: @json($monthlyFinal),
+                    type: 'line',
+                    borderColor: '#0f766e',
+                    backgroundColor: 'rgba(15, 118, 110, 0.12)',
+                    tension: 0.35,
+                    yAxisID: 'amount'
+                },
+                {
+                    label: "To'langan",
+                    data: @json($monthlyPaid),
+                    type: 'line',
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                    tension: 0.35,
+                    yAxisID: 'amount'
+                }
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            interaction: {mode: 'index', intersect: false},
+            scales: {
+                y: {beginAtZero: true, ticks: {precision: 0}},
+                amount: {
+                    beginAtZero: true,
+                    position: 'right',
+                    grid: {drawOnChartArea: false},
+                    ticks: {callback: moneyFormatter}
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('paymentChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ["To'langan", 'Qisman', 'Qarzdor'],
+            datasets: [{
+                data: @json([$summary['paid_documents'], $summary['partial_documents'], $summary['debt_documents']]),
+                backgroundColor: ['#16a34a', '#f59e0b', '#dc2626'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            cutout: '68%',
+            plugins: {
+                legend: {position: 'bottom'}
+            }
+        }
+    });
+
+    new Chart(document.getElementById('yearlyChart'), {
+        type: 'bar',
+        data: {
+            labels: @json($yearlyLabels),
+            datasets: [
+                {
+                    label: 'Hujjatlar',
+                    data: @json($yearlyDocuments),
+                    backgroundColor: '#1d4ed8',
+                    borderRadius: 6,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Jami summa',
+                    data: @json($yearlyFinal),
+                    type: 'line',
+                    borderColor: '#7c3aed',
+                    backgroundColor: 'rgba(124, 58, 237, 0.12)',
+                    tension: 0.35,
+                    yAxisID: 'amount'
+                }
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            interaction: {mode: 'index', intersect: false},
+            scales: {
+                y: {beginAtZero: true, ticks: {precision: 0}},
+                amount: {
+                    beginAtZero: true,
+                    position: 'right',
+                    grid: {drawOnChartArea: false},
+                    ticks: {callback: moneyFormatter}
+                }
+            }
+        }
+    });
 });
 </script>
 @endsection

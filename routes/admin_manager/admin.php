@@ -6,11 +6,20 @@ use App\Http\Controllers\Admin\FilialController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\DocumentController;
+use App\Http\Controllers\Admin\Api\ClientController;
+use App\Http\Controllers\Admin\Api\DocumentController as ApiDocumentController;
 
 
 
 
 Route::name('admin.')->prefix('admin')->group(function(){
+    Route::prefix('api')->group(function () {
+        Route::post('/document', [ApiDocumentController::class, 'store']);
+        Route::get('/clients/search', [ClientController::class, 'search']);
+        Route::apiResource('/clients', ClientController::class);
+        Route::post('/document/save-all', [ApiDocumentController::class, 'storeAll']);
+        Route::get('/get-addons/{type}/{id}', [ApiDocumentController::class, 'getAddons']);
+    });
 
     Route::get('/index', [AdminController::class, 'index'])->name('index');
 
@@ -33,6 +42,9 @@ Route::name('admin.')->prefix('admin')->group(function(){
     Route::resource('/document',DocumentController::class);
 
     Route::get('/document_static', [DocumentController::class, 'statistika'])->name('document.statistika');
+
+    Route::post('/payment/add', [DocumentController::class, 'add_payment'])->name('add_payment');
+    Route::get('/payments/{document}', [DocumentController::class, 'paymentHistory'])->name('payments');
 
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
 

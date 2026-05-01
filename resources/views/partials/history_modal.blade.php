@@ -4,7 +4,7 @@
 
       <div class="modal-header">
         <h5 class="modal-title" id="historyModalLabel">
-          <i class="fas fa-history me-2"></i>To‘lovlar tarixi
+          <i class="fas fa-history me-2"></i>To'lovlar tarixi
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Yopish"></button>
       </div>
@@ -17,7 +17,7 @@
                 <th style="width:60px;">#</th>
                 <th>Summa</th>
                 <th>Turi</th>
-                <th>Admin (paid_by_admin_id)</th>
+                <th>Kim to'lagan</th>
                 <th>Sana</th>
               </tr>
             </thead>

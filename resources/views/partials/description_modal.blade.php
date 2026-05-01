@@ -11,7 +11,7 @@
 
       <div class="modal-body">
         <div class="p-3 rounded" style="background:#f5f7fb;">
-          <div id="descriptionContent" style="white-space: pre-wrap;">—</div>
+          <div id="descriptionContent" style="white-space: pre-wrap;">-</div>
         </div>
       </div>
 

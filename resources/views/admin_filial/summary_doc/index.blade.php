@@ -237,6 +237,15 @@
 
 <script>
 $(document).ready(function(){
+    function showBootstrapModal(modalId) {
+        const modalElement = document.getElementById(modalId);
+
+        if (!modalElement || typeof bootstrap === 'undefined') {
+            return;
+        }
+
+        bootstrap.Modal.getOrCreateInstance(modalElement).show();
+    }
 
     $('th.sortable').click(function() {
         const table = $(this).closest('table');
@@ -276,16 +285,22 @@ $(document).ready(function(){
         $('#document_code').val(code);
         $('#balance').val(balance + " so'm");
         $('input[name="amount"]').attr('max', balance).val('');
-        $('#paymentModal').modal('show');
+        showBootstrapModal('paymentModal');
     });
 
     $('.description-btn').click(function(e){
         e.stopPropagation();
         $('#descriptionContent').text($(this).data('description'));
-        $('#descriptionModal').modal('show');
+        showBootstrapModal('descriptionModal');
     });
 
     const paymentHistoryBase = "{{ route('admin_filial.payments', ['document' => '__id__']) }}";
+    const paymentTypeLabels = {
+        cash: 'Naqd',
+        card: 'Plastik karta',
+        online: 'Onlayn',
+        admin_entry: 'Boshqalar'
+    };
 
     $('.payment-history-btn').click(function(e){
         e.stopPropagation();
@@ -311,14 +326,14 @@ $(document).ready(function(){
                     tbody += `<tr>
                         <td>${index + 1}</td>
                         <td>${Number(payment.amount).toLocaleString()} so'm</td>
-                        <td>${payment.payment_type}</td>
-                        <td>${payment.paid_by_admin_id}</td>
+                        <td>${payment.payment_type_label || paymentTypeLabels[payment.payment_type] || payment.payment_type}</td>
+                        <td>${payment.paid_by_name || payment.paid_by_admin_id || '-'}</td>
                         <td>${formatted}</td>
                     </tr>`;
                 });
 
                 $('#historyTableBody').html(tbody);
-                $('#historyModal').modal('show');
+                showBootstrapModal('historyModal');
             }
         });
     });

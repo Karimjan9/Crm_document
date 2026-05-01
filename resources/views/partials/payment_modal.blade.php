@@ -11,8 +11,6 @@
 
       <form id="paymentForm">
         <div class="modal-body">
-
-          {{-- Hidden --}}
           <input type="hidden" id="document_id" name="document_id">
 
           <div class="mb-3">
@@ -26,22 +24,20 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">To‘lov summasi</label>
+            <label class="form-label">To'lov summasi</label>
             <input type="number" class="form-control" name="amount" min="1" step="1" required placeholder="Masalan: 100000">
             <small class="text-muted">Summani qoldiqdan oshirmang.</small>
           </div>
 
           <div class="mb-1">
-            <label class="form-label">To‘lov turi</label>
+            <label class="form-label">To'lov turi</label>
             <select class="form-select" name="payment_type" required>
-              <option value="Naqd">Naqd</option>
-              <option value="Karta">Karta</option>
-              <option value="Click">Click</option>
-              <option value="Payme">Payme</option>
-              <option value="Bank">Bank</option>
+              <option value="cash">Naqd</option>
+              <option value="card">Plastik karta</option>
+              <option value="online">Onlayn</option>
+              <option value="admin_entry">Boshqalar</option>
             </select>
           </div>
-
         </div>
 
         <div class="modal-footer">

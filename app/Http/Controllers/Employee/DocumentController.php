@@ -275,9 +275,25 @@ class DocumentController extends Controller
             abort(403);
         }
 
-        $payments = PaymentsModel::where('document_id', $document->id)
+        $paymentTypes = [
+            'cash' => 'Naqd',
+            'card' => 'Plastik karta',
+            'online' => 'Onlayn',
+            'admin_entry' => 'Boshqalar',
+        ];
+
+        $payments = PaymentsModel::with(['paidByAdmin' => fn ($q) => $q->withTrashed()->select('id', 'name', 'login')])
+            ->where('document_id', $document->id)
             ->orderBy('created_at', 'desc')
-            ->get(['amount', 'payment_type', 'paid_by_admin_id', 'created_at']);
+            ->get(['amount', 'payment_type', 'paid_by_admin_id', 'created_at'])
+            ->map(fn (PaymentsModel $payment) => [
+                'amount' => (float) $payment->amount,
+                'payment_type' => $payment->payment_type,
+                'payment_type_label' => $paymentTypes[$payment->payment_type] ?? $payment->payment_type,
+                'paid_by_admin_id' => $payment->paid_by_admin_id,
+                'paid_by_name' => $payment->paidByAdmin?->name ?? 'Noma\'lum',
+                'created_at' => optional($payment->created_at)->toIso8601String(),
+            ]);
 
         return response()->json($payments);
     }
