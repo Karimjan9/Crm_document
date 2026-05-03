@@ -255,7 +255,7 @@
             <div class="header">
                 <h1>
                     <i class="fas fa-calendar-alt"></i>
-                    Календарь праздников
+                    Bayram kalendari 
                 </h1>
                 <div id="currentDate">{{ now()->format('d.m.Y') }}</div>
             </div>
@@ -265,35 +265,35 @@
                 <div class="legend">
                     <span class="legend-item">
                         <span class="color-dot" style="background: #ff6b6b;"></span>
-                        Государственные
+                        Davlat
                     </span>
                     <span class="legend-item">
                         <span class="color-dot" style="background: #4ecdc4;"></span>
-                        Корпоративные
+                        Korporativ
                     </span>
                     <span class="legend-item">
                         <span class="color-dot" style="background: #ffd166;"></span>
-                        Региональные
+                        Mintaqaviy
                     </span>
                     <span class="legend-item">
                         <span class="color-dot" style="background: #9b5de5;"></span>
-                        Религиозные
+                        Diniy
                     </span>
                     <span class="legend-item">
                         <span class="color-dot" style="background: #cccccc;"></span>
-                        Выходные
+                        Dam olish kunlari
                     </span>
                 </div>
 
                 <div class="controls">
                     <button id="addHolidayBtn" class="btn">
-                        <i class="fas fa-plus"></i> Добавить праздник
+                        <i class="fas fa-plus"></i> Bayram qo'shing
                     </button>
                     <button id="refreshBtn" class="btn">
-                        <i class="fas fa-sync-alt"></i> Обновить
+                        <i class="fas fa-sync-alt"></i> Yangilash
                     </button>
                     <button id="todayBtn" class="btn">
-                        <i class="fas fa-calendar-day"></i> Сегодня
+                        <i class="fas fa-calendar-day"></i> Bugun
                     </button>
                 </div>
             </div>
@@ -306,43 +306,43 @@
         <div id="addHolidayModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 id="modalTitle">Добавить праздник</h3>
+                    <h3 id="modalTitle">Bayram qo'shish</h3>
                     <button class="modal-close">&times;</button>
                 </div>
 
                 <form id="addHolidayForm">
                     <div class="form-group">
-                        <label for="holidayTitle">Название праздника *</label>
+                        <label for="holidayTitle">Bayram nomi *</label>
                         <input type="text" id="holidayTitle" class="form-control" required
                             placeholder="Введите название праздника">
                     </div>
 
                     <div class="form-group">
-                        <label for="holidayDate">Дата праздника *</label>
+                        <label for="holidayDate">Bayram sanasi *</label>
                         <input type="date" id="holidayDate" class="form-control" required
                             value="{{ date('Y-m-d') }}">
                     </div>
 
                     <div class="form-group">
-                        <label for="holidayType">Тип праздника *</label>
+                        <label for="holidayType">Bayram turi *</label>
                         <select id="holidayType" class="form-control" required>
-                            <option value="">Выберите тип</option>
-                            <option value="national">Государственный</option>
-                            <option value="company">Корпоративный</option>
-                            <option value="regional">Региональный</option>
-                            <option value="religious">Религиозный</option>
-                            <option value="other">Другой</option>
+                            <option value="">Turni tanlang</option>
+                            <option value="national">Davlat</option>
+                            <option value="company">Korporativ</option>
+                            <option value="regional">Mintaqaviy</option>
+                            <option value="religious">Diniy</option>
+                            <option value="other">Boshqa</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="holidayColor">Цвет оформления</label>
+                        <label for="holidayColor">Dizayn rangi</label>
                         <input type="color" id="holidayColor" value="#ff6b6b"
                             style="width: 60px; height: 40px;">
                     </div>
 
                     <div class="form-group">
-                        <label for="holidayDescription">Описание (необязательно)</label>
+                        <label for="holidayDescription">Tavsif (ixtiyoriy)</label>
                         <textarea id="holidayDescription" class="form-control" rows="3"
                                 placeholder="Краткое описание праздника..."></textarea>
                     </div>
@@ -350,16 +350,16 @@
                     <div class="form-group">
                         <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
                             <input type="checkbox" id="holidayRecurring">
-                            <span>Повторяющийся праздник (каждый год)</span>
+                            <span>Takroriy bayram (har yili)</span>
                         </label>
                     </div>
 
 
 
                     <div class="form-actions">
-                        <button type="button" class="btn btn-cancel modal-close">Отмена</button>
+                        <button type="button" class="btn btn-cancel modal-close">Bekor qilish</button>
                         <button type="submit" class="btn" id="submitBtn">
-                            Сохранить праздник
+                            Bayramni saqlang
                         </button>
                     </div>
                 </form>
