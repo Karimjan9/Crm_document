@@ -184,8 +184,8 @@
     <div class="page-content">
 
         <div class="page-breadcrumb">
-            <div class="breadcrumb-title">Yangi Filial Qo‘shish</div>
-            <a href="{{ route('superadmin.sms_message_text.index') }}" class="btn btn-outline">← Orqaga</a>
+            <div class="breadcrumb-title">SMS shablonni tahrirlash</div>
+            <a href="{{ route('superadmin.sms_message_text.index') }}" class="btn btn-outline">Orqaga</a>
         </div>
 
         <div class="card">
@@ -195,11 +195,11 @@
                     @method('PUT')
                     <div class="mb-3">
                         <label for="filial_nomi">SMS nomi</label>
-                        <input type="text" id="filial_nomi" name="name" value="{{ $smsMessage->name }}" class="form-control" placeholder="Masalan: Toshkent markaziy filial" required>
+                        <input type="text" id="filial_nomi" name="name" value="{{ $smsMessage->name }}" class="form-control" placeholder="Masalan: To'lov eslatmasi" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="sms_type">SMS type</label>
+                        <label for="sms_type">SMS turi</label>
                         <select name="type" id="sms_type" class="form-control">
                             <option value="xabarnoma" @if ($smsMessage->type=="xabarnoma") selected @endif>Xabarnoma</option>
                             <option value="ogohlantirish" @if ($smsMessage->type=="ogohlantirish") selected @endif>Ogohlantirish</option>
@@ -208,23 +208,23 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="message_text1">SMS text1</label>
-                        <input type="text" id="message_text1" value="{{ $smsMessage->message_text1 }}" name="message_text1" class="form-control" placeholder="Masalan: TSH001" required>
+                        <label for="message_text1">SMS matni 1</label>
+                        <input type="text" id="message_text1" value="{{ $smsMessage->message_text1 }}" name="message_text1" class="form-control" placeholder="Masalan: Hurmatli mijoz, hujjatingiz qabul qilindi." required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="message_text2">SMS text2</label>
-                        <input type="text" id="message_text2" value="{{ $smsMessage->message_text2 }}" name="message_text2" class="form-control" placeholder="Masalan: TSH001" required>
+                        <label for="message_text2">SMS matni 2</label>
+                        <input type="text" id="message_text2" value="{{ $smsMessage->message_text2 }}" name="message_text2" class="form-control" placeholder="Masalan: To'lov holatini shaxsiy kabinetingizdan tekshiring." required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="message_text3">SMS text3</label>
-                        <input type="text" id="message_text3" value="{{ $smsMessage->message_text3 }}" name="message_text3" class="form-control" placeholder="Masalan: TSH001" required>
+                        <label for="message_text3">SMS matni 3</label>
+                        <input type="text" id="message_text3" value="{{ $smsMessage->message_text3 }}" name="message_text3" class="form-control" placeholder="Masalan: Global Voice" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="description">SMS izoh</label>
-                        <textarea id="description" name="description" class="form-control" placeholder="Filial haqida qisqacha ma’lumot...">{{ $smsMessage->description }}</textarea>
+                        <textarea id="description" name="description" class="form-control" placeholder="Shablon qachon va kimlarga yuborilishini qisqacha yozing.">{{ $smsMessage->description }}</textarea>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">

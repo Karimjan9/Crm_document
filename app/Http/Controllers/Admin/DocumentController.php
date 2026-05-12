@@ -361,10 +361,11 @@ class DocumentController extends Controller
         $query = DocumentsModel::query();
         $this->applyFilters($query, $request, ['month', 'date_from', 'date_to']);
         $query->whereYear('created_at', $year);
+        $monthExpression = $this->monthExpression();
 
         $rows = $query
-            ->selectRaw('MONTH(created_at) as month, COUNT(*) as documents_count, COALESCE(SUM(final_price), 0) as final_price, COALESCE(SUM(paid_amount), 0) as paid_amount')
-            ->groupByRaw('MONTH(created_at)')
+            ->selectRaw("{$monthExpression} as month, COUNT(*) as documents_count, COALESCE(SUM(final_price), 0) as final_price, COALESCE(SUM(paid_amount), 0) as paid_amount")
+            ->groupByRaw($monthExpression)
             ->get()
             ->keyBy('month');
 
@@ -385,11 +386,12 @@ class DocumentController extends Controller
     {
         $query = DocumentsModel::query();
         $this->applyFilters($query, $request, ['year', 'month', 'date_from', 'date_to']);
+        $yearExpression = $this->yearExpression();
 
         return $query
-            ->selectRaw('YEAR(created_at) as year, COUNT(*) as documents_count, COALESCE(SUM(final_price), 0) as final_price, COALESCE(SUM(paid_amount), 0) as paid_amount')
-            ->groupByRaw('YEAR(created_at)')
-            ->orderByRaw('YEAR(created_at)')
+            ->selectRaw("{$yearExpression} as year, COUNT(*) as documents_count, COALESCE(SUM(final_price), 0) as final_price, COALESCE(SUM(paid_amount), 0) as paid_amount")
+            ->groupByRaw($yearExpression)
+            ->orderByRaw($yearExpression)
             ->get()
             ->map(fn ($row) => [
                 'year' => (int) $row->year,
@@ -428,8 +430,10 @@ class DocumentController extends Controller
 
     protected function yearOptions(int $selectedYear)
     {
+        $yearExpression = $this->yearExpression();
+
         $years = DocumentsModel::query()
-            ->selectRaw('YEAR(created_at) as year')
+            ->selectRaw("{$yearExpression} as year")
             ->whereNotNull('created_at')
             ->distinct()
             ->orderByDesc('year')
@@ -449,5 +453,19 @@ class DocumentController extends Controller
             'year' => (int) ($request->input('year') ?: now()->year),
             'month' => $request->filled('month') ? (int) $request->input('month') : null,
         ];
+    }
+
+    protected function yearExpression(): string
+    {
+        return DocumentsModel::query()->getConnection()->getDriverName() === 'sqlite'
+            ? "CAST(strftime('%Y', created_at) AS INTEGER)"
+            : 'YEAR(created_at)';
+    }
+
+    protected function monthExpression(): string
+    {
+        return DocumentsModel::query()->getConnection()->getDriverName() === 'sqlite'
+            ? "CAST(strftime('%m', created_at) AS INTEGER)"
+            : 'MONTH(created_at)';
     }
 }

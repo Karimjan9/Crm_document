@@ -6,6 +6,7 @@
     $weatherCity = $authUser->setting('weather_city', 'Bukhara');
     $reducedMotion = (bool) $authUser->setting('reduced_motion', false);
     $canExcelExport = $authUser->hasRole('super_admin');
+    $canChangePassword = $authUser->hasAnyRole(['super_admin', 'admin_manager']);
   @endphp
 
   <style>
@@ -98,6 +99,24 @@
     background: rgba(0, 209, 255, 0.12);
     border-color: rgba(0, 209, 255, 0.48);
     box-shadow: 0 12px 24px rgba(0, 209, 255, 0.12);
+  }
+
+  .theme-toggle-fa {
+    font-size: 16px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .theme-toggle-image {
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .theme-toggle-image[hidden],
+  .theme-toggle-fa[hidden] {
+    display: none !important;
   }
 
   .deadline-bell {
@@ -711,10 +730,10 @@
 
   .profile-close {
     position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 40px;
-    height: 40px;
+    top: 14px;
+    right: 14px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     border: 1px solid rgba(255,255,255,0.14);
     background: rgba(255,255,255,0.06);
@@ -724,7 +743,12 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    z-index: 1;
+    z-index: 5;
+  }
+
+  .profile-close i {
+    font-size: 24px;
+    line-height: 1;
   }
 
   .profile-close:hover {
@@ -1914,7 +1938,8 @@
         <button id="themeToggle" class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center"
         style="width:38px;height:38px;border-radius:10px;">
 
-    <i id="themeIcon" class="fa-solid fa-moon" style="font-size:16px; transition:0.3s;"></i>
+    <i id="themeMoonIcon" class="fa-solid fa-moon theme-toggle-fa"></i>
+    <img id="themeIcon" class="theme-toggle-image" src="{{ asset('assets/images/icons/theme-sun.png') }}" alt="" hidden>
 
 </button>
 
@@ -1960,13 +1985,15 @@
             <span>Rasm, ism va telefon raqamingizni alohida oynada boshqaring.</span>
           </div>
         </button>
-        <button type="button" class="modal-btn" data-panel-target="panel-password">
-          <i class='bx bx-lock-alt'></i>
-          <div>
-            <strong>Parolni o'zgartirish</strong>
-            <span>Joriy parolni tasdiqlab yangi parol qo'ying.</span>
-          </div>
-        </button>
+        @if($canChangePassword)
+          <button type="button" class="modal-btn" data-panel-target="panel-password">
+            <i class='bx bx-lock-alt'></i>
+            <div>
+              <strong>Parolni o'zgartirish</strong>
+              <span>Joriy parolni tasdiqlab yangi parol qo'ying.</span>
+            </div>
+          </button>
+        @endif
         <button type="button" class="modal-btn" data-panel-target="panel-settings">
           <i class='bx bx-cog'></i>
           <div>
@@ -2071,36 +2098,38 @@
           </form>
         </section>
 
-        <section class="profile-panel" id="panel-password">
-          <div class="profile-panel-title">Parolni o'zgartirish</div>
-          <p class="profile-panel-note">Xavfsizlik uchun avval joriy parolni kiriting. Yangi parol kamida 6 belgidan iborat bo'lishi va tasdiqlanishi kerak.</p>
-          <div class="panel-feedback" data-feedback="password"></div>
+        @if($canChangePassword)
+          <section class="profile-panel" id="panel-password">
+            <div class="profile-panel-title">Parolni o'zgartirish</div>
+            <p class="profile-panel-note">Xavfsizlik uchun avval joriy parolni kiriting. Yangi parol kamida 6 belgidan iborat bo'lishi va tasdiqlanishi kerak.</p>
+            <div class="panel-feedback" data-feedback="password"></div>
 
-          <form id="passwordForm" action="{{ route('account.password.update') }}" method="POST" novalidate>
-            @csrf
-            <div class="account-fields">
-              <div class="field-group is-full">
-                <label class="field-label" for="currentPassword">Joriy parol</label>
-                <input type="password" class="field-input" id="currentPassword" name="current_password" autocomplete="current-password">
-                <div class="field-error" data-error-for="current_password"></div>
+            <form id="passwordForm" action="{{ route('account.password.update') }}" method="POST" novalidate>
+              @csrf
+              <div class="account-fields">
+                <div class="field-group is-full">
+                  <label class="field-label" for="currentPassword">Joriy parol</label>
+                  <input type="password" class="field-input" id="currentPassword" name="current_password" autocomplete="current-password">
+                  <div class="field-error" data-error-for="current_password"></div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="newPassword">Yangi parol</label>
+                  <input type="password" class="field-input" id="newPassword" name="password" autocomplete="new-password">
+                  <div class="field-error" data-error-for="password"></div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="confirmPassword">Parolni tasdiqlang</label>
+                  <input type="password" class="field-input" id="confirmPassword" name="password_confirmation" autocomplete="new-password">
+                  <div class="field-error" data-error-for="password_confirmation"></div>
+                </div>
               </div>
-              <div class="field-group">
-                <label class="field-label" for="newPassword">Yangi parol</label>
-                <input type="password" class="field-input" id="newPassword" name="password" autocomplete="new-password">
-                <div class="field-error" data-error-for="password"></div>
-              </div>
-              <div class="field-group">
-                <label class="field-label" for="confirmPassword">Parolni tasdiqlang</label>
-                <input type="password" class="field-input" id="confirmPassword" name="password_confirmation" autocomplete="new-password">
-                <div class="field-error" data-error-for="password_confirmation"></div>
-              </div>
-            </div>
 
-            <div class="panel-actions">
-              <button type="submit" class="panel-submit" data-submit-label="Parolni yangilash">Parolni yangilash</button>
-            </div>
-          </form>
-        </section>
+              <div class="panel-actions">
+                <button type="submit" class="panel-submit" data-submit-label="Parolni yangilash">Parolni yangilash</button>
+              </div>
+            </form>
+          </section>
+        @endif
 
         <section class="profile-panel" id="panel-settings">
           <div class="profile-panel-title">Shaxsiy sozlamalar</div>
@@ -3155,16 +3184,18 @@
       updateProfileUI(payload.user);
     });
 
-    passwordForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const payload = await sendForm(passwordForm, 'password');
+    if (passwordForm) {
+      passwordForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = await sendForm(passwordForm, 'password');
 
-      if (!payload) {
-        return;
-      }
+        if (!payload) {
+          return;
+        }
 
-      passwordForm.reset();
-    });
+        passwordForm.reset();
+      });
+    }
 
     settingsForm.addEventListener('submit', async (event) => {
       event.preventDefault();

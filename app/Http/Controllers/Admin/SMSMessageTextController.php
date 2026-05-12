@@ -14,6 +14,43 @@ class SMSMessageTextController extends Controller
         return view('admin.sms_message_text.index', compact('smsMessages'));
     }
 
+    public function report()
+    {
+        $typeLabels = [
+            'xabarnoma' => 'Xabarnoma',
+            'ogohlantirish' => 'Ogohlantirish',
+            'boshqa' => 'Boshqa',
+        ];
+
+        $typeStats = SMSMessageTextModel::query()
+            ->selectRaw('type, COUNT(*) as total')
+            ->groupBy('type')
+            ->pluck('total', 'type');
+
+        $stats = [
+            'total' => SMSMessageTextModel::count(),
+            'filled' => SMSMessageTextModel::query()
+                ->where(function ($query) {
+                    $query->whereNotNull('message_text1')
+                        ->orWhereNotNull('message_text2')
+                        ->orWhereNotNull('message_text3');
+                })
+                ->count(),
+            'empty' => SMSMessageTextModel::query()
+                ->whereNull('message_text1')
+                ->whereNull('message_text2')
+                ->whereNull('message_text3')
+                ->count(),
+        ];
+
+        $recentMessages = SMSMessageTextModel::query()
+            ->latest('updated_at')
+            ->take(8)
+            ->get();
+
+        return view('admin.sms_message_text.report', compact('stats', 'typeLabels', 'typeStats', 'recentMessages'));
+    }
+
     public function create()
     {
         return view('admin.sms_message_text.create');

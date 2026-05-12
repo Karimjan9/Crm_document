@@ -99,8 +99,8 @@
     </a>
     <ul>
         <li><a href="{{ route('superadmin.index') }}"><i class='bx bx-user'></i> Foydalanuvchilar</a></li>
-        <li><a href="#"><i class='bx bx-group'></i> Bo'limlar</a></li>
-        <li><a href="#"><i class='bx bx-cog'></i> Jihozlar</a></li>
+        <li><a href="{{ route('superadmin.filial.index') }}"><i class='bx bx-group'></i> Bo'limlar</a></li>
+        <li><a href="{{ route('superadmin.service.index') }}"><i class='bx bx-cog'></i> Jihozlar</a></li>
     </ul>
 </li>
 
@@ -160,8 +160,8 @@
         <div class="menu-title">SMS Xabarnoma</div>
     </a>
     <ul>
-        <li><a href="#"><i class='bx bx-list-ul'></i> Hisobot</a></li>
-        <li><a href="#"><i class='bx bx-cog'></i> Sozlamalar</a></li>
+        <li><a href="{{ route('superadmin.sms_message_text.report') }}"><i class='bx bx-list-ul'></i> Hisobot</a></li>
+        <li><a href="{{ route('superadmin.sms_message_text.index') }}"><i class='bx bx-cog'></i> Sozlamalar</a></li>
     </ul>
 </li>
 

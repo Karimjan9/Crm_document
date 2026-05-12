@@ -553,9 +553,53 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    const moneyFormatter = (value) => Number(value || 0).toLocaleString('uz-UZ') + " so'm";
+    Chart.defaults.global.defaultFontFamily = "'Roboto', 'Arial', sans-serif";
+    Chart.defaults.global.defaultFontColor = '#475569';
 
-    new Chart(document.getElementById('monthlyChart'), {
+    const moneyFormatter = function (value) {
+        return Number(value || 0).toLocaleString('uz-UZ') + " so'm";
+    };
+
+    const sharedGrid = {
+        color: 'rgba(148, 163, 184, 0.18)',
+        zeroLineColor: 'rgba(148, 163, 184, 0.32)',
+        drawBorder: false
+    };
+
+    function verticalGradient(canvas, from, to) {
+        const ctx = canvas.getContext('2d');
+        const fill = ctx.createLinearGradient(0, 0, 0, canvas.height || 320);
+        fill.addColorStop(0, from);
+        fill.addColorStop(1, to);
+        return fill;
+    }
+
+    const centerTextPlugin = {
+        afterDraw: function (chart) {
+            const center = chart.config.options.centerText;
+            if (!center) return;
+
+            const ctx = chart.chart.ctx;
+            const area = chart.chartArea;
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '700 24px Roboto, Arial, sans-serif';
+            ctx.fillText(center.title, (area.left + area.right) / 2, (area.top + area.bottom) / 2 - 4);
+            ctx.fillStyle = '#64748b';
+            ctx.font = '600 12px Roboto, Arial, sans-serif';
+            ctx.fillText(center.subtitle, (area.left + area.right) / 2, (area.top + area.bottom) / 2 + 20);
+            ctx.restore();
+        }
+    };
+    Chart.plugins.register(centerTextPlugin);
+
+    const monthlyCanvas = document.getElementById('monthlyChart');
+    const yearlyCanvas = document.getElementById('yearlyChart');
+    const paymentTotal = @json($summary['paid_documents'] + $summary['partial_documents'] + $summary['debt_documents']);
+
+    new Chart(monthlyCanvas, {
         type: 'bar',
         data: {
             labels: @json($monthlyLabels),
@@ -563,8 +607,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 {
                     label: 'Hujjatlar',
                     data: @json($monthlyDocuments),
-                    backgroundColor: '#2563eb',
-                    borderRadius: 6,
+                    backgroundColor: verticalGradient(monthlyCanvas, 'rgba(37, 99, 235, 0.92)', 'rgba(37, 99, 235, 0.24)'),
+                    borderColor: '#2563eb',
+                    borderWidth: 1,
                     yAxisID: 'y'
                 },
                 {
@@ -573,7 +618,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     type: 'line',
                     borderColor: '#0f766e',
                     backgroundColor: 'rgba(15, 118, 110, 0.12)',
-                    tension: 0.35,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#0f766e',
+                    pointRadius: 4,
+                    lineTension: 0.35,
+                    fill: true,
                     yAxisID: 'amount'
                 },
                 {
@@ -582,7 +631,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     type: 'line',
                     borderColor: '#f59e0b',
                     backgroundColor: 'rgba(245, 158, 11, 0.12)',
-                    tension: 0.35,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#f59e0b',
+                    pointRadius: 4,
+                    lineTension: 0.35,
+                    fill: true,
                     yAxisID: 'amount'
                 }
             ]
@@ -590,15 +643,36 @@ document.addEventListener('DOMContentLoaded', function () {
         options: {
             maintainAspectRatio: false,
             responsive: true,
-            interaction: {mode: 'index', intersect: false},
-            scales: {
-                y: {beginAtZero: true, ticks: {precision: 0}},
-                amount: {
-                    beginAtZero: true,
-                    position: 'right',
-                    grid: {drawOnChartArea: false},
-                    ticks: {callback: moneyFormatter}
+            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, fontColor: '#475569' } },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        const dataset = data.datasets[tooltipItem.datasetIndex];
+                        const value = tooltipItem.yLabel;
+                        return dataset.yAxisID === 'amount'
+                            ? dataset.label + ': ' + moneyFormatter(value)
+                            : dataset.label + ': ' + value;
+                    }
                 }
+            },
+            scales: {
+                xAxes: [{ gridLines: { display: false }, ticks: { fontColor: '#64748b' } }],
+                yAxes: [
+                    {
+                        id: 'y',
+                        position: 'left',
+                        gridLines: sharedGrid,
+                        ticks: { beginAtZero: true, precision: 0, fontColor: '#64748b' }
+                    },
+                    {
+                        id: 'amount',
+                        position: 'right',
+                        gridLines: { drawOnChartArea: false, drawBorder: false },
+                        ticks: { beginAtZero: true, callback: moneyFormatter, fontColor: '#64748b' }
+                    }
+                ]
             }
         }
     });
@@ -610,20 +684,31 @@ document.addEventListener('DOMContentLoaded', function () {
             datasets: [{
                 data: @json([$summary['paid_documents'], $summary['partial_documents'], $summary['debt_documents']]),
                 backgroundColor: ['#16a34a', '#f59e0b', '#dc2626'],
-                borderWidth: 0
+                borderColor: '#ffffff',
+                borderWidth: 3
             }]
         },
         options: {
             maintainAspectRatio: false,
             responsive: true,
-            cutout: '68%',
-            plugins: {
-                legend: {position: 'bottom'}
+            cutoutPercentage: 68,
+            centerText: {
+                title: paymentTotal,
+                subtitle: 'hujjat'
+            },
+            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, fontColor: '#475569' } },
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        const dataset = data.datasets[tooltipItem.datasetIndex];
+                        return data.labels[tooltipItem.index] + ': ' + dataset.data[tooltipItem.index];
+                    }
+                }
             }
         }
     });
 
-    new Chart(document.getElementById('yearlyChart'), {
+    new Chart(yearlyCanvas, {
         type: 'bar',
         data: {
             labels: @json($yearlyLabels),
@@ -631,8 +716,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 {
                     label: 'Hujjatlar',
                     data: @json($yearlyDocuments),
-                    backgroundColor: '#1d4ed8',
-                    borderRadius: 6,
+                    backgroundColor: verticalGradient(yearlyCanvas, 'rgba(29, 78, 216, 0.9)', 'rgba(29, 78, 216, 0.22)'),
+                    borderColor: '#1d4ed8',
+                    borderWidth: 1,
                     yAxisID: 'y'
                 },
                 {
@@ -641,7 +727,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     type: 'line',
                     borderColor: '#7c3aed',
                     backgroundColor: 'rgba(124, 58, 237, 0.12)',
-                    tension: 0.35,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#7c3aed',
+                    pointRadius: 4,
+                    lineTension: 0.35,
+                    fill: true,
                     yAxisID: 'amount'
                 }
             ]
@@ -649,15 +739,36 @@ document.addEventListener('DOMContentLoaded', function () {
         options: {
             maintainAspectRatio: false,
             responsive: true,
-            interaction: {mode: 'index', intersect: false},
-            scales: {
-                y: {beginAtZero: true, ticks: {precision: 0}},
-                amount: {
-                    beginAtZero: true,
-                    position: 'right',
-                    grid: {drawOnChartArea: false},
-                    ticks: {callback: moneyFormatter}
+            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, fontColor: '#475569' } },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        const dataset = data.datasets[tooltipItem.datasetIndex];
+                        const value = tooltipItem.yLabel;
+                        return dataset.yAxisID === 'amount'
+                            ? dataset.label + ': ' + moneyFormatter(value)
+                            : dataset.label + ': ' + value;
+                    }
                 }
+            },
+            scales: {
+                xAxes: [{ gridLines: { display: false }, ticks: { fontColor: '#64748b' } }],
+                yAxes: [
+                    {
+                        id: 'y',
+                        position: 'left',
+                        gridLines: sharedGrid,
+                        ticks: { beginAtZero: true, precision: 0, fontColor: '#64748b' }
+                    },
+                    {
+                        id: 'amount',
+                        position: 'right',
+                        gridLines: { drawOnChartArea: false, drawBorder: false },
+                        ticks: { beginAtZero: true, callback: moneyFormatter, fontColor: '#64748b' }
+                    }
+                ]
             }
         }
     });

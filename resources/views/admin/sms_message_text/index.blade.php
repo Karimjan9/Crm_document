@@ -168,12 +168,12 @@
             @endif
 
             <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
-                <div class="breadcrumb-title pe-3">Filiallar</div>
-                <a href="{{ route('superadmin.sms_message_text.create') }}" class="btn btn-custom">+ Yangi Filial</a>
+                <div class="breadcrumb-title pe-3">SMS sozlamalari</div>
+                <a href="{{ route('superadmin.sms_message_text.create') }}" class="btn btn-custom">+ Yangi SMS shablon</a>
             </div>
 
             <div class="d-flex align-items-center mb-2">
-                <h6 class="mb-0 text-uppercase">Filiallar bazasi</h6>
+                <h6 class="mb-0 text-uppercase">SMS shablonlari bazasi</h6>
             </div>
             <hr>
 

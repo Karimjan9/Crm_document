@@ -115,6 +115,7 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
     Route::put('/consulation_main_type_update', [ConsulationTypeController::class, 'update_main'])->name('consulation.update_main_type');
 
+    Route::get('/sms_message_text/report', [SMSMessageTextController::class, 'report'])->name('sms_message_text.report');
     Route::resource('/sms_message_text', SMSMessageTextController::class)->except(['show']);
 
     Route::middleware('role:super_admin')->prefix('excel')->name('excel.')->group(function () {

@@ -157,8 +157,8 @@
     <div class="page-content">
 
         <div class="page-breadcrumb mb-3">
-            <div class="breadcrumb-title">Yangi Filial Qo‘shish</div>
-            <a href="{{ route('superadmin.sms_message_text.index') }}" class="btn btn-outline">← Orqaga</a>
+            <div class="breadcrumb-title">Yangi SMS shablon qo'shish</div>
+            <a href="{{ route('superadmin.sms_message_text.index') }}" class="btn btn-outline">Orqaga</a>
         </div>
 
         <div class="card radius-10">
@@ -168,32 +168,32 @@
 
                     <div class="mb-3">
                         <label for="filial_nomi">SMS nomi</label>
-                        <input type="text" id="filial_nomi" name="name" class="form-control" placeholder="Masalan: Toshkent markaziy filial" required>
+                        <input type="text" id="filial_nomi" name="name" class="form-control" placeholder="Masalan: To'lov eslatmasi" required>
                     </div>
                      <div class="mb-3">
-                        <label for="filial_kodi">SMS type</label>
-                        <select name="type" id="">
+                        <label for="sms_type">SMS turi</label>
+                        <select name="type" id="sms_type" class="form-control">
                             <option value="xabarnoma">Xabarnoma</option>
                             <option value="ogohlantirish">Ogohlantirish</option>
                             <option value="boshqa">Boshqa</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="filial_kodi">SMS text1</label>
-                        <input type="text" id="filial_kodi" name="message_text1" class="form-control" placeholder="Masalan: TSH001" required>
+                        <label for="message_text1">SMS matni 1</label>
+                        <input type="text" id="message_text1" name="message_text1" class="form-control" placeholder="Masalan: Hurmatli mijoz, hujjatingiz qabul qilindi." required>
                     </div>
                     <div class="mb-3">
-                        <label for="filial_kodi">SMS text2</label>
-                        <input type="text" id="filial_kodi" name="message_text2" class="form-control" placeholder="Masalan: TSH001" required>
+                        <label for="message_text2">SMS matni 2</label>
+                        <input type="text" id="message_text2" name="message_text2" class="form-control" placeholder="Masalan: To'lov holatini shaxsiy kabinetingizdan tekshiring." required>
                     </div>
                     <div class="mb-3">
-                        <label for="filial_kodi">SMS text3</label>
-                        <input type="text" id="filial_kodi" name="message_text3" class="form-control" placeholder="Masalan: TSH001" required>
+                        <label for="message_text3">SMS matni 3</label>
+                        <input type="text" id="message_text3" name="message_text3" class="form-control" placeholder="Masalan: Global Voice" required>
                     </div>
 
                       <div class="mb-3">
                         <label for="description">SMS izoh</label>
-                        <textarea id="description" name="description" rows="4" class="form-control" placeholder="Filial haqida qisqacha ma’lumot..."></textarea>
+                        <textarea id="description" name="description" rows="4" class="form-control" placeholder="Shablon qachon va kimlarga yuborilishini qisqacha yozing."></textarea>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
