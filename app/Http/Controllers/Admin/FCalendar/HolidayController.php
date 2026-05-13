@@ -46,7 +46,7 @@ class HolidayController extends Controller
 
             $query->orderBy($sortBy, $sortOrder);
 
-            $perPage = $request->get('per_page', 15);
+            $perPage = min(max((int) $request->get('per_page', 15), 1), 100);
             $holidays = $query->paginate($perPage);
 
             return response()->json([
@@ -168,7 +168,35 @@ class HolidayController extends Controller
                 return $response;
             }
 
-            $holiday->update($request->all());
+            $validatedInput = $validator->validated();
+            $editableFields = [
+                'title',
+                'date',
+                'type',
+                'color',
+                'description',
+                'is_recurring',
+                'is_active',
+            ];
+
+            $updates = [];
+            foreach ($editableFields as $field) {
+                if (!$request->exists($field)) {
+                    continue;
+                }
+
+                $updates[$field] = $validatedInput[$field] ?? null;
+            }
+
+            if (array_key_exists('is_recurring', $updates)) {
+                $updates['is_recurring'] = $request->boolean('is_recurring');
+            }
+
+            if (array_key_exists('is_active', $updates)) {
+                $updates['is_active'] = $request->boolean('is_active');
+            }
+
+            $holiday->update($updates);
 
             WorkdayCalendar::clearCache();
 

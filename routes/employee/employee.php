@@ -13,11 +13,11 @@ use App\Http\Controllers\Admin\Api\DocumentController as ApiDocumentController;
 
 Route::name('employee.')->prefix('employee')->group(function(){
     Route::prefix('api')->group(function () {
-        Route::post('/document', [ApiDocumentController::class, 'store']);
-        Route::get('/clients/search', [ClientController::class, 'search']);
+        Route::post('/document', [ApiDocumentController::class, 'store'])->name('api.document.store');
+        Route::get('/clients/search', [ClientController::class, 'search'])->name('api.clients.search');
         Route::apiResource('/clients', ClientController::class);
-        Route::post('/document/save-all', [ApiDocumentController::class, 'storeAll']);
-        Route::get('/get-addons/{type}/{id}', [ApiDocumentController::class, 'getAddons']);
+        Route::post('/document/save-all', [ApiDocumentController::class, 'storeAll'])->name('api.document.save_all');
+        Route::get('/get-addons/{type}/{id}', [ApiDocumentController::class, 'getAddons'])->name('api.addons.index');
     });
 
     Route::get('/', [EmployeeController::class, 'index'])->name('index');

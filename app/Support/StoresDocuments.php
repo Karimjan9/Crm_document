@@ -51,8 +51,10 @@ trait StoresDocuments
         $directionTypeId = $request->input('direction_type_id') ?? $request->input('direction_type');
         $consulateTypeId = $request->input('consulate_type_id') ?? $request->input('legalization_id');
 
-        $processMode = $request->input('process_mode');
-        $processMode = $processMode === 'service' ? null : $processMode;
+        $processMode = $request->input('process_mode') ?: 'service';
+        if (!in_array($processMode, ['service', 'apostil', 'consul'], true)) {
+            $processMode = 'service';
+        }
         $apostilGroup1Id = $request->input('apostil_group1_id');
         $apostilGroup2Id = $request->input('apostil_group2_id');
         $consulId = $request->input('consul_id');

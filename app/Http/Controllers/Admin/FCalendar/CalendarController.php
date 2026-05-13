@@ -65,7 +65,6 @@ class CalendarController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Calendar data could not be loaded',
-                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -120,7 +119,6 @@ class CalendarController extends Controller
             return response()->json([
                 'available' => false,
                 'message' => 'Date check failed',
-                'error' => $e->getMessage(),
             ], 500);
         }
     }

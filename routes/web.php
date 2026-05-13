@@ -43,9 +43,11 @@ Route::middleware(['auth'])->group(function () {
 
 // holidays
 
-Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
-Route::post('/holidays', [HolidayController::class, 'store'])->name('holidays.store');
-Route::delete('/holidays/{date}', [HolidayController::class, 'destroy'])->name('holidays.destroy');
+Route::middleware(['auth', 'role:admin_manager|super_admin'])->group(function () {
+    Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
+    Route::post('/holidays', [HolidayController::class, 'store'])->name('holidays.store');
+    Route::delete('/holidays/{date}', [HolidayController::class, 'destroy'])->name('holidays.destroy');
+});
 
 
 
@@ -78,10 +80,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 
-
+Route::middleware(['auth'])->group(function () {
     Route::get('/change-password', [AuthenticatedSessionController::class, 'changePassword'])->name('change-password');
-
-        Route::any('/destroy', [AuthenticatedSessionController::class, 'destroy'])->name('destroy');
+    Route::any('/destroy', [AuthenticatedSessionController::class, 'destroy'])->name('destroy');
+});
     
 
 
@@ -132,6 +134,8 @@ Route::get("/load_script", function () {
 })->name("load_script");
 
 Route::get('test', function(){
+    abort_unless(app()->environment('local') && config('app.debug'), 404);
+
     return view('test.test');
 });
 

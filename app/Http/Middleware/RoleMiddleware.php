@@ -2,30 +2,31 @@
 
 namespace App\Http\Middleware;
 
-use auth;
 use Closure;
 use Illuminate\Http\Request;
 
 class RoleMiddleware
 {
-    
-    public function handle(Request $request, Closure $next, $role1,$role2=null,$role3=null)
+    public function handle(Request $request, Closure $next, $role1, $role2 = null, $role3 = null)
     {
-        // dd($role3);
-        $role="";
-        $array=[];
-        for ($i=1; $i <4 ; $i++) { 
-            $role="role".$i;
-            // dd(${ $role });
-            if(${$role}){
-                $array[]=${$role};
-            }
-        }
-        // dd($array);
-        if(!auth()->user()->hasRole($array)) {
+        $user = $request->user();
+
+        if (!$user) {
             abort(404);
         }
-        
+
+        $roles = collect([$role1, $role2, $role3])
+            ->filter()
+            ->flatMap(fn (string $role) => preg_split('/[|,]/', $role))
+            ->map(fn (string $role) => trim($role))
+            ->filter()
+            ->values()
+            ->all();
+
+        if (!$user->hasAnyRole($roles)) {
+            abort(404);
+        }
+
         return $next($request);
     }
 }

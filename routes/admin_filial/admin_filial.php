@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::name('admin_filial.')->prefix('admin_filial')->group(function () {
     Route::prefix('api')->group(function () {
-        Route::post('/document', [ApiDocumentController::class, 'store']);
+        Route::post('/document', [ApiDocumentController::class, 'store'])->name('api.document.store');
 
-        Route::get('/clients/search', [ClientController::class, 'search']);
+        Route::get('/clients/search', [ClientController::class, 'search'])->name('api.clients.search');
         Route::apiResource('/clients', ClientController::class);
-        Route::post('/document/save-all', [ApiDocumentController::class, 'storeAll']);
-        Route::get('/get-addons/{type}/{id}', [ApiDocumentController::class, 'getAddons']);
+        Route::post('/document/save-all', [ApiDocumentController::class, 'storeAll'])->name('api.document.save_all');
+        Route::get('/get-addons/{type}/{id}', [ApiDocumentController::class, 'getAddons'])->name('api.addons.index');
     });
 
     // Filial index

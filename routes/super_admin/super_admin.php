@@ -25,11 +25,11 @@ use App\Http\Controllers\Admin\FCalendar\CalendarController as FCalendarControll
 Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
     Route::prefix('api')->group(function () {
-        Route::post('/document', [ApiDocumentController::class, 'store']);
-        Route::get('/clients/search', [ClientController::class, 'search']);
+        Route::post('/document', [ApiDocumentController::class, 'store'])->name('api.document.store');
+        Route::get('/clients/search', [ClientController::class, 'search'])->name('api.clients.search');
         Route::apiResource('/clients', ClientController::class);
-        Route::post('/document/save-all', [ApiDocumentController::class, 'storeAll']);
-        Route::get('/get-addons/{type}/{id}', [ApiDocumentController::class, 'getAddons']);
+        Route::post('/document/save-all', [ApiDocumentController::class, 'storeAll'])->name('api.document.save_all');
+        Route::get('/get-addons/{type}/{id}', [ApiDocumentController::class, 'getAddons'])->name('api.addons.index');
     });
 
     Route::prefix('fl')->group(function () {
@@ -40,23 +40,23 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
         // Календарь
         Route::prefix('calendar')->group(function () {
-            Route::get('/data', [FCalendarController::class, 'getCalendarData']);
-            Route::post('/check-date', [FCalendarController::class, 'checkDateAvailability']);
+            Route::get('/data', [FCalendarController::class, 'getCalendarData'])->name('calendar.data');
+            Route::post('/check-date', [FCalendarController::class, 'checkDateAvailability'])->name('calendar.check_date');
         });
 
         // Праздники (CRUD)
         Route::prefix('holidays')->group(function () {
-            Route::get('/', [HolidayController::class, 'index']);
-            Route::get('/upcoming', [HolidayController::class, 'upcoming']);
-            Route::get('/stats', [HolidayController::class, 'stats']);
-            Route::get('/{id}', [HolidayController::class, 'show']);
-            Route::get('/{id}/edit', [HolidayController::class, 'edit']);
-            Route::post('/', [HolidayController::class, 'store']);
-            Route::put('/{id}', [HolidayController::class, 'update']);
-            Route::delete('/{id}', [HolidayController::class, 'destroy']);
-            Route::post('/{id}/copy', [HolidayController::class, 'copy']);
-            Route::post('/bulk-import', [HolidayController::class, 'bulkImport']);
-            Route::get('/export/csv', [HolidayController::class, 'exportCsv']);
+            Route::get('/', [HolidayController::class, 'index'])->name('holidays.index');
+            Route::get('/upcoming', [HolidayController::class, 'upcoming'])->name('holidays.upcoming');
+            Route::get('/stats', [HolidayController::class, 'stats'])->name('holidays.stats');
+            Route::get('/{id}', [HolidayController::class, 'show'])->name('holidays.show');
+            Route::get('/{id}/edit', [HolidayController::class, 'edit'])->name('holidays.edit');
+            Route::post('/', [HolidayController::class, 'store'])->name('holidays.store');
+            Route::put('/{id}', [HolidayController::class, 'update'])->name('holidays.update');
+            Route::delete('/{id}', [HolidayController::class, 'destroy'])->name('holidays.destroy');
+            Route::post('/{id}/copy', [HolidayController::class, 'copy'])->name('holidays.copy');
+            Route::post('/bulk-import', [HolidayController::class, 'bulkImport'])->name('holidays.bulk_import');
+            Route::get('/export/csv', [HolidayController::class, 'exportCsv'])->name('holidays.export_csv');
         });
     });
 
