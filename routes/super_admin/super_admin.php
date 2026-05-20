@@ -20,9 +20,14 @@ use App\Http\Controllers\Admin\Api\DocumentController as ApiDocumentController;
 use App\Http\Controllers\SuperAdmin\ExcelExportController;
 use App\Http\Controllers\SuperAdmin\StaticApostilController;
 use App\Http\Controllers\SuperAdmin\PackageTemplateController;
+use App\Http\Controllers\SuperAdmin\MonthlyNotificationController;
 use App\Http\Controllers\Admin\FCalendar\CalendarController as FCalendarController;
 
 Route::name('superadmin.')->prefix('superadmin')->group(function(){
+    Route::middleware('role:super_admin')->prefix('monthly-notifications')->name('monthly_notifications.')->group(function () {
+        Route::get('/', [MonthlyNotificationController::class, 'index'])->name('index');
+        Route::post('/{notification}/read', [MonthlyNotificationController::class, 'markAsRead'])->name('read');
+    });
 
     Route::prefix('api')->group(function () {
         Route::post('/document', [ApiDocumentController::class, 'store'])->name('api.document.store');

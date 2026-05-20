@@ -23,6 +23,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('notifications:create-monthly')
+            ->dailyAt('00:05');
 
         Log::info('fix: {id}', ['id' => date("Y-m-d 00:00:00", strtotime("last day of -1 month"))]);
 

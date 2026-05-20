@@ -58,6 +58,7 @@
 		<!--start page wrapper -->
 		@yield('body')
 		<!--end page wrapper -->
+		@include('partials.superadmin_notifications')
 		 @yield('script')
 		<!--start overlay-->
 		<div class="overlay toggle-icon"></div>
