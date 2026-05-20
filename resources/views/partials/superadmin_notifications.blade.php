@@ -99,7 +99,9 @@
             position: relative;
             z-index: 1;
             display: flex;
+            gap: 9px;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
         .superadmin-notification__button {
@@ -113,11 +115,26 @@
             padding: 8px 15px;
             box-shadow: 0 8px 18px rgba(13, 110, 253, 0.26);
             transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
         }
 
         .superadmin-notification__button:hover {
+            color: #ffffff;
+            text-decoration: none;
             transform: translateY(-1px);
             box-shadow: 0 10px 24px rgba(13, 110, 253, 0.32);
+        }
+
+        .superadmin-notification__button--backup {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            box-shadow: 0 8px 18px rgba(22, 163, 74, 0.24);
+        }
+
+        .superadmin-notification__button--backup:hover {
+            box-shadow: 0 10px 24px rgba(22, 163, 74, 0.3);
         }
 
         .superadmin-notification__button:focus {
@@ -188,6 +205,12 @@
             function renderNotifications(items) {
                 container.hidden = items.length === 0;
                 container.innerHTML = items.map(function (item) {
+                    const actionButton = item.action_url
+                        ? `<a href="${escapeHtml(item.action_url)}" class="superadmin-notification__button superadmin-notification__button--backup">
+                            ${escapeHtml(item.action_label || 'Yuklab olish')}
+                        </a>`
+                        : '';
+
                     return `
                         <div class="superadmin-notification" data-id="${item.id}">
                             <div class="superadmin-notification__head">
@@ -198,6 +221,7 @@
                             </div>
                             <p class="superadmin-notification__message">${escapeHtml(item.message)}</p>
                             <div class="superadmin-notification__actions">
+                                ${actionButton}
                                 <button type="button" class="superadmin-notification__button" data-read-id="${item.id}">
                                     Tushunarli
                                 </button>

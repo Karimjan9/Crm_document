@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\FCalendar\CalendarController as FCalendarControll
 Route::name('superadmin.')->prefix('superadmin')->group(function(){
     Route::middleware('role:super_admin')->prefix('monthly-notifications')->name('monthly_notifications.')->group(function () {
         Route::get('/', [MonthlyNotificationController::class, 'index'])->name('index');
+        Route::get('/sql-backup', [MonthlyNotificationController::class, 'downloadSqlBackup'])->name('sql_backup');
         Route::post('/{notification}/read', [MonthlyNotificationController::class, 'markAsRead'])->name('read');
     });
 
