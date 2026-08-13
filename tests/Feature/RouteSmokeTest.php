@@ -76,7 +76,7 @@ class RouteSmokeTest extends TestCase
                 try {
                     if ($actor) {
                         if (in_array('auth:sanctum', $route->gatherMiddleware(), true)) {
-                            Sanctum::actingAs($actor);
+                            Sanctum::actingAs($actor, ['*']);
                         } else {
                             $this->actingAs($actor);
                         }
@@ -141,7 +141,7 @@ class RouteSmokeTest extends TestCase
                 'login' => $role . '_tester',
                 'phone' => (string) random_int(100000000, 999999999),
                 'filial_id' => $filial->id,
-                'password' => Hash::make('password'),
+                'password' => Hash::make('TestPassword-2026!'),
             ]);
 
             $user->assignRole($role);
@@ -468,8 +468,8 @@ class RouteSmokeTest extends TestCase
             'login' => 'fake_login_' . $sequence,
             'phone' => $phone,
             'phone_number' => $phone,
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => 'TestPassword-2026!',
+            'password_confirmation' => 'TestPassword-2026!',
             'role' => 'employee',
             'filial_id' => $this->ids['filial'],
             'user_id' => $this->users['employee']->id,
@@ -509,7 +509,7 @@ class RouteSmokeTest extends TestCase
             'is_active' => true,
             'weather_city' => 'Tashkent',
             'reduced_motion' => false,
-            'current_password' => 'password',
+            'current_password' => 'TestPassword-2026!',
             'base_price' => 100000,
             'promo_price' => 90000,
             'sort_order' => 1,
@@ -519,13 +519,13 @@ class RouteSmokeTest extends TestCase
         if (str_contains($uri, 'login')) {
             return [
                 'login' => $this->users['super_admin']->login,
-                'password' => 'password',
+                'password' => 'TestPassword-2026!',
             ];
         }
 
         if (str_contains($uri, 'account/password')) {
             return [
-                'current_password' => 'password',
+                'current_password' => 'TestPassword-2026!',
                 'password' => 'new-password-' . $sequence,
                 'password_confirmation' => 'new-password-' . $sequence,
             ];

@@ -1327,6 +1327,10 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
   }
 
   .export-card:hover {
@@ -2101,7 +2105,7 @@
         @if($canChangePassword)
           <section class="profile-panel" id="panel-password">
             <div class="profile-panel-title">Parolni o'zgartirish</div>
-            <p class="profile-panel-note">Xavfsizlik uchun avval joriy parolni kiriting. Yangi parol kamida 6 belgidan iborat bo'lishi va tasdiqlanishi kerak.</p>
+            <p class="profile-panel-note">Xavfsizlik uchun avval joriy parolni kiriting. Yangi parol kamida 12 belgidan iborat bo'lishi va tasdiqlanishi kerak.</p>
             <div class="panel-feedback" data-feedback="password"></div>
 
             <form id="passwordForm" action="{{ route('account.password.update') }}" method="POST" novalidate>
@@ -2183,7 +2187,10 @@
 
             <div class="panel-actions panel-actions-split">
               <button type="button" class="panel-secondary" data-profile-panel-back>Ortga</button>
-              <a href="{{ route('destroy') }}" class="panel-submit panel-submit-link panel-submit-danger">Tizimdan chiqish</a>
+               <form method="POST" action="{{ route('destroy') }}" style="margin:0;">
+                   @csrf
+                   <button type="submit" class="panel-submit panel-submit-link panel-submit-danger">Tizimdan chiqish</button>
+               </form>
             </div>
           </div>
         </section>
@@ -2192,39 +2199,40 @@
           <section class="profile-panel" id="panel-export">
             <div class="profile-panel-title">Excel eksportlari</div>
             <p class="profile-panel-note">Har bir eksport relationlar bilan boyitilgan va Excel uchun tayyor workbook ko'rinishida yuklanadi.</p>
+            <div class="panel-feedback" data-feedback="export"></div>
 
             <div class="export-grid">
-              <a href="{{ route('superadmin.excel.download', ['dataset' => 'clients']) }}" class="export-card">
+              <button type="button" class="export-card" data-export-dataset="clients">
                 <i class='bx bx-group'></i>
                 <div>
                   <strong>Mijozlar</strong>
                   <span>Mijozlar bazasi, hujjatlar statistikasi va mijoz-hujjat relationlari bilan.</span>
                 </div>
-              </a>
+              </button>
 
-              <a href="{{ route('superadmin.excel.download', ['dataset' => 'documents']) }}" class="export-card">
+              <button type="button" class="export-card" data-export-dataset="documents">
                 <i class='bx bx-folder-open'></i>
                 <div>
                   <strong>Dokumentlar</strong>
                   <span>Asosiy hujjatlar, to'lovlar, fayllar, courier va process charge sheetlari bilan.</span>
                 </div>
-              </a>
+              </button>
 
-              <a href="{{ route('superadmin.excel.download', ['dataset' => 'employees']) }}" class="export-card">
+              <button type="button" class="export-card" data-export-dataset="employees">
                 <i class='bx bx-id-card'></i>
                 <div>
                   <strong>Xodimlar</strong>
                   <span>Xodimlar bazasi, rollar, filiallar va yaratilgan hujjatlar kesimida.</span>
                 </div>
-              </a>
+              </button>
 
-              <a href="{{ route('superadmin.excel.download', ['dataset' => 'all']) }}" class="export-card">
+              <button type="button" class="export-card" data-export-dataset="all">
                 <i class='bx bx-layer'></i>
                 <div>
                   <strong>Barchasi</strong>
                   <span>Uchala bazani ham bitta workbook ichida to'liq yuklab beradi.</span>
                 </div>
-              </a>
+              </button>
             </div>
 
             <div class="export-note">
@@ -2240,8 +2248,10 @@
     const headerAccountConfig = {
       csrf: @json(csrf_token()),
       weatherCity: @json($weatherCity),
+      weatherUrl: @json(route('weather')),
       reducedMotion: @json($reducedMotion),
       canExcelExport: @json($canExcelExport),
+      excelQueueUrl: @json(url('/superadmin/excel')),
     };
 
     const weatherTranslations = {
@@ -2280,8 +2290,8 @@
 
     }
 
-    const API_KEY = '6d325d5ac3fbc4b0a3f6e1021e50896c';
     const openExcelPanel = document.getElementById('openExcelPanel');
+    const exportButtons = Array.from(document.querySelectorAll('[data-export-dataset]'));
     const openProfile = document.getElementById('openProfile');
     const profileModal = document.getElementById('profileModal');
     const closeProfileModal = document.getElementById('closeProfileModal');
@@ -2385,9 +2395,11 @@
       startOffsetY: 0,
     };
 
-    async function legacyGetWeather() {
+    async function legacyGetWeather(cityName = headerAccountConfig.weatherCity) {
+      const city = (cityName || 'Bukhara').trim();
+
       try {
-        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
+        const res = await fetch(`${headerAccountConfig.weatherUrl}?city=${encodeURIComponent(city)}`);
         const data = await res.json();
 
         if (data.main) {
@@ -2595,7 +2607,7 @@
       weatherInfo.innerText = 'Ob-havo yuklanmoqda...';
 
       try {
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`);
+        const response = await fetch(`${headerAccountConfig.weatherUrl}?city=${encodeURIComponent(city)}`);
         const data = await response.json();
 
         if (!response.ok || !data.main) {
@@ -3196,6 +3208,64 @@
         passwordForm.reset();
       });
     }
+
+    const wait = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
+
+    async function queueExcelExport(button) {
+      const dataset = button.dataset.exportDataset;
+      const originalText = button.querySelector('strong')?.textContent || 'Eksport';
+      button.disabled = true;
+      clearFeedback('export');
+      showFeedback('export', `${originalText} eksporti tayyorlanmoqda...`);
+
+      try {
+        const response = await fetch(`${headerAccountConfig.excelQueueUrl}/${encodeURIComponent(dataset)}/queue`, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            Accept: 'application/json',
+            'X-CSRF-TOKEN': headerAccountConfig.csrf,
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+        });
+        const payload = await parseJsonResponse(response);
+
+        if (!response.ok || !payload.status_url) {
+          throw new Error(payload.message || 'Eksportni navbatga qo\'shib bo\'lmadi.');
+        }
+
+        for (let attempt = 0; attempt < 120; attempt += 1) {
+          await wait(1000);
+          const statusResponse = await fetch(payload.status_url, {
+            credentials: 'same-origin',
+            headers: { Accept: 'application/json' },
+          });
+          const status = await parseJsonResponse(statusResponse);
+
+          if (!statusResponse.ok) {
+            throw new Error(status.message || 'Eksport holatini tekshirib bo\'lmadi.');
+          }
+
+          if (status.status === 'ready' && status.download_url) {
+            window.location.assign(status.download_url);
+            showFeedback('export', 'Eksport tayyor. Yuklab olish boshlandi.');
+            return;
+          }
+
+          if (status.status === 'failed') {
+            throw new Error('Eksport tayyorlashda xatolik yuz berdi.');
+          }
+        }
+
+        throw new Error('Eksport tayyorlash vaqti tugadi. Keyinroq qayta urinib ko\'ring.');
+      } catch (error) {
+        showFeedback('export', error.message || 'Eksportda xatolik yuz berdi.', 'error');
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    exportButtons.forEach(button => button.addEventListener('click', () => queueExcelExport(button)));
 
     settingsForm.addEventListener('submit', async (event) => {
       event.preventDefault();

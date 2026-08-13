@@ -4,10 +4,18 @@ namespace App\Http\Controllers\Admin\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ConsulationTypeModel as ConsulationType;
+use App\Models\DirectionTypeModel;
 use App\Models\DocumentDirectionAdditionModel as DocumentDirectionAddition;
+use App\Models\DocumentsModel;
 use App\Models\DocumentTypeAdditionModel as DocumentTypeAddition;
+use App\Models\DocumentTypeModel;
 use App\Models\ServiceAddonModel as ServiceAddon;
+use App\Models\ServicesModel;
+use App\Models\ClientsModel;
+use App\Models\Order;
 use App\Support\StoresDocuments;
+use App\Services\OrderCaseService;
+use App\Services\PricingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +27,8 @@ class DocumentController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', DocumentsModel::class);
+
         $payload = $this->normalizeDocumentPayload($request->all());
         $validator = $this->makeDocumentValidator(
             $payload + ['files' => $request->file('files', [])],
@@ -28,13 +38,14 @@ class DocumentController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => "Hujjatni tekshirishda xatolar bor.",
+                'message' => 'Hujjatni tekshirishda xatolar bor.',
                 'errors' => $validator->errors(),
             ], 422);
         }
 
         $request->merge($payload);
         $document = $this->storeDocumentFromRequest($request);
+        $order = $document->order;
 
         return response()->json([
             'success' => true,
@@ -45,23 +56,32 @@ class DocumentController extends Controller
                     'document_code' => $document->document_code,
                     'final_price' => (float) $document->final_price,
                 ],
+                'order' => $order ? [
+                    'id' => $order->id,
+                    'order_code' => $order->order_code,
+                    'tracking_url' => route('orders.track', ['trackingToken' => $order->tracking_token]),
+                ] : null,
             ],
         ], 200);
     }
 
     public function storeAll(Request $request)
     {
+        $this->authorize('create', DocumentsModel::class);
+
         $clientId = $this->normalizeNullable($request->input('client_id'));
         $items = $this->decodeItemsPayload($request->input('items_payload', $request->input('items', [])));
 
         $topLevelValidator = Validator::make([
             'client_id' => $clientId,
+            'order_id' => $this->normalizeNullable($request->input('order_id')),
             'items' => $items,
             'files' => $request->file('files', []),
         ], [
             'client_id' => ['required', 'integer', 'exists:clients,id'],
+            'order_id' => ['nullable', 'integer', 'exists:orders,id'],
             'items' => ['required', 'array', 'min:1'],
-            'files' => ['nullable', 'array'],
+            'files' => ['nullable', 'array', 'max:10'],
             'files.*' => ['nullable', 'array'],
             'files.*.*' => ['file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:10240'],
         ]);
@@ -97,7 +117,7 @@ class DocumentController extends Controller
             $validatedItems[$index] = $payload;
         }
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return response()->json([
                 'success' => false,
                 'message' => "Ba'zi hujjatlarda xatolar bor. Hech biri saqlanmadi.",
@@ -105,10 +125,28 @@ class DocumentController extends Controller
             ], 422);
         }
 
-        $documents = DB::transaction(function () use ($validatedItems, $request) {
+        $result = DB::transaction(function () use ($validatedItems, $request, $clientId) {
+            $filialId = $this->resolveFilialId($request);
+            $clientRequest = clone $request;
+            $clientRequest->merge(['client_id' => $clientId]);
+            $resolvedClientId = $this->resolveClientId($clientRequest, $filialId);
+            $order = $request->filled('order_id')
+                ? Order::query()->findOrFail((int) $request->input('order_id'))
+                : app(OrderCaseService::class)->createForClient(
+                    ClientsModel::query()->findOrFail($resolvedClientId),
+                    $filialId,
+                    auth()->id(),
+                    ['title' => 'Ko‘p hujjatli buyurtma']
+                );
+
+            if ($request->filled('order_id')) {
+                $this->authorize('update', $order);
+            }
             $created = [];
 
             foreach (array_values($validatedItems) as $index => $payload) {
+                $payload['order_id'] = $order->id;
+                $payload['filial_id'] = $payload['filial_id'] ?? $filialId;
                 $files = $request->file("files.{$index}", []);
                 $files = is_array($files) ? $files : array_filter([$files]);
 
@@ -121,15 +159,23 @@ class DocumentController extends Controller
                 ];
             }
 
-            return $created;
+            return [
+                'order' => [
+                    'id' => $order->id,
+                    'order_code' => $order->order_code,
+                    'tracking_url' => route('orders.track', ['trackingToken' => $order->tracking_token]),
+                ],
+                'documents' => $created,
+            ];
         });
 
         return response()->json([
             'success' => true,
-            'message' => count($documents) . " ta hujjat muvaffaqiyatli saqlandi.",
+            'message' => count($result['documents']).' ta hujjat muvaffaqiyatli saqlandi.',
             'data' => [
-                'documents' => $documents,
-                'count' => count($documents),
+                'order' => $result['order'],
+                'documents' => $result['documents'],
+                'count' => count($result['documents']),
             ],
         ], 200);
     }
@@ -143,19 +189,51 @@ class DocumentController extends Controller
             'service' => [ServiceAddon::class, 'service_id', 'price'],
         ];
 
-        if (!isset($models[$type])) {
+        if (! isset($models[$type])) {
             return response()->json([]);
         }
 
         [$model, $foreignKey, $priceField] = $models[$type];
 
+        abort_unless($this->addonParentExists($type, (int) $id), 404);
+
+        $pricing = app(PricingService::class);
+        $filialId = auth()->user()?->filial_id;
+        $pricingContext = [
+            'variant' => 'standard',
+            'filial_id' => $filialId ? (int) $filialId : null,
+        ];
+
+        $columns = ['id', 'name', $priceField, 'description'];
+        if ($type === 'service') {
+            $columns[] = 'deadline';
+        } elseif (in_array($type, ['document', 'direction', 'consulate'], true)) {
+            $columns[] = 'day';
+        }
+
         $addons = $model::where($foreignKey, $id)
-            ->get(['id', 'name', $priceField, 'description'])
-            ->map(function ($addon) use ($priceField) {
+            ->get($columns)
+            ->map(function ($addon) use ($priceField, $type, $filialId, $pricingContext, $pricing) {
+                $fallbackPrice = (float) ($addon->{$priceField} ?? 0);
+                $fallbackDeadline = (int) ($addon->day ?? $addon->deadline ?? 0);
+                $quote = match ($type) {
+                    'service' => $pricing->resolveServiceAddon($addon, $filialId, $pricingContext),
+                    'document' => $pricing->resolveFixed('addon', (int) $addon->id, 'document_addon:' . $addon->id, (string) $addon->name, $fallbackPrice, $fallbackDeadline, $filialId, $pricingContext),
+                    'direction' => $pricing->resolveFixed('addon', (int) $addon->id, 'direction_addon:' . $addon->id, (string) $addon->name, $fallbackPrice, $fallbackDeadline, $filialId, $pricingContext),
+                    'consulate' => $pricing->resolveFixed('consulate', (int) $addon->id, 'consulate:' . $addon->id, (string) $addon->name, $fallbackPrice, $fallbackDeadline, $filialId, $pricingContext),
+                    default => null,
+                };
+
                 return [
                     'id' => $addon->id,
                     'name' => $addon->name,
-                    'amount' => $addon->{$priceField},
+                    'amount' => $quote['price'] ?? $fallbackPrice,
+                    'deadline' => $quote['deadline'] ?? $fallbackDeadline,
+                    'pricing' => $quote ? [
+                        'tariff_id' => $quote['tariff_id'],
+                        'effective_from' => $quote['effective_from'],
+                        'variant' => $quote['variant_applied'],
+                    ] : null,
                     'description' => $addon->description,
                 ];
             });
@@ -163,10 +241,27 @@ class DocumentController extends Controller
         return response()->json($addons);
     }
 
+    protected function addonParentExists(string $type, int $id): bool
+    {
+        return match ($type) {
+            'document' => DocumentTypeModel::query()->whereKey($id)->exists(),
+            'direction' => DirectionTypeModel::query()->whereKey($id)->exists(),
+            'service' => ServicesModel::query()->whereKey($id)->exists(),
+            'consulate' => ConsulationType::query()->whereKey($id)->exists(),
+            default => false,
+        };
+    }
+
     protected function makeDocumentValidator(array $payload, bool $includeFiles = false)
     {
         $rules = [
             'client_id' => ['required', 'integer', 'exists:clients,id'],
+            'filial_id' => [
+                'nullable',
+                'integer',
+                'exists:filial,id',
+                Rule::requiredIf(fn () => auth()->user()?->filial_id === null),
+            ],
             'service_id' => ['required', 'integer', 'exists:services,id'],
             'document_type_id' => ['required', 'integer', 'exists:document_type,id'],
             'package_template_id' => ['nullable', 'integer', 'exists:package_templates,id'],
@@ -213,18 +308,27 @@ class DocumentController extends Controller
             'selected_addons.*.id' => ['required_with:selected_addons', 'integer'],
             'selected_addons.*.sourceType' => ['required_with:selected_addons', 'string', Rule::in(['document', 'direction', 'service'])],
             'discount' => ['nullable', 'numeric', 'min:0'],
+            'discount_type' => ['nullable', Rule::in(['percent', 'amount'])],
+            'pricing_variant' => ['nullable', Rule::in(['standard', 'express', 'rush', 'corporate', 'seasonal'])],
+            'variant' => ['nullable', Rule::in(['standard', 'express', 'rush', 'corporate', 'seasonal'])],
+            'season_code' => ['nullable', 'string', 'max:60'],
+            'pricing_as_of' => ['nullable', 'date'],
+            'pricing_approval_id' => ['nullable', 'integer', 'exists:pricing_approvals,id'],
+            'pricing_approval_token' => ['nullable', 'string', 'size:48'],
+            'partner_id' => ['nullable', 'integer', 'exists:partners,id'],
+            'tax_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'paid_amount' => ['nullable', 'numeric', 'min:0'],
             'payment_type' => [
                 'nullable',
                 'string',
-                Rule::in(['cash', 'card', 'transfer', 'online', 'admin_entry']),
+                Rule::in(['cash', 'card', 'online', 'transfer', 'admin_entry']),
                 Rule::requiredIf(fn () => (float) ($payload['paid_amount'] ?? 0) > 0),
             ],
             'description' => ['nullable', 'string', 'max:5000'],
         ];
 
         if ($includeFiles) {
-            $rules['files'] = ['nullable', 'array'];
+            $rules['files'] = ['nullable', 'array', 'max:10'];
             $rules['files.*'] = ['file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:10240'];
         }
 
@@ -240,11 +344,11 @@ class DocumentController extends Controller
             $selectedAddons = is_array($decoded) ? $decoded : [];
         }
 
-        if (!is_array($selectedAddons)) {
+        if (! is_array($selectedAddons)) {
             $selectedAddons = [];
         }
 
-        if (!empty($data['addons']) && is_array($data['addons']) && empty($selectedAddons)) {
+        if (! empty($data['addons']) && is_array($data['addons']) && empty($selectedAddons)) {
             $selectedAddons = array_map(fn ($id) => [
                 'id' => (int) $id,
                 'sourceType' => 'service',
@@ -253,14 +357,14 @@ class DocumentController extends Controller
 
         $selectedAddons = collect($selectedAddons)
             ->map(function ($addon) {
-                if (!is_array($addon)) {
+                if (! is_array($addon)) {
                     return null;
                 }
 
                 $id = (int) ($addon['id'] ?? 0);
                 $sourceType = $addon['sourceType'] ?? $addon['type'] ?? null;
 
-                if (!$id || !$sourceType) {
+                if (! $id || ! $sourceType) {
                     return null;
                 }
 
@@ -290,6 +394,15 @@ class DocumentController extends Controller
             'payment_type' => $this->normalizeNullable($data['payment_type'] ?? null),
             'description' => $this->normalizeNullable($data['description'] ?? null),
             'selected_addons' => $selectedAddons,
+            'filial_id' => $this->normalizeNullable($data['filial_id'] ?? null),
+            'discount_type' => $this->normalizeNullable($data['discount_type'] ?? null),
+            'pricing_variant' => $this->normalizeNullable($data['pricing_variant'] ?? ($data['variant'] ?? null)),
+            'season_code' => $this->normalizeNullable($data['season_code'] ?? null),
+            'pricing_as_of' => $this->normalizeNullable($data['pricing_as_of'] ?? null),
+            'pricing_approval_id' => $this->normalizeNullable($data['pricing_approval_id'] ?? null),
+            'pricing_approval_token' => $this->normalizeNullable($data['pricing_approval_token'] ?? null),
+            'partner_id' => $this->normalizeNullable($data['partner_id'] ?? null),
+            'tax_percent' => $this->normalizeNullable($data['tax_percent'] ?? null),
         ];
 
         if ($payload['process_mode'] !== 'apostil') {
@@ -304,11 +417,11 @@ class DocumentController extends Controller
             $payload['consulate_type_id'] = null;
         }
 
-        if ($payload['process_mode'] === 'consul' && !in_array($payload['selection_mode'], ['consul', 'mixed'], true)) {
+        if ($payload['process_mode'] === 'consul' && ! in_array($payload['selection_mode'], ['consul', 'mixed'], true)) {
             $payload['consul_id'] = null;
         }
 
-        if ($payload['process_mode'] === 'consul' && !in_array($payload['selection_mode'], ['legalization', 'mixed'], true)) {
+        if ($payload['process_mode'] === 'consul' && ! in_array($payload['selection_mode'], ['legalization', 'mixed'], true)) {
             $payload['consulate_type_id'] = null;
         }
 

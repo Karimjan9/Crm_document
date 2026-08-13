@@ -1,0 +1,50 @@
+@extends('template')
+
+@section('body')
+<div class="container-fluid py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div><h3 class="mb-1">Payment ledger</h3><p class="text-muted mb-0">Receipt, tasdiq, refund, kassir, qarzdorlik va kunlik yopilish.</p></div>
+        <div class="d-flex gap-2">@if(auth()->user()->hasAnyRole(['admin_manager','super_admin']))<a class="btn btn-outline-secondary" href="{{ route('finance.dashboard') }}">Finance dashboard</a><a class="btn btn-outline-danger" href="{{ route('finance.margin-leaks.index') }}">Margin leaks</a>@endif</div>
+    </div>
+
+    @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
+    @if($errors->any())<div class="alert alert-danger">{{ $errors->first() }}</div>@endif
+
+    <div class="row g-3 mb-4">
+        @foreach([['Ledger gross', $summary['gross'], 'primary'], ['Effective paid', $summary['effective'], 'success'], ['Refunds', $summary['refunds'], 'danger'], ['Debt', $debtTotal, 'warning']] as [$label, $value, $color])
+            <div class="col-md-3"><div class="card border-{{ $color }} h-100"><div class="card-body"><small class="text-muted">{{ $label }}</small><h4 class="mt-2 mb-0 text-{{ $color }}">{{ number_format($value, 0, ',', ' ') }} UZS</h4></div></div></div>
+        @endforeach
+    </div>
+
+    <div class="card shadow-sm mb-4"><div class="card-body"><form method="GET" class="row g-2 align-items-end">
+        <div class="col-md-2"><label class="form-label">Dan</label><input type="date" name="date_from" value="{{ $data['date_from'] ?? '' }}" class="form-control"></div>
+        <div class="col-md-2"><label class="form-label">Gacha</label><input type="date" name="date_to" value="{{ $data['date_to'] ?? '' }}" class="form-control"></div>
+        <div class="col-md-2"><label class="form-label">Filial</label><select name="filial_id" class="form-select"><option value="">Barcha filial</option>@foreach($filials as $filial)<option value="{{ $filial->id }}" @selected((string)($data['filial_id'] ?? '') === (string)$filial->id)>{{ $filial->name }}</option>@endforeach</select></div>
+        <div class="col-md-2"><label class="form-label">Status</label><select name="status" class="form-select"><option value="">Barchasi</option>@foreach(\App\Models\PaymentsModel::STATUSES as $status)<option value="{{ $status }}" @selected(($data['status'] ?? '') === $status)>{{ $status }}</option>@endforeach</select></div>
+        <div class="col-md-2"><label class="form-label">Tur</label><select name="payment_type" class="form-select"><option value="">Barchasi</option>@foreach(\App\Models\PaymentsModel::TYPES as $type)<option value="{{ $type }}" @selected(($data['payment_type'] ?? '') === $type)>{{ $type }}</option>@endforeach</select></div>
+        <div class="col-md-2"><label class="form-label">Qidirish</label><div class="input-group"><input name="q" value="{{ $data['q'] ?? '' }}" class="form-control" placeholder="Receipt / order"><button class="btn btn-primary">OK</button></div></div>
+    </form></div></div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-xl-7"><div class="card shadow-sm h-100"><div class="card-header fw-bold">Payment ledger</div><div class="table-responsive"><table class="table table-sm mb-0 align-middle"><thead><tr><th>Receipt</th><th>Order / client</th><th>Filial</th><th>Tur / kassir</th><th>Status</th><th class="text-end">Summa</th><th></th></tr></thead><tbody>
+            @forelse($payments as $payment)
+                <tr>
+                    <td><strong>{{ $payment->receipt_number ?: '—' }}</strong><small class="d-block text-muted">{{ optional($payment->created_at)->format('d.m.Y H:i') }}</small>@if($payment->payment_proof_path)<a class="small" href="{{ route('finance.ledger.proof', $payment) }}">Proof</a>@endif</td>
+                    <td>{{ $payment->order?->order_code ?: $payment->document?->document_code ?: 'Legacy' }}<small class="d-block text-muted">{{ $payment->order?->client?->name }}</small></td>
+                    <td>{{ $payment->filial?->name ?: $payment->order?->filial?->name ?: '—' }}</td>
+                    <td>{{ $payment->payment_type }}<small class="d-block text-muted">{{ $payment->cashier?->name ?: '—' }}</small></td>
+                    <td><span class="badge bg-{{ in_array($payment->status, ['confirmed','partially_refunded']) ? 'success' : ($payment->status === 'cancelled' ? 'danger' : 'warning text-dark') }}">{{ $payment->status }}</span>@if($payment->refund_amount > 0)<small class="d-block text-danger">Refund {{ number_format($payment->refund_amount,0,',',' ') }}</small>@endif</td>
+                    <td class="text-end"><strong>{{ number_format($payment->effective_amount, 0, ',', ' ') }}</strong><small class="d-block text-muted">{{ number_format($payment->amount, 0, ',', ' ') }} gross</small></td>
+                    <td class="text-nowrap">@if(in_array($payment->status, ['pending']))<form method="POST" action="{{ route('finance.ledger.confirm', $payment) }}" class="d-inline">@csrf<button class="btn btn-sm btn-outline-success">Tasdiq</button></form>@endif @if(!in_array($payment->status, ['cancelled','refunded']))<form method="POST" action="{{ route('finance.ledger.cancel', $payment) }}" class="d-inline" onsubmit="return confirm('To‘lov bekor qilinsinmi?')">@csrf<input type="hidden" name="reason" value="Operator bekor qildi"><button class="btn btn-sm btn-outline-danger">Bekor</button></form><details class="d-inline-block ms-1"><summary class="btn btn-sm btn-outline-warning">Refund</summary><form method="POST" action="{{ route('finance.ledger.refund', $payment) }}" class="mt-2 p-2 border rounded bg-light">@csrf<input type="number" name="amount" min="0.01" max="{{ $payment->effective_amount }}" step="0.01" class="form-control form-control-sm mb-1" placeholder="Summa" required><input name="reason" class="form-control form-control-sm mb-1" placeholder="Sabab" required><button class="btn btn-sm btn-warning">Saqlash</button></form></details>@endif</td>
+                </tr>
+            @empty<tr><td colspan="7" class="text-center text-muted py-4">Payment topilmadi.</td></tr>@endforelse
+            </tbody></table></div><div class="card-footer">{{ $payments->links() }}</div></div></div>
+
+        <div class="col-xl-5"><div class="card shadow-sm mb-4"><div class="card-header fw-bold">Cash session ochish</div><div class="card-body"><form method="POST" action="{{ route('finance.cash-sessions.open') }}" class="row g-2">@csrf<div class="col-md-6"><label class="form-label">Filial</label><select name="filial_id" class="form-select" required>@foreach($filials as $filial)<option value="{{ $filial->id }}">{{ $filial->name }}</option>@endforeach</select></div><div class="col-md-6"><label class="form-label">Sana</label><input type="date" name="session_date" class="form-control" value="{{ today()->toDateString() }}"></div><div class="col-md-6"><label class="form-label">Boshlang‘ich qoldiq</label><input type="number" name="opening_balance" min="0" step="0.01" class="form-control" value="0" required></div><div class="col-md-6 d-flex align-items-end"><button class="btn btn-primary w-100">Session ochish</button></div></form></div></div>
+            <div class="card shadow-sm"><div class="card-header fw-bold">Cash sessions / day close</div><div class="card-body p-0"><div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Filial / kassir</th><th>Status</th><th>Expected / actual</th><th></th></tr></thead><tbody>@forelse($sessions as $session)<tr><td>{{ $session->filial?->name }}<small class="d-block text-muted">{{ $session->cashier?->name }} · {{ optional($session->session_date)->format('d.m.Y') }}</small></td><td><span class="badge bg-{{ $session->status === 'reconciled' ? 'success' : ($session->status === 'open' ? 'primary' : 'secondary') }}">{{ $session->status }}</span></td><td>{{ $session->expected_cash !== null ? number_format($session->expected_cash,0,',',' ') : '—' }} / {{ $session->actual_cash !== null ? number_format($session->actual_cash,0,',',' ') : '—' }}<small class="d-block {{ (float)$session->variance == 0 ? 'text-success' : 'text-danger' }}">Farq: {{ number_format($session->variance,0,',',' ') }}</small></td><td>@if($session->status === 'open')<details><summary class="btn btn-sm btn-outline-primary">Yopish</summary><form method="POST" action="{{ route('finance.cash-sessions.close', $session) }}" class="mt-2">@csrf<input type="number" name="actual_cash" min="0" step="0.01" class="form-control form-control-sm mb-1" placeholder="Amaldagi kassa" required><input name="notes" class="form-control form-control-sm mb-1" placeholder="Izoh"><button class="btn btn-sm btn-primary">Yopish</button></form></details>@elseif($session->status === 'closed' && auth()->user()->hasAnyRole(['admin_manager','super_admin']))<form method="POST" action="{{ route('finance.cash-sessions.reconcile', $session) }}">@csrf<button class="btn btn-sm btn-outline-success">Reconcile</button></form>@endif</td></tr>@empty<tr><td colspan="4" class="text-center text-muted py-3">Session yo‘q.</td></tr>@endforelse</tbody></table></div></div></div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm"><div class="card-header fw-bold">Qarzdorlik (debt orders)</div><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Order</th><th>Mijoz</th><th>Filial</th><th class="text-end">Jami</th><th class="text-end">To‘langan</th><th class="text-end">Qoldiq</th></tr></thead><tbody>@forelse($debt as $order)<tr><td><a href="{{ route('orders.show', $order) }}">{{ $order->order_code }}</a></td><td>{{ $order->client?->name }}</td><td>{{ $order->filial?->name }}</td><td class="text-end">{{ number_format($order->total_amount,0,',',' ') }}</td><td class="text-end">{{ number_format($order->paid_amount,0,',',' ') }}</td><td class="text-end text-danger fw-bold">{{ number_format($order->balance_amount,0,',',' ') }} UZS</td></tr>@empty<tr><td colspan="6" class="text-center text-muted py-4">Qarzdorlik yo‘q.</td></tr>@endforelse</tbody></table></div></div>
+</div>
+@endsection

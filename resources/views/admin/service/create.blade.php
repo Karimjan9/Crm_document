@@ -165,6 +165,7 @@
             <div class="card-body">
                 <form action="{{ route('superadmin.service.store') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="checklist_configured" value="1">
 
                     <div class="mb-3">
                         <label for="filial_nomi">Service nomi</label>
@@ -179,6 +180,21 @@
                         <label for="filial_kodi">Service deadline</label>
                         <input type="number" id="filial_kodi" name="deadline" class="form-control" placeholder="000000" required>
                     </div>
+                    <div class="mb-4 p-3 border rounded bg-light">
+                        <h6 class="mb-1">Majburiy hujjatlar checklisti</h6>
+                        <p class="small text-muted mb-2">Bu talablar shu xizmat uchun yaratiladigan har bir hujjatga snapshot qilinadi.</p>
+                        <div class="row g-2">
+                            @foreach(\App\Services\DocumentChecklistService::DEFAULT_ITEMS as $code => $item)
+                                <div class="col-md-6">
+                                    <label class="d-flex align-items-center gap-2 mb-1 text-dark">
+                                        <input type="checkbox" name="checklist[{{ $code }}]" value="1" checked>
+                                        <span>{{ $item['title'] }} <small class="text-muted">{{ $item['requires_file'] ? '(fayl kerak)' : '(manual tekshiruv)' }}</small></span>
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label for="description">Service izoh </label>
                         <textarea id="description" name="description" rows="4" class="form-control" placeholder="Servise haqida qisqacha ma’lumot..."></textarea>

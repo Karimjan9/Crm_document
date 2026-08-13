@@ -39,10 +39,11 @@ Route::name('admin_filial.')->prefix('admin_filial')->group(function () {
     Route::get('/payments/{document}', [AdminFilialDocumentController::class, 'paymentHistory'])->name('payments');
 
     // Expense
-    Route::resource('expense_admin', ExpenseAdminController::class);
+    Route::resource('expense_admin', ExpenseAdminController::class)
+        ->only(['index', 'store', 'update', 'destroy']);
     Route::get('/expense/statistika', [ExpenseAdminController::class, 'statistika'])->name('expense.statistika');
 
     // Complete document and courier workflow
-    Route::get('/document/complete/{document}', [AdminFilialDocumentController::class, 'completeDocument'])->name('document.complete');
+    Route::post('/document/complete/{document}', [AdminFilialDocumentController::class, 'completeDocument'])->name('document.complete');
     Route::post('/document/{document}/send-courier', [AdminFilialDocumentController::class, 'sendToCourier'])->name('document.send_courier');
 });

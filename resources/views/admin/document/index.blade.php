@@ -480,6 +480,12 @@
                                 <td><span class="money-main">{{ $money($balance) }}</span></td>
                                 <td>
                                     <div class="row-actions">
+                                        <a class="btn btn-sm btn-outline-secondary" href="{{ route($routePrefix . '.document.show', $doc) }}">
+                                            Ko'rish
+                                        </a>
+                                        <a class="btn btn-sm btn-outline-primary" href="{{ route($routePrefix . '.document.edit', $doc) }}">
+                                            Tahrirlash
+                                        </a>
                                         <button type="button"
                                                 class="btn btn-sm btn-primary js-payment"
                                                 data-document-id="{{ $doc->id }}"
@@ -493,6 +499,11 @@
                                                 data-document-id="{{ $doc->id }}">
                                             Tarix
                                         </button>
+                                        <form method="POST" action="{{ route($routePrefix . '.document.destroy', $doc) }}" onsubmit="return confirm('Hujjatni o‘chirishni tasdiqlaysizmi?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">O'chirish</button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

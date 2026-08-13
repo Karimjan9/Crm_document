@@ -59,6 +59,9 @@ class AuthenticatedSessionController extends Controller
         }else if ($roles->contains('courier')) {
 
                  return redirect()->route('courier.documents.index'); 
+        }else if ($roles->contains('partner_admin') || $roles->contains('partner_operator')) {
+
+                 return redirect()->route('partner.dashboard');
         }
         else{
                  return redirect()->route('login'); 

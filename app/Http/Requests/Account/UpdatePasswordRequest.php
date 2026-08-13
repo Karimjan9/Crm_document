@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Account;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UpdatePasswordRequest extends FormRequest
 {
@@ -15,7 +16,7 @@ class UpdatePasswordRequest extends FormRequest
     {
         return [
             'current_password' => ['required', 'current_password'],
-            'password' => 'required|string|min:6|confirmed|different:current_password',
+            'password' => ['required', 'string', 'confirmed', Password::min(12), 'different:current_password'],
         ];
     }
 
@@ -25,7 +26,7 @@ class UpdatePasswordRequest extends FormRequest
             'current_password.required' => 'Joriy parolni kiriting.',
             'current_password.current_password' => 'Joriy parol notogri.',
             'password.required' => 'Yangi parolni kiriting.',
-            'password.min' => 'Yangi parol kamida 6 belgidan iborat bolishi kerak.',
+            'password.min' => 'Yangi parol kamida 12 belgidan iborat bolishi kerak.',
             'password.confirmed' => 'Yangi parol tasdiqlanishi kerak.',
             'password.different' => 'Yangi parol joriy paroldan farq qilishi kerak.',
         ];

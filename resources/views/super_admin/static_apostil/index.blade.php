@@ -242,12 +242,13 @@
 
             <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
                 <div class="breadcrumb-title pe-3">Apostil Statik</div>
-               <div class="page-breadcrumb mb-3">
-    <a class="btn-back" href="{{ route('superadmin.direction_type.index') }}">
-        <i class="lni lni-arrow-left"></i>
-        <span>Orqaga</span>
-    </a>
-</div>
+                <div class="d-flex gap-2">
+                    <a class="btn btn-primary" href="{{ route('superadmin.apostil.create') }}">+ Yangi apostil</a>
+                    <a class="btn-back" href="{{ route('superadmin.direction_type.index') }}">
+                        <i class="lni lni-arrow-left"></i>
+                        <span>Orqaga</span>
+                    </a>
+                </div>
             </div>
 
             @php

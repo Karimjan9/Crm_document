@@ -11,7 +11,11 @@
                         <h1 class="display-1"><span class="text-success">200</span></h1>
                         <h2 class="font-weight-bold display-4">Загрузка первычных скриптов завершена</h2>
                             Загрузка скриптов выполнено успешно !!!
-                        <div class="mt-5"> <a href="{{ route('destroy') }}" class="btn btn-primary btn-lg px-md-5 radius-30">{{ __('return_home_page') }}</a>
+                        <div class="mt-5">
+                            <form method="POST" action="{{ route('destroy') }}">
+                                @csrf
+                                <button type="submit" class="btn btn-primary btn-lg px-md-5 radius-30">{{ __('return_home_page') }}</button>
+                            </form>
                         </div>
                     </div>
                 </div>

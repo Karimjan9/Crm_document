@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\GenerateDatabaseBackup;
 use App\Models\Notification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class MonthlyNotificationController extends Controller
 {
@@ -18,77 +19,71 @@ class MonthlyNotificationController extends Controller
             ->where('is_read', false)
             ->orderByDesc('created_at')
             ->get(['id', 'title', 'message', 'type', 'notify_date', 'created_at'])
-            ->map(function (Notification $notification) {
+            ->map(function (Notification $notification): array {
+                $payload = $notification->toArray();
+
                 if ($notification->type === 'sql_backup') {
-                    $notification->action_label = 'SQL nusxa olish';
-                    $notification->action_url = route('superadmin.monthly_notifications.sql_backup');
+                    $payload['action_label'] = 'SQL nusxa olish';
+                    $payload['action_type'] = 'sql_backup';
                 }
 
-                return $notification;
+                return $payload;
             });
 
         return response()->json($notifications);
     }
 
-    public function downloadSqlBackup()
+    public function queueSqlBackup(): JsonResponse
     {
-        $connection = config('database.default');
-        $database = config("database.connections.{$connection}");
-
-        abort_unless(($database['driver'] ?? null) === 'mysql', 422, 'SQL backup faqat MySQL bazasi uchun ishlaydi.');
-
-        $backupDirectory = storage_path('app/backups');
-        File::ensureDirectoryExists($backupDirectory);
-
-        $fileName = sprintf(
-            '%s-sql-backup-%s.sql',
-            $database['database'],
-            now()->format('Y-m-d_H-i-s')
+        abort_unless(
+            config('database.connections.'.config('database.default').'.driver') === 'mysql',
+            422,
+            'SQL backup faqat MySQL bazasi uchun ishlaydi.'
         );
-        $path = $backupDirectory . DIRECTORY_SEPARATOR . $fileName;
 
-        $command = [
-            env('DB_DUMP_BINARY', 'mysqldump'),
-            '--host=' . ($database['host'] ?? '127.0.0.1'),
-            '--port=' . ($database['port'] ?? 3306),
-            '--user=' . ($database['username'] ?? ''),
-            '--single-transaction',
-            '--quick',
-            '--skip-lock-tables',
-            $database['database'],
-        ];
+        $token = Str::random(64);
+        Cache::put('queued-database-backup:'.$token, [
+            'status' => 'queued',
+            'user_id' => (int) auth()->id(),
+        ], now()->addHours(2));
+        GenerateDatabaseBackup::dispatch($token, (int) auth()->id());
 
-        $environment = [];
+        return response()->json([
+            'status' => 'queued',
+            'token' => $token,
+            'status_url' => route('superadmin.monthly_notifications.sql_backup.status', ['token' => $token]),
+        ], 202);
+    }
 
-        if (!empty($database['password'])) {
-            $environment['MYSQL_PWD'] = $database['password'];
-        }
+    public function sqlBackupStatus(string $token): JsonResponse
+    {
+        $backup = Cache::get('queued-database-backup:'.$token);
+        abort_unless($this->ownedBackup($backup), 404);
 
-        $process = new Process($command, base_path(), $environment, null, 300);
-        $errorOutput = '';
+        return response()->json([
+            'status' => $backup['status'],
+            'download_url' => $backup['status'] === 'ready'
+                ? route('superadmin.monthly_notifications.sql_backup.file', ['token' => $token])
+                : null,
+        ]);
+    }
 
-        $file = fopen($path, 'w');
+    public function queuedSqlBackup(string $token)
+    {
+        $backup = Cache::get('queued-database-backup:'.$token);
+        abort_unless($this->ownedBackup($backup) && $backup['status'] === 'ready', 404);
 
-        try {
-            $process->run(function ($type, $buffer) use ($file, &$errorOutput) {
-                if ($type === Process::ERR) {
-                    $errorOutput .= $buffer;
-                    return;
-                }
+        $path = storage_path('app/backups/'.basename((string) $backup['path']));
+        abort_unless(is_file($path), 404);
 
-                fwrite($file, $buffer);
-            });
-        } finally {
-            fclose($file);
-        }
+        return response()->download($path, basename($path), [
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
 
-        if (!$process->isSuccessful()) {
-            File::delete($path);
-
-            abort(500, trim($errorOutput) ?: 'SQL backup olishda xatolik yuz berdi.');
-        }
-
-        return response()->download($path, $fileName)->deleteFileAfterSend(true);
+    private function ownedBackup(mixed $backup): bool
+    {
+        return is_array($backup) && (int) ($backup['user_id'] ?? 0) === (int) auth()->id();
     }
 
     public function markAsRead(Request $request, Notification $notification): JsonResponse

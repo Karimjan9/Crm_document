@@ -158,7 +158,7 @@
 
         <div class="page-breadcrumb mb-3">
             <div class="breadcrumb-title">Yangi Apostil  qo'shimchasi Qo‘shish</div>
-            <a href="{{ route('superadmin.type_addition.index',['document_type'=>$id]) }}" class="btn btn-outline">← Orqaga</a>
+            <a href="{{ route('superadmin.direction_addition.index',['direction_type'=>$id]) }}" class="btn btn-outline">← Orqaga</a>
         </div>
 
         <div class="card radius-10">
@@ -166,7 +166,7 @@
                 <form action="{{ route('superadmin.direction_addition.update',['direction_type'=>$id,'direction_addition'=>$documentType->id]) }}" method="POST">
                     @csrf
                     @method("PUT")
-                    <input type="hidden" name="document_type_id" value="{{$id}}">
+                    <input type="hidden" name="direction_type" value="{{$id}}">
                     <div class="mb-3">
                         <label for="filial_nomi">Apostil  qo'shimchasi nomi</label>
                         <input type="text" id="filial_nomi" name="name" value="{{ $documentType->name }}" class="form-control" placeholder="Apostil  qo'shimchasi" required>

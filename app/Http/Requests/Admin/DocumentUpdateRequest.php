@@ -3,12 +3,20 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\DocumentsModel;
 
 class DocumentUpdateRequest extends FormRequest
 {
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        $document = $this->route('document');
+        if (!$document instanceof DocumentsModel) {
+            $document = DocumentsModel::query()->find($document ?: $this->route('id'));
+        }
+
+        return $document
+            ? $this->user()?->can('update', $document) ?? false
+            : false;
     }
 
     protected function prepareForValidation()
@@ -31,14 +39,27 @@ class DocumentUpdateRequest extends FormRequest
             'service_id'       => 'required|exists:services,id',
             'addons'           => 'nullable|array',
             'addons.*'         => 'nullable|exists:service_addons,id',
-            'discount'         => 'nullable|numeric|min:0|max:100',
+            'discount'         => 'nullable|numeric|min:0',
+            'discount_type'    => 'nullable|in:percent,amount',
+            'pricing_variant'  => 'nullable|in:standard,express,rush,corporate,seasonal',
+            'variant'          => 'nullable|in:standard,express,rush,corporate,seasonal',
+            'season_code'      => 'nullable|string|max:60',
+            'pricing_as_of'    => 'nullable|date',
+            'pricing_approval_id' => 'nullable|integer|exists:pricing_approvals,id',
+            'pricing_approval_token' => 'nullable|string|size:48',
+            'partner_id'        => 'nullable|integer|exists:partners,id',
+            'tax_percent'      => 'nullable|numeric|min:0|max:100',
             'final_price'      => 'required|numeric|min:0',
             'paid_amount'      => 'nullable|numeric|min:0',
-            'payment_type'     => 'nullable|string|in:cash,card,online,admin_entry',
+            'payment_type'     => 'nullable|string|in:cash,card,online,transfer,admin_entry',
             'description'      => 'nullable|string|max:2000',
             'document_type_id' => 'required|exists:document_type,id',
-            'direction_type_id'=> 'required|exists:direction_type,id',
-            'consulate_type_id'=> 'required|exists:consulates_type,id',
+            'direction_type_id'=> 'nullable|exists:direction_type,id',
+            'consulate_type_id'=> 'nullable|exists:consulates_type,id',
+            'process_mode'     => 'nullable|in:apostil,consul,service',
+            'apostil_group1_id'=> 'nullable|exists:apostil_static,id',
+            'apostil_group2_id'=> 'nullable|exists:apostil_static,id',
+            'consul_id'        => 'nullable|exists:consul,id',
 
 
         ];

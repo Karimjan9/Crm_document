@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\Api\ClientController;
 use App\Http\Controllers\Admin\Api\DocumentController as ApiDocumentController;
+use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\PricingTariffController;
 
 
 
@@ -35,7 +37,17 @@ Route::name('admin.')->prefix('admin')->group(function(){
 
     Route::resource('/filial',FilialController::class)->except(['show']);
 
+    Route::resource('/partners', PartnerController::class)
+        ->only(['index', 'create', 'store', 'edit', 'update'])
+        ->names('partners');
+
+    Route::resource('/pricing', PricingTariffController::class)
+        ->only(['index', 'create', 'store', 'edit', 'update'])
+        ->parameters(['pricing' => 'pricing'])
+        ->names('pricing');
+
     Route::resource('/expense',ExpenseController::class);
+    Route::post('/expense/{expense}/approve', [ExpenseController::class, 'approve'])->name('expense.approve');
 
     Route::get('/expense_static', [ExpenseController::class, 'statistika'])->name('statistika');
 

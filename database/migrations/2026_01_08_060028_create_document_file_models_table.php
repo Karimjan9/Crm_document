@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('document_file_models');
+        Schema::dropIfExists('document_files');
     }
 };

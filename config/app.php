@@ -6,9 +6,9 @@ return [
 
 
 
-    'sms_login'=>('oxuniversity'),
+    'sms_login' => env('SMS_LOGIN'),
 
-    'sms_password'=>('Sv$7G63w2t'),
+    'sms_password' => env('SMS_PASSWORD'),
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -74,7 +74,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'Asia/Tashkent'),
 
     /*
     |--------------------------------------------------------------------------

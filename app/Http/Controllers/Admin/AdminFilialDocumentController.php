@@ -20,8 +20,9 @@ use App\Models\DocumentCourier;
 use App\Support\PackageTemplateSupport;
 use App\Support\StoresDocuments;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Order;
+use App\Services\OrderCaseService;
 
 class AdminFilialDocumentController extends Controller
 {
@@ -41,8 +42,9 @@ class AdminFilialDocumentController extends Controller
 //         ->get();
 // }
 
-   public function getServiceAddons($serviceId)
+    public function getServiceAddons($serviceId)
     {
+        ServicesModel::query()->findOrFail($serviceId);
         $addons = ServiceAddonModel::where('service_id', $serviceId)
                     ->select(['id', 'name', 'price'])
                     ->get();
@@ -82,9 +84,7 @@ class AdminFilialDocumentController extends Controller
                 'consulateType:id,name',
                 'courierAssignment.courier:id,name',
             ])
-            ->whereHas('user', function ($q) use ($userFilialId) {
-                $q->where('filial_id', $userFilialId);
-            })
+            ->where('filial_id', $userFilialId)
             ->orderBy('id', 'DESC')
             ->paginate(30);
 
@@ -96,7 +96,7 @@ class AdminFilialDocumentController extends Controller
         return view('admin_filial.admin_filial_document.index', compact('documents', 'couriers'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $userFilialId   = auth()->user()->filial_id;
         $documentTypes  = DocumentTypeModel::all();
@@ -131,8 +131,12 @@ class AdminFilialDocumentController extends Controller
                 ->get()
         );
         return view('admin_filial.admin_filial_document.refactor.create',
-            compact('services', 'addons', 'documentTypes',
-                'directions', 'consulateTypes', 'consul_price', 'apostilStatics', 'consuls', 'packageTemplates'));
+            array_merge(compact(
+                'services', 'addons', 'documentTypes',
+                'directions', 'consulateTypes', 'consul_price', 'apostilStatics', 'consuls', 'packageTemplates'
+            ), [
+                'orderId' => $request->integer('order_id') ?: null,
+            ]));
     }
 
     // -------------------------------
@@ -140,15 +144,18 @@ class AdminFilialDocumentController extends Controller
     // -------------------------------
     public function store(DocumentCreateRequest $request)
     {
-        $this->storeDocumentFromRequest($request);
+        $document = $this->storeDocumentFromRequest($request);
 
-        return redirect()->route('admin_filial.document.index')
+        return redirect($request->filled('order_id')
+            ? route('orders.show', $document->order_id)
+            : route('admin_filial.document.index'))
             ->with('success', 'Hujjat muvaffaqiyatli yaratildi!');
     }
 
-  public function edit($id)
-{
-    $document = DocumentsModel::with(['addons', 'client', 'payments'])->findOrFail($id);
+    public function edit($id)
+    {
+        $document = DocumentsModel::with(['addons', 'client', 'payments'])->findOrFail($id);
+        $this->authorize('update', $document);
 
     // 24 soatdan oshganini tekshirish
     if ($document->created_at->diffInHours(now()) > 24) {
@@ -166,68 +173,15 @@ class AdminFilialDocumentController extends Controller
         'document', 'services', 'addons',
         'documentTypes', 'directions', 'consulates'
     ));
-}
+    }
 
 
 
     public function update(DocumentUpdateRequest $request, $id)
     {
         $document = DocumentsModel::with(['addons'])->findOrFail($id);
-
-        // Client o'zgarmaydi
-
-        // Service va addons
-        $service      = ServicesModel::findOrFail($request->service_id);
-        $servicePrice = $service->price;
-        $deadlineTime = $service->deadline;
-
-        $addons_total = 0;
-        $addonsData   = [];
-        if ($request->addons) {
-            $addons = DB::table('service_addons')->whereIn('id', $request->addons)->get();
-            foreach ($addons as $addon) {
-                $addons_total += $addon->price;
-                $deadlineTime += $addon->deadline;
-                $addonsData[$addon->id] = [
-                    'addon_price'    => $addon->price,
-                    'addon_deadline' => $addon->deadline,
-                ];
-            }
-        }
-
-        $discount   = $request->discount ?? 0;
-        $totalPrice = $servicePrice + $addons_total;
-        $finalPrice = $totalPrice - ($totalPrice * ($discount / 100));
-
-        // Document update
-        $document->update([
-            'service_id'         => $request->service_id,
-            'service_price'      => $servicePrice,
-            'addons_total_price' => $addons_total,
-            'deadline_time'      => $deadlineTime,
-            'final_price'        => $finalPrice,
-            'paid_amount'        => $request->paid_amount ?? 0,
-            'discount'           => $discount,
-            'description'        => $request->description,
-            'document_type_id'   => $request->document_type_id,
-            'direction_type_id'  => $request->direction_type_id,
-            'consulate_type_id'  => $request->consulate_type_id,
-        ]);
-
-        // Addons update
-        $document->addons()->sync($addonsData);
-
-        // Payment update yoki create
-        if ($request->paid_amount && $request->payment_type) {
-            PaymentsModel::updateOrCreate(
-                ['document_id' => $document->id],
-                [
-                    'amount'           => $request->paid_amount,
-                    'payment_type'     => $request->payment_type,
-                    'paid_by_admin_id' => auth()->id(),
-                ]
-            );
-        }
+        $this->authorize('update', $document);
+        $this->updateDocumentFromRequest($document, $request);
 
         return redirect()->route('admin_filial.document.index')
             ->with('success', 'Hujjat muvaffaqiyatli yangilandi!');
@@ -250,9 +204,7 @@ class AdminFilialDocumentController extends Controller
             ->with([
                 'payments:id,document_id,amount,payment_type,paid_by_admin_id,created_at',
             ])
-            ->whereHas('user', function ($q) use ($userFilialId) {
-                $q->where('filial_id', $userFilialId);
-            })
+            ->where('filial_id', $userFilialId)
             ->orderBy('id', 'DESC')
             ->paginate(25);
 
@@ -265,53 +217,52 @@ class AdminFilialDocumentController extends Controller
         $request->validate([
             'document_id'  => 'required|exists:documents,id',
             'amount'       => 'required|numeric|min:1000',
-            'payment_type' => 'required|string',
+            'payment_type' => 'required|in:cash,card,online,transfer,admin_entry',
         ]);
 
-        $doc = DocumentsModel::find($request->document_id);
+        DB::transaction(function () use ($request) {
+            $doc = DocumentsModel::query()
+                ->whereKey($request->document_id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        $balance = $doc->final_price - $doc->paid_amount;
-
-        // >>> BACKEND CHEK: to‘lov qoldiqdan oshmasin!
-        if ($request->amount > $balance) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => "To'lov summasi qoldiqdan oshmasligi kerak!",
-            ], 422);
-        }
-
-        PaymentsModel::create([
-            'document_id'      => $request->document_id,
-            'amount'           => $request->amount,
-            'payment_type'     => $request->payment_type,
-            'paid_by_admin_id' => auth()->id(),
-        ]);
-
-        $doc->paid_amount += $request->amount;
-        $doc->save();
+            $this->authorize('pay', $doc);
+            $this->recordPayment($doc, $request);
+        });
 
         return response()->json(['status' => 'success']);
+
+
+        // >>> BACKEND CHEK: to‘lov qoldiqdan oshmasin!
     }
 
     public function paymentHistory(DocumentsModel $document)
     {
+        $this->authorize('view', $document);
+
         $paymentTypes = [
             'cash' => 'Naqd',
             'card' => 'Plastik karta',
             'online' => 'Onlayn',
+            'transfer' => 'Bank transfer',
             'admin_entry' => 'Boshqalar',
         ];
 
-        $payments = PaymentsModel::with(['paidByAdmin' => fn ($q) => $q->withTrashed()->select('id', 'name', 'login')])
+        $payments = PaymentsModel::with(['paidByAdmin' => fn ($q) => $q->withTrashed()->select('id', 'name', 'login'), 'cashier' => fn ($q) => $q->withTrashed()->select('id', 'name', 'login')])
             ->where('document_id', $document->id)
             ->orderBy('created_at', 'desc')
-            ->get(['amount', 'payment_type', 'paid_by_admin_id', 'created_at'])
+            ->get(['amount', 'payment_type', 'status', 'confirmation_status', 'receipt_number', 'refund_amount', 'online_transaction_id', 'paid_by_admin_id', 'cashier_id', 'created_at'])
             ->map(fn (PaymentsModel $payment) => [
                 'amount' => (float) $payment->amount,
                 'payment_type' => $payment->payment_type,
                 'payment_type_label' => $paymentTypes[$payment->payment_type] ?? $payment->payment_type,
+                'status' => $payment->status,
+                'confirmation_status' => $payment->confirmation_status,
+                'receipt_number' => $payment->receipt_number,
+                'refund_amount' => (float) $payment->refund_amount,
+                'online_transaction_id' => $payment->online_transaction_id,
                 'paid_by_admin_id' => $payment->paid_by_admin_id,
-                'paid_by_name' => $payment->paidByAdmin?->name ?? 'Noma\'lum',
+                'paid_by_name' => $payment->cashier?->name ?: ($payment->paidByAdmin?->name ?? 'Noma\'lum'),
                 'created_at' => optional($payment->created_at)->toIso8601String(),
             ]);
 
@@ -319,13 +270,25 @@ class AdminFilialDocumentController extends Controller
     }
     public function completeDocument(DocumentsModel $document)
     {
+        $this->authorize('complete', $document);
+
         if ($document->courierAssignment && in_array($document->courierAssignment->status, ['sent', 'accepted'])) {
             return redirect()->back()->with('error', 'Courierga yuborilgan hujjatni tugallab bo‘lmaydi.');
         }
 
-        // Hujjatni tugallash
-        $document->status_doc = 'finish';
-        $document->save();
+        app(\App\Services\DocumentWorkflowService::class)->transition(
+            $document,
+            'ready_for_delivery',
+            auth()->user(),
+            'Legacy complete tugmasi orqali yakunlandi.',
+        );
+
+        if ($document->order_id) {
+            app(OrderCaseService::class)->syncFromDocuments(
+                Order::query()->findOrFail((int) $document->order_id),
+                auth()->user()
+            );
+        }
 
         return redirect()->route('admin_filial.document.index')
             ->with('success', 'Hujjat muvaffaqiyatli tugallandi!');
@@ -334,10 +297,7 @@ class AdminFilialDocumentController extends Controller
     public function sendToCourier(Request $request, DocumentsModel $document)
     {
         $user = auth()->user();
-
-        if ($document->filial_id !== $user->filial_id) {
-            abort(403);
-        }
+        $this->authorize('sendToCourier', $document);
 
         $request->validate([
             'courier_id' => 'required|exists:users,id',
@@ -365,6 +325,8 @@ class AdminFilialDocumentController extends Controller
         $assignment->rejected_at = null;
         $assignment->returned_at = null;
         $assignment->save();
+
+        app(OrderCaseService::class)->syncDocumentCourier($assignment);
 
         return redirect()->back()->with('success', 'Hujjat courierga yuborildi.');
     }

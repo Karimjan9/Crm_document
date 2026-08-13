@@ -5,22 +5,23 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^8.1.12",
-        "doctrine/dbal": "^3.9",
-        "guzzlehttp/guzzle": "^7.2",
-        "laravel/framework": "^10.48.29",
-        "laravel/sanctum": "^3.3",
-        "laravel/tinker": "^2.8.1",
+        "php": "^8.2",
+        "bacon/bacon-qr-code": "^3.0",
+        "doctrine/dbal": "^4.4",
+        "guzzlehttp/guzzle": "^7.15.2",
+        "laravel/framework": "^12.61.1",
+        "laravel/sanctum": "^4.3",
+        "laravel/tinker": "^3.0",
         "spatie/laravel-permission": "^6.21"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.8",
+        "barryvdh/laravel-debugbar": "^4.4",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
-        "laravel/sail": "^1.22.0",
+        "laravel/sail": "^1.66.0",
         "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^7.0",
-        "phpunit/phpunit": "^10.5"
+        "nunomaduro/collision": "^8.9",
+        "phpunit/phpunit": "^11.5"
     },
     "autoload": {
         "psr-4": {
@@ -51,7 +52,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "10.x-dev"
+            "dev-master": "12.x-dev"
         },
         "laravel": {
             "dont-discover": []

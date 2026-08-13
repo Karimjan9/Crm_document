@@ -13,7 +13,7 @@ class ServiceEditRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->user()?->hasRole('super_admin') ?? false;
     }
 
     /**
@@ -28,6 +28,9 @@ class ServiceEditRequest extends FormRequest
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'deadline' => 'required|integer',
+            'checklist' => 'nullable|array|max:20',
+            'checklist.*' => 'boolean',
+            'checklist_configured' => 'nullable|boolean',
         ];
     }
 }

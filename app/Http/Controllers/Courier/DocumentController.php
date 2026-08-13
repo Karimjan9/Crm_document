@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Courier;
 use App\Http\Controllers\Controller;
 use App\Models\DocumentCourier;
 use Illuminate\Http\Request;
+use App\Services\OrderCaseService;
 
 class DocumentController extends Controller
 {
@@ -62,6 +63,7 @@ class DocumentController extends Controller
         $documentCourier->courier_comment = $request->comment;
         $documentCourier->accepted_at = now();
         $documentCourier->save();
+        app(OrderCaseService::class)->syncDocumentCourier($documentCourier);
 
         return redirect()->back()->with('success', 'Hujjat qabul qilindi.');
     }
@@ -82,6 +84,7 @@ class DocumentController extends Controller
         $documentCourier->courier_comment = $request->comment;
         $documentCourier->rejected_at = now();
         $documentCourier->save();
+        app(OrderCaseService::class)->syncDocumentCourier($documentCourier);
 
         return redirect()->back()->with('success', 'Hujjat rad etildi.');
     }
@@ -102,6 +105,7 @@ class DocumentController extends Controller
         $documentCourier->return_comment = $request->comment;
         $documentCourier->returned_at = now();
         $documentCourier->save();
+        app(OrderCaseService::class)->syncDocumentCourier($documentCourier);
 
         return redirect()->back()->with('success', 'Hujjat qaytarildi.');
     }

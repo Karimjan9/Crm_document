@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Barn\Kadr\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UserRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class UserRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return auth()->check();
     }
 
     /**
@@ -28,7 +29,7 @@ class UserRequest extends FormRequest
                 // 'jshir'=>['required','digits:14'],
 
                 'login'=>['required',],
-                'password' => ['required','confirmed','min:4'],
+                'password' => ['required', 'string', 'confirmed', Password::min(12)],
 
                 // 'surname'=>['required'],
                 // 'other_name'=>['required'],
@@ -52,7 +53,7 @@ class UserRequest extends FormRequest
             'login.required'=>"Login kiritilmadi !", 
             'password.required'=>"Parol kiritilmadi !",
             'password.confirmed'=>"Parollar mos kelmadi  !",
-            'password.min'=>"Parol 4 ta simvoldan kam bo'lishi mumkin emas !",
+            'password.min'=>"Parol 12 ta belgidan kam bo'lishi mumkin emas !",
 
             // 'surname.required'=>'Familiya kiritilmadi!',
             // 'other_name.required'=>'Otasining ismi kiritilmadi!',

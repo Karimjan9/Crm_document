@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class DocumentFileModel extends Model
@@ -26,8 +25,10 @@ class DocumentFileModel extends Model
     }
 
     // Получить полный URL файла
-    public function getFileUrlAttribute()
+    public function getFileUrlAttribute(): ?string
     {
-        return Storage::url($this->file_path);
+        return $this->exists
+            ? route('document-files.show', ['documentFile' => $this->getKey()])
+            : null;
     }
 }

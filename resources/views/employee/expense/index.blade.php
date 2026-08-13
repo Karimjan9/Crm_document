@@ -134,7 +134,7 @@ body {
 {{-- Add Expense Modal --}}
 <div class="modal fade" id="addExpenseModal" tabindex="-1">
     <div class="modal-dialog">
-        <form action="{{ route('employee.expense_admin.store') }}" method="POST" id="addExpenseForm">
+        <form action="{{ route('employee.expense_admin.store') }}" method="POST" enctype="multipart/form-data" id="addExpenseForm">
             @csrf
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
@@ -153,6 +153,14 @@ body {
                         <label class="form-label">Izoh:</label>
                         <textarea name="description" class="form-control" rows="3"></textarea>
                     </div>
+                    <div class="row g-2">
+                        <div class="col-md-6"><label class="form-label">Kategoriya</label><select name="category_id" class="form-select"><option value="">Umumiy</option>@foreach($categories as $category)<option value="{{ $category->id }}">{{ $category->name }}</option>@endforeach</select></div>
+                        <div class="col-md-6"><label class="form-label">Vendor</label><select name="vendor_id" class="form-select"><option value="">Tanlanmagan</option>@foreach($vendors as $vendor)<option value="{{ $vendor->id }}">{{ $vendor->name }}</option>@endforeach</select></div>
+                        <div class="col-md-6"><label class="form-label">Payment method</label><select name="payment_method" class="form-select"><option value="cash">Naqd</option><option value="card">Karta</option><option value="bank_transfer">Bank</option><option value="online">Online</option><option value="other">Boshqa</option></select></div>
+                        <div class="col-md-6"><label class="form-label">Expense sanasi</label><input type="date" name="expense_date" class="form-control" value="{{ today()->toDateString() }}"></div>
+                        <div class="col-md-8"><label class="form-label">Receipt</label><input type="file" name="receipt" class="form-control" accept=".pdf,.jpg,.jpeg,.png"></div>
+                        <div class="col-md-4"><label class="form-label">Recurring</label><select name="recurrence_rule" class="form-select"><option value="">Yo‘q</option><option value="weekly">Haftalik</option><option value="monthly">Oylik</option><option value="yearly">Yillik</option></select></div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Yopish</button>
@@ -166,7 +174,7 @@ body {
 {{-- Edit Expense Modal --}}
 <div class="modal fade" id="editExpenseModal" tabindex="-1">
     <div class="modal-dialog">
-        <form action="" method="POST" id="editExpenseForm">
+        <form action="" method="POST" enctype="multipart/form-data" id="editExpenseForm">
             @csrf
             @method('PUT')
             <div class="modal-content">

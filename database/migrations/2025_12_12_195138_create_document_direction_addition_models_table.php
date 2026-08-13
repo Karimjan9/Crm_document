@@ -14,8 +14,6 @@ return new class extends Migration
     public function up()
     {
         Schema::create('document_direction_addition', function (Blueprint $table) {
-        Schema::dropIfExists('document_direction_addition');
-
             $table->id();
             $table->unsignedBigInteger('document_direction_id');
             $table->string('name');

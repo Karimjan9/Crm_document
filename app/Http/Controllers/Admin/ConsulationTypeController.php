@@ -6,6 +6,8 @@ use App\Models\ConsulModel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\ConsulationTypeModel;
+use App\Models\PriceTariff;
+use App\Services\PricingService;
 
 class ConsulationTypeController extends Controller
 {
@@ -34,20 +36,22 @@ class ConsulationTypeController extends Controller
             'day' => 'required|integer',
         ]);
 
-        ConsulationTypeModel::create([
+        $consulationType = ConsulationTypeModel::create([
             'name' => $request->name,
             'description' => $request->description,
             'amount' => $request->amount,
             'day' => $request->day,
         ]);
+        app(PricingService::class)->publishFixedPrice(
+            'consulate',
+            (int) $consulationType->id,
+            'consulate:' . $consulationType->id,
+            (string) $consulationType->name,
+            (float) $consulationType->amount,
+            (int) $consulationType->day,
+        );
 
         return redirect()->route('superadmin.consulation.index')->with('success', 'Consulation Type created successfully.');
-    }
-
-  
-    public function show($id)
-    {
-        //
     }
 
   
@@ -74,6 +78,14 @@ class ConsulationTypeController extends Controller
             'amount' => $request->amount,
             'day' => $request->day,
         ]);
+        app(PricingService::class)->publishFixedPrice(
+            'consulate',
+            (int) $consulationType->id,
+            'consulate:' . $consulationType->id,
+            (string) $consulationType->name,
+            (float) $consulationType->amount,
+            (int) $consulationType->day,
+        );
 
         return redirect()->route('superadmin.consulation.index')->with('success', 'Consulation Type updated successfully.');
     }
@@ -82,6 +94,9 @@ class ConsulationTypeController extends Controller
     public function destroy($id)
     {
         $consulationType = ConsulationTypeModel::findOrFail($id);
+        if (PriceTariff::query()->where('line_type', 'consulate')->where('source_id', $consulationType->id)->exists()) {
+            return back()->with('error', 'Bu consulate tarixi mavjud, o‘chirib bo‘lmaydi.');
+        }
         $consulationType->delete();
 
         return redirect()->route('superadmin.consulation.index')->with('success', 'Consulation Type deleted successfully.');
@@ -102,11 +117,22 @@ class ConsulationTypeController extends Controller
         ]);
 
         $mainConsulationType = ConsulModel::first();
+        if (!$mainConsulationType) {
+            return response()->json(['message' => 'Main consulation type topilmadi.'], 404);
+        }
         $mainConsulationType->update([
             'name' => $request->name,
             'amount' => $request->amount,
             'day' => $request->day,
         ]);
+        app(PricingService::class)->publishFixedPrice(
+            'consulate',
+            (int) $mainConsulationType->id,
+            'consul:' . $mainConsulationType->id,
+            (string) $mainConsulationType->name,
+            (float) $mainConsulationType->amount,
+            (int) $mainConsulationType->day,
+        );
        return response()->json(['message' => 'Main Consulation Type updated successfully.']);
 }
 
@@ -133,6 +159,14 @@ class ConsulationTypeController extends Controller
         'amount' => $request->amount,
         'day'    => $request->day,
     ]);
+    app(PricingService::class)->publishFixedPrice(
+        'consulate',
+        (int) $consul->id,
+        'consul:' . $consul->id,
+        (string) $consul->name,
+        (float) $consul->amount,
+        (int) $consul->day,
+    );
 
     return redirect()->back()->with(
         'success',
@@ -143,6 +177,9 @@ class ConsulationTypeController extends Controller
     {
         // dd(123);
         $consul = ConsulModel::findOrFail($id);
+        if (PriceTariff::query()->where('line_type', 'consulate')->where('source_id', $consul->id)->exists()) {
+            return back()->with('error', 'Bu consulate tarixi mavjud, o‘chirib bo‘lmaydi.');
+        }
         $consul->delete();
         return redirect()->back()->with('success', 'Consulation static muvaffaqiyatli o\'chirildi.');
     }

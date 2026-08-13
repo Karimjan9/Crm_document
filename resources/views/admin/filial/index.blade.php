@@ -149,6 +149,9 @@
 @endsection
 
 @section('body')
+@php
+    $filialRoutePrefix = auth()->user()?->hasRole('super_admin') ? 'superadmin' : 'admin';
+@endphp
 <div class="page-wrapper">
     <div class="page-content">
         @if (session('success'))
@@ -169,7 +172,7 @@
 
         <div class="page-breadcrumb d-flex align-items-center mb-3 justify-content-between">
             <div class="breadcrumb-title pe-3">Filiallar</div>
-            <a href="{{ route('superadmin.filial.create') }}" class="btn btn-custom">+ Yangi Filial</a>
+            <a href="{{ route($filialRoutePrefix . '.filial.create') }}" class="btn btn-custom">+ Yangi Filial</a>
         </div>
 
         <div class="d-flex align-items-center mb-2">
@@ -186,6 +189,8 @@
                                 <th class="fixed_header2 align-middle">#</th>
                                 <th class="fixed_header2 align-middle">Filial nomi</th>
                                 <th class="fixed_header2 align-middle">Filial codi</th>
+                                <th class="fixed_header2 align-middle">Telefon</th>
+                                <th class="fixed_header2 align-middle">Target</th>
                                 <th class="fixed_header2 align-middle">Filial izoh</th>
                                 <th class="fixed_header2 align-middle">Harakatlar</th>
                             </tr>
@@ -196,12 +201,15 @@
                                 <td>{{ $key+1 }}</td>
                                 <td>{{ $filial->name }}</td>
                                 <td>{{ $filial->code }}</td>
+                                <td>{{ $filial->phone ?: '—' }}</td>
+                                <td>{{ number_format((float) $filial->target_amount, 0, ',', ' ') }}</td>
                                 <td>{{ $filial->description }}</td>
                                 <td>
-                                    <a class="btn btn-warning" href="{{ route('superadmin.filial.edit',['filial'=>$filial->id]) }}">O'zgartirish</a>
+                                    <a class="btn btn-info" href="{{ route('finance.filials.show', $filial) }}">P&amp;L</a>
+                                    <a class="btn btn-warning" href="{{ route($filialRoutePrefix . '.filial.edit',['filial'=>$filial->id]) }}">O'zgartirish</a>
 
                                     <!-- Delete Form -->
-                                    <form action="{{ route('superadmin.filial.destroy',['filial'=>$filial->id]) }}" method="POST" class="d-inline delete-form">
+                                    <form action="{{ route($filialRoutePrefix . '.filial.destroy',['filial'=>$filial->id]) }}" method="POST" class="d-inline delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" class="btn btn-danger btn-delete" data-name="{{ $filial->name }}">O'chirish</button>

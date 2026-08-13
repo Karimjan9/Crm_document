@@ -4,10 +4,18 @@ namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
 use App\Models\ExpenseAdminModel;
+use App\Models\ExpenseCategory;
+use App\Models\ExpenseVendor;
+use App\Services\ExpenseManagementService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ExpenseController extends Controller
 {
+    public function __construct(private readonly ExpenseManagementService $expenseService)
+    {
+    }
+
     public function index()
     {
         $user = auth()->user();
@@ -17,22 +25,36 @@ class ExpenseController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        return view('employee.expense.index', compact('expenses'));
+        return view('employee.expense.index', [
+            'expenses' => $expenses,
+            'categories' => ExpenseCategory::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']),
+            'vendors' => ExpenseVendor::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']),
+        ]);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'amount' => 'required|numeric|min:1000',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:2000',
+            'category_id' => ['nullable', 'integer', 'exists:expense_categories,id'],
+            'vendor_id' => ['nullable', 'integer', 'exists:expense_vendors,id'],
+            'payment_method' => ['nullable', Rule::in(['cash', 'card', 'bank_transfer', 'online', 'other'])],
+            'receipt' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+            'is_recurring' => ['nullable', 'boolean'],
+            'recurrence_rule' => ['nullable', Rule::in(['weekly', 'monthly', 'yearly'])],
+            'recurrence_start' => ['nullable', 'date'],
+            'recurrence_end' => ['nullable', 'date', 'after_or_equal:recurrence_start'],
+            'expense_type' => ['nullable', Rule::in(['direct', 'branch', 'overhead'])],
+            'expense_date' => ['nullable', 'date'],
         ]);
 
-        $expense = new ExpenseAdminModel();
-        $expense->user_id = auth()->id();
-        $expense->filial_id = auth()->user()->filial_id;
-        $expense->amount = $request->amount;
-        $expense->description = $request->description;
-        $expense->save();
+        abort_unless(auth()->user()->filial_id !== null, 422, 'Foydalanuvchiga filial biriktirilmagan.');
+        $data['user_id'] = auth()->id();
+        $data['filial_id'] = auth()->user()->filial_id;
+        $receipt = $request->file('receipt');
+        unset($data['receipt']);
+        $this->expenseService->save($data, null, $receipt, $request->user());
 
         return redirect()->route('employee.expense_admin.index')
             ->with('success', 'Xarajat muvaffaqiyatli qo\'shildi.');
@@ -47,9 +69,7 @@ class ExpenseController extends Controller
         $year_filter = null;
         $month_filter = null;
 
-        if ($month_year) {
-            [$year_filter, $month_filter] = explode('-', $month_year);
-        }
+        [$year_filter, $month_filter] = $this->parseMonthYear($month_year);
 
         $query = ExpenseAdminModel::query()
             ->where('user_id', $user->id);
@@ -78,5 +98,18 @@ class ExpenseController extends Controller
             'chartData',
             'user'
         ));
+    }
+
+    private function parseMonthYear(?string $monthYear): array
+    {
+        if (! $monthYear || ! preg_match('/^(\d{4})-(\d{1,2})$/', $monthYear, $matches)) {
+            return [null, null];
+        }
+
+        $month = (int) $matches[2];
+
+        return $month >= 1 && $month <= 12
+            ? [(int) $matches[1], $month]
+            : [null, null];
     }
 }

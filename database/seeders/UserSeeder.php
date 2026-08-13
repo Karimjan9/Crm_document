@@ -28,6 +28,8 @@ class UserSeeder extends Seeder
             'employee',
             'user',
             'courier',
+            'partner_admin',
+            'partner_operator',
         ];
 
         foreach ($roles as $roleName) {

@@ -205,10 +205,10 @@
             function renderNotifications(items) {
                 container.hidden = items.length === 0;
                 container.innerHTML = items.map(function (item) {
-                    const actionButton = item.action_url
-                        ? `<a href="${escapeHtml(item.action_url)}" class="superadmin-notification__button superadmin-notification__button--backup">
+                    const actionButton = item.action_type === 'sql_backup'
+                        ? `<button type="button" data-backup-action="sql_backup" class="superadmin-notification__button superadmin-notification__button--backup">
                             ${escapeHtml(item.action_label || 'Yuklab olish')}
-                        </a>`
+                        </button>`
                         : '';
 
                     return `
@@ -249,6 +249,73 @@
             }
 
             container.addEventListener('click', function (event) {
+                const backupButton = event.target.closest('[data-backup-action]');
+
+                if (backupButton) {
+                    backupButton.disabled = true;
+
+                    fetch(@json(route('superadmin.monthly_notifications.sql_backup.queue')), {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    })
+                        .then(function (response) {
+                            return response.json().then(function (payload) {
+                                if (!response.ok || !payload.status_url) {
+                                    throw new Error(payload.message || 'SQL backupni navbatga qo\'shib bo\'lmadi.');
+                                }
+
+                                return payload;
+                            });
+                        })
+                        .then(function (payload) {
+                            let attempts = 0;
+                            const poll = function () {
+                                attempts += 1;
+
+                                if (attempts > 300) {
+                                    throw new Error('SQL backup tayyorlash vaqti tugadi.');
+                                }
+
+                                return fetch(payload.status_url, {
+                                    headers: { 'Accept': 'application/json' }
+                                })
+                                    .then(function (response) {
+                                        return response.json().then(function (status) {
+                                            if (!response.ok) {
+                                                throw new Error(status.message || 'Backup holatini tekshirib bo\'lmadi.');
+                                            }
+
+                                            if (status.status === 'ready' && status.download_url) {
+                                                window.location.assign(status.download_url);
+                                                return;
+                                            }
+
+                                            if (status.status === 'failed') {
+                                                throw new Error('SQL backup tayyorlashda xatolik yuz berdi.');
+                                            }
+
+                                            return new Promise(function (resolve) {
+                                                window.setTimeout(function () {
+                                                    resolve(poll());
+                                                }, 1000);
+                                            });
+                                        });
+                                    });
+                            };
+
+                            return poll();
+                        })
+                        .catch(function (error) {
+                            backupButton.disabled = false;
+                            backupButton.textContent = error.message || 'Qayta urinib ko\'ring';
+                        });
+
+                    return;
+                }
+
                 const button = event.target.closest('[data-read-id]');
 
                 if (!button) {

@@ -3,37 +3,95 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\GenerateExcelExport;
 use App\Models\ClientsModel;
 use App\Models\DocumentsModel;
 use App\Models\User;
 use App\Support\ExcelWorkbookBuilder;
-use Illuminate\Http\Response;
-use Illuminate\Support\Collection;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ExcelExportController extends Controller
 {
-    public function __construct(private ExcelWorkbookBuilder $builder)
+    public function __construct(private ExcelWorkbookBuilder $builder) {}
+
+    public function queue(string $dataset): JsonResponse
     {
+        abort_unless(in_array($dataset, ['clients', 'documents', 'employees', 'all'], true), 404);
+        $token = Str::random(64);
+
+        Cache::put($this->cacheKey($token), [
+            'status' => 'queued',
+            'user_id' => (int) auth()->id(),
+        ], now()->addHours(2));
+        GenerateExcelExport::dispatch($dataset, $token, (int) auth()->id());
+
+        return response()->json([
+            'status' => 'queued',
+            'token' => $token,
+            'status_url' => route('superadmin.excel.status', ['token' => $token]),
+        ], 202);
     }
 
-    public function download(string $dataset): Response
+    public function status(string $token): JsonResponse
+    {
+        $export = Cache::get($this->cacheKey($token));
+        abort_unless($this->ownedExport($export), 404);
+
+        return response()->json([
+            'status' => $export['status'],
+            'download_url' => $export['status'] === 'ready'
+                ? route('superadmin.excel.file', ['token' => $token])
+                : null,
+            'filename' => $export['filename'] ?? null,
+        ]);
+    }
+
+    public function file(string $token)
+    {
+        $export = Cache::get($this->cacheKey($token));
+        abort_unless($this->ownedExport($export) && $export['status'] === 'ready', 404);
+
+        $disk = Storage::disk('private');
+        abort_unless($disk->exists($export['path']), 404);
+
+        return $disk->download($export['path'], $export['filename'], [
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
+    public function buildQueuedExport(string $dataset): array
+    {
+        $payload = $this->buildPayload($dataset);
+
+        return [
+            'content' => $this->builder->build($payload['title'], $payload['sheets']),
+            'filename' => $payload['filename'],
+        ];
+    }
+
+    public function buildPayload(string $dataset): array
     {
         abort_unless(in_array($dataset, ['clients', 'documents', 'employees', 'all'], true), 404);
 
-        $payload = match ($dataset) {
+        return match ($dataset) {
             'clients' => $this->buildClientsWorkbook(),
             'documents' => $this->buildDocumentsWorkbook(),
             'employees' => $this->buildEmployeesWorkbook(),
             default => $this->buildFullWorkbook(),
         };
+    }
 
-        return response($this->builder->build($payload['title'], $payload['sheets']), 200, [
-            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $payload['filename'] . '"',
-            'Cache-Control' => 'max-age=0, no-cache, no-store, must-revalidate',
-            'Pragma' => 'public',
-            'Expires' => '0',
-        ]);
+    private function cacheKey(string $token): string
+    {
+        return 'queued-excel-export:'.$token;
+    }
+
+    private function ownedExport(mixed $export): bool
+    {
+        return is_array($export) && (int) ($export['user_id'] ?? 0) === (int) auth()->id();
     }
 
     private function buildClientsWorkbook(): array
@@ -225,23 +283,23 @@ class ExcelExportController extends Controller
                 $price = $addon->pivot?->addon_price;
                 $deadline = $addon->pivot?->addon_deadline;
 
-                return trim($addon->name . ' | ' . $this->formatAmountText($price) . ' | ' . $this->formatDaysText($deadline));
+                return trim($addon->name.' | '.$this->formatAmountText($price).' | '.$this->formatDaysText($deadline));
             });
 
             $typeAddons = $document->document_type_addons->map(function ($addon) {
-                return trim($addon->name . ' | ' . $this->formatAmountText($addon->pivot?->addon_price ?? $addon->amount) . ' | ' . $this->formatDaysText($addon->day));
+                return trim($addon->name.' | '.$this->formatAmountText($addon->pivot?->addon_price ?? $addon->amount).' | '.$this->formatDaysText($addon->day));
             });
 
             $directionAddons = $document->document_direction_addons->map(function ($addon) {
-                return trim($addon->name . ' | ' . $this->formatAmountText($addon->pivot?->addon_price ?? $addon->amount) . ' | ' . $this->formatDaysText($addon->day));
+                return trim($addon->name.' | '.$this->formatAmountText($addon->pivot?->addon_price ?? $addon->amount).' | '.$this->formatDaysText($addon->day));
             });
 
             $payments = $document->payments->map(function ($payment) {
-                return trim($payment->payment_type . ' | ' . $this->formatAmountText($payment->amount) . ' | ' . $this->formatDate($payment->created_at));
+                return trim($payment->payment_type.' | '.$this->formatAmountText($payment->amount).' | '.$this->formatDate($payment->created_at));
             });
 
             $processCharges = $document->processCharges->map(function ($charge) {
-                return trim(($charge->name ?: $charge->charge_type) . ' | ' . $this->formatAmountText($charge->price) . ' | ' . $this->formatDaysText($charge->days));
+                return trim(($charge->name ?: $charge->charge_type).' | '.$this->formatAmountText($charge->price).' | '.$this->formatDaysText($charge->days));
             });
 
             return [
@@ -598,7 +656,7 @@ class ExcelExportController extends Controller
 
     private function makeFilename(string $slug): string
     {
-        return 'global-voice-' . $slug . '-' . now()->format('Y-m-d-His') . '.xls';
+        return 'global-voice-'.$slug.'-'.now()->format('Y-m-d-His').'.xls';
     }
 
     private function textCell(mixed $value): array
@@ -653,8 +711,7 @@ class ExcelExportController extends Controller
         }
 
         return $this->implodeUnique(
-            $user->roles->pluck('name')->map(fn ($name) => str_replace('_', ' ', (string) $name))
-        , ', ');
+            $user->roles->pluck('name')->map(fn ($name) => str_replace('_', ' ', (string) $name)), ', ');
     }
 
     private function personLabel(mixed $user): string
@@ -670,7 +727,7 @@ class ExcelExportController extends Controller
             return '';
         }
 
-        return $login !== '' ? trim($name . ' (' . $login . ')') : $name;
+        return $login !== '' ? trim($name.' ('.$login.')') : $name;
     }
 
     private function implodeUnique(iterable $values, string $separator = "\n"): string
@@ -698,7 +755,7 @@ class ExcelExportController extends Controller
             return '';
         }
 
-        return (int) $value . ' kun';
+        return (int) $value.' kun';
     }
 
     private function bytesToMegabytes(mixed $value): float

@@ -38,12 +38,6 @@ class DocumentTypeController extends Controller
         return redirect()->route('superadmin.document_type.index')->with('success', 'Document Type created successfully.');
     }
 
-    
-    public function show($id)
-    {
-        //
-    }
-
   
     public function edit($id)
     {

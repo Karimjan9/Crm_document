@@ -16,7 +16,32 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('notifications:create-monthly')
-            ->dailyAt('00:05');
+            ->dailyAt('00:05')
+            ->withoutOverlapping();
+
+        $schedule->command('notifications:deliver')
+            ->everyFiveMinutes()
+            ->withoutOverlapping();
+
+        $schedule->command('expenses:generate-recurring')
+            ->dailyAt('00:15')
+            ->withoutOverlapping();
+
+        $schedule->command('orders:send-deadline-alerts')
+            ->hourly()
+            ->withoutOverlapping();
+
+        $schedule->command('finance:scan-margin-leaks')
+            ->dailyAt('00:30')
+            ->withoutOverlapping();
+
+        $schedule->command('sanctum:prune-expired --hours=24')
+            ->dailyAt('01:00')
+            ->withoutOverlapping();
+
+        $schedule->command('b2b:generate-invoices')
+            ->monthlyOn(1, '00:20')
+            ->withoutOverlapping();
     }
 
     /**

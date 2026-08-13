@@ -38,6 +38,9 @@
 	<link rel="stylesheet" href="{{ url('assets/css/dark-theme.css') }}" />
 	<link rel="stylesheet" href="{{ url('assets/css/semi-dark.css') }}" />
 	<link rel="stylesheet" href="{{ url('assets/css/header-colors.css') }}" />
+	@if (file_exists(public_path('build/manifest.json')))
+		@vite(['resources/css/app.css', 'resources/js/app.js'])
+	@endif
 
 	@yield('style')
 	@stack('style')

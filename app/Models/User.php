@@ -24,6 +24,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'filial_id',
+        'partner_id',
         'login',
         'phone',
         'password',
@@ -53,9 +54,14 @@ class User extends Authenticatable
 
    
    
-     public function filial()
+    public function filial()
     {
         return $this->belongsTo(FilialModel::class);
+    }
+
+    public function partner()
+    {
+        return $this->belongsTo(Partner::class);
     }
 
     public function createdDocuments()

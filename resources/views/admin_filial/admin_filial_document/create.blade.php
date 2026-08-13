@@ -359,6 +359,7 @@ body{
                     <option value="cash" {{ old('payment_type') == 'cash' ? 'selected':'' }}>Naqd</option>
                     <option value="card" {{ old('payment_type') == 'card' ? 'selected':'' }}>Plastik karta</option>
                     <option value="online" {{ old('payment_type') == 'online' ? 'selected' : '' }}>Onlayn</option>
+                    <option value="transfer" {{ old('payment_type') == 'transfer' ? 'selected' : '' }}>Bank transfer</option>
                     <option value="admin_entry" {{ old('payment_type') == 'admin_entry' ? 'selected' : '' }}>Boshqalar</option>
                 </select>
             </div>
@@ -385,6 +386,10 @@ body{
 @section('script_include_end_body')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, character => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+}[character]));
+
 $(function(){
     const progressBar = $('#progressBar');
     function updateProgress(step){ progressBar.css('width', step===1?'50%':'100%'); }
@@ -408,16 +413,22 @@ $(function(){
         if(q.length<3){ $('#phoneSearchResults').hide().html(''); return; }
         timer=setTimeout(()=>{
             $.get("{{ route('admin_filial.clients.search') }}",{q:q},function(res){
-                let html='';
-                if(!res || res.length===0){
-                    html='<div class="new-client-btn">➕ Yangi mijoz yaratish</div>';
+                const resultContainer = $('#phoneSearchResults').empty().css({display:'flex', flexDirection:'column', gap:'6px'});
+                if (!res || res.length === 0) {
+                    resultContainer.append($('<div>').addClass('new-client-btn').text('Yangi mijoz yaratish'));
                 } else {
-                    res.forEach(item=>{
-                        html+=`<div class="result-item" data-id="${item.id}" data-phone="${item.phone_number}" data-name="${item.name}">${item.name} — ${item.phone_number}</div>`;
+                    res.forEach(item => {
+                        resultContainer.append($('<div>')
+                            .addClass('result-item')
+                            .text(`${item.name} — ${item.phone_number}`)
+                            .attr({
+                                'data-id': Number(item.id),
+                                'data-phone': item.phone_number || '',
+                                'data-name': item.name || '',
+                            }));
                     });
-                    html+='<div class="new-client-btn">➕ Yangi mijoz yaratish</div>';
+                    resultContainer.append($('<div>').addClass('new-client-btn').text('Yangi mijoz yaratish'));
                 }
-                $('#phoneSearchResults').html(html).css({display:'flex', flexDirection:'column', gap:'6px'});
             });
         },200);
     });
@@ -453,7 +464,16 @@ $(function(){
         $('#addonsList').html('');
         if(!sid){ $('#addonsContainer').slideUp(); updatePrice(); return; }
         addonsData.filter(a=>a.service_id==sid).forEach(a=>{
-            $('#addonsList').append(`<label class="addon-badge"><input type="checkbox" class="addon-checkbox" name="addons[]" value="${a.id}" data-price="${a.price}" style="margin-right:6px">${a.name} (+${a.price})</label>`);
+            const addonLabel = $('<label>').addClass('addon-badge');
+            addonLabel.append($('<input>').attr({
+                type: 'checkbox',
+                class: 'addon-checkbox',
+                name: 'addons[]',
+                value: Number(a.id),
+                'data-price': Number(a.price || 0),
+            }).css('margin-right', '6px'));
+            addonLabel.append(document.createTextNode(`${a.name} (+${Number(a.price || 0)})`));
+            $('#addonsList').append(addonLabel);
         });
         $('#addonsContainer').slideDown();
         updatePrice();

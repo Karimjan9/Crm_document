@@ -3,12 +3,14 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class StoreUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()?->hasAnyRole(['admin_manager', 'super_admin']) ?? false;
     }
 
     public function rules(): array
@@ -16,10 +18,10 @@ class StoreUserRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'login' => 'required|string|unique:users,login',
-            'phone' => 'required|digits:9|integer|unique:users,phone',
-            'password' => 'required|confirmed|min:6',
-            'role' => 'required|string',
-            'filial_id' => 'required_if:role,employee,admin_filial|nullable|integer|exists:filial,id',
+            'phone' => 'required|digits:9|unique:users,phone',
+            'password' => ['required', 'string', 'confirmed', Password::min(12)],
+            'role' => ['required', 'string', Rule::in($this->allowedRoles())],
+            'filial_id' => 'required_if:role,employee,admin_filial,courier|nullable|integer|exists:filial,id',
         ];
     }
 
@@ -41,14 +43,23 @@ class StoreUserRequest extends FormRequest
 
             'password.required' => 'Parol kiritish majburiy.',
             'password.confirmed' => 'Parollar bir-biriga mos emas.',
-            'password.min' => 'Parol kamida 6 belgidan iborat bolishi kerak.',
+            'password.min' => 'Parol kamida 12 belgidan iborat bolishi kerak.',
 
             'role.required' => 'Foydalanuvchi roli tanlanishi shart.',
             'role.string' => 'Rol nomi matn korinishida bolishi kerak.',
 
-            'filial_id.required_if' => 'Employee yoki admin filial uchun filial tanlanishi shart.',
+            'filial_id.required_if' => 'Employee, courier yoki admin filial uchun filial tanlanishi shart.',
             'filial_id.integer' => 'Filial identifikatori notogri formatda.',
             'filial_id.exists' => 'Tanlangan filial mavjud emas.',
         ];
+    }
+
+    protected function allowedRoles(): array
+    {
+        if ($this->user()?->hasRole('super_admin')) {
+            return ['employee', 'admin_filial', 'courier', 'admin_manager', 'super_admin'];
+        }
+
+        return ['employee', 'admin_filial', 'courier'];
     }
 }

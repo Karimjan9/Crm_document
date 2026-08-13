@@ -4,12 +4,13 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\DocumentsModel;
 
 class DocumentCreateRequest extends FormRequest
 {
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        return $this->user()?->can('create', DocumentsModel::class) ?? false;
     }
 
     /**
@@ -57,17 +58,40 @@ class DocumentCreateRequest extends FormRequest
 {
     $rules = [
         'client_id'    => 'nullable|exists:clients,id',
+        'order_id'     => 'nullable|integer|exists:orders,id',
         'new_client_name'  => 'nullable|string|max:255',
         'new_client_phone' => ['nullable','regex:/^\d{9}$/'],
         'new_client_desc'  => 'nullable|string|max:500',
+        'filial_id'        => [
+            'nullable',
+            'integer',
+            'exists:filial,id',
+            Rule::requiredIf(fn () => auth()->user()?->filial_id === null),
+        ],
         'service_id'       => 'required|exists:services,id',
         'addons'           => 'nullable|array',
         'addons.*'         => 'nullable|exists:service_addons,id',
         'selected_addons'  => 'nullable|json',
         'discount'         => 'nullable|numeric|min:0',
+        'discount_type'    => 'nullable|in:percent,amount',
+        'pricing_variant'  => 'nullable|in:standard,express,rush,corporate,seasonal',
+        'variant'          => 'nullable|in:standard,express,rush,corporate,seasonal',
+        'season_code'      => 'nullable|string|max:60',
+        'pricing_as_of'    => 'nullable|date',
+        'pricing_approval_id' => 'nullable|integer|exists:pricing_approvals,id',
+        'pricing_approval_token' => 'nullable|string|size:48',
+        'partner_id'        => 'nullable|integer|exists:partners,id',
+        'tax_percent'      => 'nullable|numeric|min:0|max:100',
         'final_price'      => 'nullable|numeric|min:0',
         'paid_amount'      => 'nullable|numeric|min:0',
-        'payment_type'     => 'nullable|string|in:cash,card,online,admin_entry,transfer',
+        'payment_type'     => [
+            'nullable',
+            'string',
+            'in:cash,card,online,transfer,admin_entry',
+            Rule::requiredIf(fn () => (float) $this->input('paid_amount', 0) > 0),
+        ],
+        'files'            => 'nullable|array|max:10',
+        'files.*'          => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
         'description'      => 'nullable|string|max:2000',
         'document_type_id' => 'required|exists:document_type,id',
         'package_template_id' => 'nullable|exists:package_templates,id',

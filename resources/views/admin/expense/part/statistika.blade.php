@@ -182,10 +182,10 @@ flatpickr("#monthYear", {
 
 // Chart
 const ctx = document.getElementById('expenseChart').getContext('2d');
-const labels = {!! json_encode($chartData->keys()->map(function($user_id) use ($users) {
+const labels = @json($chartData->keys()->map(function($user_id) use ($users) {
     $user = $users->firstWhere('id', $user_id);
     return $user ? $user->name : 'Noma\'lum';
-})) !!};
+}));
 
 const backgroundColors = [
     '#2563eb','#3b82f6','#60a5fa','#2563eb','#1d4ed8','#3b82f6','#60a5fa','#2563eb'
@@ -195,7 +195,7 @@ const data = {
     labels: labels,
     datasets: [{
         label: 'Xarajatlar summasi (so\'m)',
-        data: {!! json_encode($chartData->values()) !!},
+        data: @json($chartData->values()),
         backgroundColor: backgroundColors,
         borderColor: backgroundColors.map(c => c),
         borderWidth: 1

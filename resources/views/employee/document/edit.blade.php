@@ -195,6 +195,10 @@ body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
 $(function(){
     if ($.fn.select2) $('.select2').select2({ width: '100%' });
 
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[character]));
+
     let selectedAddons = @json($document->addons->pluck('id')) || [];
     selectedAddons = selectedAddons.map(x => String(x));
     const addonsBaseTemplate = "{{ route('employee.get_service_addons', ['service' => ':id']) }}";
@@ -220,15 +224,15 @@ $(function(){
                 let checked = preSelected.includes(String(a.id)) ? 'checked' : '';
                 html += `<label class="addon-box">
                             <div>
-                                <b>${a.name}</b><br>
+                                <b>${escapeHtml(a.name)}</b><br>
                                 <small class="text-muted">${Number(a.price).toLocaleString()} so'm</small>
                             </div>
                             <input
                                 type="checkbox"
                                 name="addons[]"
                                 class="addonCheckbox"
-                                data-price="${a.price}"
-                                value="${a.id}"
+                                data-price="${Number(a.price || 0)}"
+                                value="${Number(a.id || 0)}"
                                 ${checked}
                             />
                         </label>`;

@@ -1,0 +1,3 @@
+# Install as /etc/cron.d/crm-document-scheduler after changing the path and user.
+# Laravel scheduler is evaluated every minute; the application schedule prevents overlaps.
+* * * * * www-data cd /var/www/crm-document && php artisan schedule:run >> /dev/null 2>&1

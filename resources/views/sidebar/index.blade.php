@@ -88,6 +88,10 @@
     <ul>
         <li><a href="{{ route('superadmin.document.statistika') }}"><i class='bx bx-bar-chart'></i> Document</a></li>
         <li><a href="{{ route('superadmin.document.index') }}"><i class='bx bx-task'></i> Document work</a></li>
+        <li><a href="{{ route('documents.workflow.index') }}"><i class='bx bx-columns'></i> Ishlar Kanban</a></li>
+        <li><a href="{{ route('orders.index') }}"><i class='bx bx-layer'></i> Buyurtmalar</a></li>
+        <li><a href="{{ route('admin.partners.index') }}"><i class='bx bx-briefcase-alt-2'></i> B2B Partners</a></li>
+        <li><a href="{{ route('admin.pricing.index') }}"><i class='bx bx-purchase-tag'></i> Tariflar</a></li>
     </ul>
 </li>
 
@@ -136,6 +140,9 @@
     <ul>
         <li><a href="{{ route('superadmin.expense.index') }}"><i class='bx bx-receipt'></i> Xarajatlar</a></li>
         <li><a href="{{ route('superadmin.statistika') }}"><i class='bx bx-line-chart'></i> Statistika</a></li>
+        @if(auth()->user()?->hasAnyRole(['admin_filial', 'admin_manager', 'super_admin']))
+            <li><a href="{{ route('finance.ledger.index') }}"><i class='bx bx-money'></i> Payment ledger</a></li>
+        @endif
     </ul>
 </li>
 
@@ -181,6 +188,39 @@
     </a>
 </li>
 
+@endrole
+
+@hasanyrole('employee|admin_filial')
+<li>
+    <a href="{{ route('orders.index') }}">
+        <div class="parent-icon"><i class='bx bx-layer'></i></div>
+        <div class="menu-title">Buyurtmalar</div>
+    </a>
+</li>
+<li>
+    <a href="{{ route('documents.workflow.index') }}">
+        <div class="parent-icon"><i class='bx bx-columns'></i></div>
+        <div class="menu-title">Ishlar Kanban</div>
+    </a>
+</li>
+@endrole
+
+@hasrole('courier')
+<li>
+    <a href="{{ route('courier.orders.index') }}">
+        <div class="parent-icon"><i class='bx bx-package'></i></div>
+        <div class="menu-title">Buyurtma yetkazish</div>
+    </a>
+</li>
+@endrole
+
+@hasanyrole('partner_admin|partner_operator')
+<li>
+    <a href="{{ route('partner.dashboard') }}">
+        <div class="parent-icon"><i class='bx bx-briefcase-alt-2'></i></div>
+        <div class="menu-title">Partner kabineti</div>
+    </a>
+</li>
 @endrole
 
 </ul>

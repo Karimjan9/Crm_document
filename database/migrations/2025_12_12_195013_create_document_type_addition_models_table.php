@@ -14,8 +14,6 @@ return new class extends Migration
     public function up()
     {
         Schema::create('document_type_addition', function (Blueprint $table) {
-        Schema::dropIfExists('document_type_addition');
-
             $table->id();
             $table->unsignedBigInteger('document_type_id');
             $table->string('name');

@@ -13,7 +13,7 @@ class RektorCurrencyRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return auth()->check();
     }
 
     /**
@@ -38,4 +38,3 @@ class RektorCurrencyRequest extends FormRequest
     ];
 }
 }
-

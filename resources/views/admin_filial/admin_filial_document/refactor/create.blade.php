@@ -245,6 +245,17 @@
                             + Yangi mijoz
                         </button>
                     </div>
+                    @if(auth()->user()?->filial_id === null && isset($filials) && $filials->isNotEmpty())
+                        <div class="col-12 mt-3">
+                            <label for="document_filial_id" class="form-label">Filial</label>
+                            <select id="document_filial_id" class="form-select" required>
+                                <option value="">Filialni tanlang...</option>
+                                @foreach($filials as $filial)
+                                    <option value="{{ $filial->id }}">{{ $filial->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -509,6 +520,12 @@
                         </select>
                     </div>
 
+                    <div class="row g-2 mb-3 pricing-options">
+                        <div class="col-md-4"><label class="form-label">Narx varianti</label><select class="form-select pricing-variant"><option value="standard">Standard</option><option value="express">Express</option><option value="rush">Rush</option><option value="seasonal">Seasonal</option><option value="corporate">Corporate</option></select></div>
+                        <div class="col-md-4"><label class="form-label">Season code</label><input class="form-control season-code" placeholder="summer-2026"></div>
+                        <div class="col-md-4"><label class="form-label">Tax %</label><input class="form-control tax-percent" type="number" min="0" max="100" step="0.01" value="0"></div>
+                    </div>
+
                     <div class="additional-services-service mb-3" style="display: none;">
                         <h6>Qo'shimcha xizmatlar (Xizmat):</h6>
                         <div class="services-list-service"></div>
@@ -525,6 +542,14 @@
                     <div class="mb-3">
                         <label class="form-label">Diskont (so'm)</label>
                         <input class="form-control discount" type="number" min="0" placeholder="0">
+                        <div class="pricing-approval-box border rounded p-2 mt-2 d-none">
+                            <div class="small text-warning mb-2">Bu chegirma admin tasdig‘ini talab qiladi.</div>
+                            <input class="form-control approval-reason mb-2" maxlength="2000" placeholder="Chegirma sababi">
+                            <input type="hidden" class="pricing-approval-id">
+                            <input type="hidden" class="pricing-approval-token">
+                            <button type="button" class="btn btn-outline-warning request-approval">Approval so‘rash</button>
+                            <span class="approval-status small ms-2"></span>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Final narx</label>
@@ -618,6 +643,17 @@
 
 <script>
 const apiBase = @json($apiBase ?? url('admin_filial/api'));
+const currentOrderId = @json($orderId ?? null);
+const pricingApprovalUrl = @json(route('pricing.approvals.store'));
+const pricingApprovalPercent = @json((float) config('pricing.discount_approval_percent', 15));
+const pricingApprovalAmount = @json((float) config('pricing.discount_approval_amount', 500000));
+const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, character => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+}[character]));
 
 let globalTotalAmount = 0;
 let globalTotalDiscount = 0;
@@ -739,6 +775,11 @@ class WizardManager {
                 legalization: processPayload.legalization,
                 selected_addons: controller ? controller.getSelectedAddons() : [],
                 service: getData('.service'),
+                pricing_variant: getData('.pricing-variant') || 'standard',
+                season_code: getData('.season-code'),
+                tax_percent: getData('.tax-percent') || '0',
+                pricing_approval_id: getData('.pricing-approval-id'),
+                pricing_approval_token: getData('.pricing-approval-token'),
                 discount: getData('.discount'),
                 payment_amount: getData('.payment-amount'),
                 payment_type: getData('.payment-type'),
@@ -784,6 +825,7 @@ class WizardManager {
 
             return {
                 client_id: clientId,
+                filial_id: this.normalizeSaveValue(document.getElementById('document_filial_id')?.value),
                 document_type_id: this.normalizeSaveValue(wizardData.document_type),
                 service_id: this.normalizeSaveValue(wizardData.service),
                 process_mode: processMode,
@@ -804,6 +846,11 @@ class WizardManager {
                     ? this.normalizeSaveValue(wizardData.legalization?.id)
                     : null,
                 discount: this.normalizeSaveValue(wizardData.discount) || '0',
+                pricing_variant: this.normalizeSaveValue(wizardData.pricing_variant) || 'standard',
+                season_code: this.normalizeSaveValue(wizardData.season_code),
+                tax_percent: this.normalizeSaveValue(wizardData.tax_percent) || '0',
+                pricing_approval_id: this.normalizeSaveValue(wizardData.pricing_approval_id),
+                pricing_approval_token: this.normalizeSaveValue(wizardData.pricing_approval_token),
                 paid_amount: this.normalizeSaveValue(wizardData.payment_amount) || '0',
                 payment_type: this.normalizeSaveValue(wizardData.payment_type),
                 description: this.normalizeSaveValue(wizardData.description),
@@ -895,6 +942,9 @@ class WizardManager {
 
             const formData = new FormData();
             formData.append('client_id', String(clientId));
+            if (currentOrderId) {
+                formData.append('order_id', String(currentOrderId));
+            }
             formData.append('items_payload', JSON.stringify(this.buildBatchSavePayload(data, clientId)));
             this.appendBatchFiles(formData);
 
@@ -1313,7 +1363,7 @@ class WizardController {
             item.className = 'file-item';
             item.innerHTML = `
                 <div class="file-info">
-                    <div class="file-name">${file.name}</div>
+                    <div class="file-name">${escapeHtml(file.name)}</div>
                     <div class="file-size">${this.formatSize(file.size)}</div>
                 </div>
                 <button type="button" class="file-remove" data-index="${i}">x</button>
@@ -1354,6 +1404,28 @@ class WizardController {
         const discountInput = w.querySelector('.discount');
         const totalAmount = w.querySelector('.total-amount');
         const finalAmount = w.querySelector('.final-amount');
+        const approvalBox = w.querySelector('.pricing-approval-box');
+        const approvalReason = w.querySelector('.approval-reason');
+        const approvalId = w.querySelector('.pricing-approval-id');
+        const approvalToken = w.querySelector('.pricing-approval-token');
+        const approvalButton = w.querySelector('.request-approval');
+        const approvalStatus = w.querySelector('.approval-status');
+
+        const clearApproval = () => {
+            if (approvalId) approvalId.value = '';
+            if (approvalToken) approvalToken.value = '';
+            if (approvalStatus) approvalStatus.textContent = '';
+        };
+
+        const updateApprovalVisibility = (totalBeforeDiscount) => {
+            const discount = parseFloat(discountInput?.value || 0);
+            const needsApproval = discount > 0 && (
+                discount >= pricingApprovalAmount ||
+                (totalBeforeDiscount > 0 && ((discount / totalBeforeDiscount) * 100) >= pricingApprovalPercent)
+            );
+            approvalBox?.classList.toggle('d-none', !needsApproval);
+            if (!needsApproval) clearApproval();
+        };
 
         const calculate = () => {
             const servicePrice = parseFloat(serviceSelect?.selectedOptions?.[0]?.dataset?.price || 0);
@@ -1378,12 +1450,45 @@ class WizardController {
 
             if (totalAmount) totalAmount.value = totalBeforeDiscount.toLocaleString();
             if (finalAmount) finalAmount.value = final.toLocaleString();
+            updateApprovalVisibility(totalBeforeDiscount);
 
             updateGlobalTotals();
         };
 
         serviceSelect?.addEventListener('change', calculate);
         discountInput?.addEventListener('input', calculate);
+        approvalButton?.addEventListener('click', async () => {
+            const discount = parseFloat(discountInput?.value || 0);
+            const reason = String(approvalReason?.value || '').trim();
+            const total = this.getTotals().totalAmount;
+            if (!reason) {
+                if (approvalStatus) approvalStatus.textContent = 'Avval sabab yozing.';
+                return;
+            }
+            approvalButton.disabled = true;
+            if (approvalStatus) approvalStatus.textContent = 'Yuborilmoqda...';
+            try {
+                const body = new FormData();
+                body.append('discount_amount', String(discount));
+                body.append('discount_percent', String(total > 0 ? (discount / total) * 100 : 0));
+                body.append('reason', reason);
+                if (currentOrderId) body.append('order_id', String(currentOrderId));
+                const response = await fetch(pricingApprovalUrl, {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '' },
+                    body,
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Approval yuborilmadi.');
+                if (approvalId) approvalId.value = result?.data?.id || '';
+                if (approvalToken) approvalToken.value = result?.approval_token || '';
+                if (approvalStatus) approvalStatus.textContent = `So‘rov yuborildi (#${result?.data?.id || '—'}).`;
+            } catch (error) {
+                if (approvalStatus) approvalStatus.textContent = error.message;
+            } finally {
+                approvalButton.disabled = false;
+            }
+        });
         w.querySelectorAll('.apostil-g1, .apostil-g2, .consul-main').forEach(el => el.addEventListener('change', calculate));
         w.querySelector('.legalization')?.addEventListener('change', calculate);
         w.querySelectorAll('.btn-process, .btn-legalization-mode').forEach(el => el.addEventListener('click', calculate));
@@ -1462,30 +1567,30 @@ class WizardController {
         if (selectedAddons.length > 0) {
             addonsHtml = `<div class="mt-2"><strong>Qo'shimcha xizmatlar:</strong><ul class="mb-0">`;
             selectedAddons.forEach(addon => {
-                addonsHtml += `<li>${addon.name} - ${parseFloat(addon.price).toLocaleString()} so'm (${addon.type})</li>`;
+                addonsHtml += `<li>${escapeHtml(addon.name)} - ${parseFloat(addon.price).toLocaleString()} so'm (${escapeHtml(addon.type)})</li>`;
             });
             addonsHtml += '</ul></div>';
         }
 
-        let processHtml = `<p class="mb-1"><strong>Jarayon:</strong> ${processLabels[processPayload.viewMode] || 'Tanlanmagan'}</p>`;
+        let processHtml = `<p class="mb-1"><strong>Jarayon:</strong> ${escapeHtml(processLabels[processPayload.viewMode] || 'Tanlanmagan')}</p>`;
         if (processPayload.processMode === 'apostil') {
-            processHtml += `<p class="mb-1"><strong>Yo'nalish:</strong> ${directionType}</p>`;
+            processHtml += `<p class="mb-1"><strong>Yo'nalish:</strong> ${escapeHtml(directionType)}</p>`;
         }
         if (processPayload.processMode === 'consul') {
-            processHtml += `<p class="mb-1"><strong>Tanlov turi:</strong> ${selectionLabels[processPayload.selectionMode] || 'Tanlanmagan'}</p>`;
-            if (processPayload.consul.consul_id) processHtml += `<p class="mb-1"><strong>Konsullik:</strong> ${consulName}</p>`;
-            if (processPayload.legalization.id) processHtml += `<p class="mb-1"><strong>Legalizatsiya:</strong> ${legalizationName}</p>`;
+            processHtml += `<p class="mb-1"><strong>Tanlov turi:</strong> ${escapeHtml(selectionLabels[processPayload.selectionMode] || 'Tanlanmagan')}</p>`;
+            if (processPayload.consul.consul_id) processHtml += `<p class="mb-1"><strong>Konsullik:</strong> ${escapeHtml(consulName)}</p>`;
+            if (processPayload.legalization.id) processHtml += `<p class="mb-1"><strong>Legalizatsiya:</strong> ${escapeHtml(legalizationName)}</p>`;
         }
 
         confirmInfo.innerHTML = `
             <div class="card">
                 <div class="card-body">
                     <h6 class="card-subtitle mb-3 text-muted">Hujjat ma'lumoti</h6>
-                    <p class="mb-1"><strong>Hujjat turi:</strong> ${docType}</p>
+                    <p class="mb-1"><strong>Hujjat turi:</strong> ${escapeHtml(docType)}</p>
                     ${processHtml}
                     <hr>
                     <h6 class="card-subtitle mb-3 text-muted">Xizmat ma'lumoti</h6>
-                    <p class="mb-1"><strong>Xizmat:</strong> ${service}</p>
+                    <p class="mb-1"><strong>Xizmat:</strong> ${escapeHtml(service)}</p>
                     ${addonsHtml}
                     <hr>
                     <h6 class="card-subtitle mb-3 text-muted">Narx tafsilotlari</h6>
@@ -1499,7 +1604,7 @@ class WizardController {
                     <p class="mb-1 text-success"><strong>Yakuniy narx:</strong> ${totals.finalAmount.toLocaleString()} so'm</p>
                     <hr>
                     <h6 class="card-subtitle mb-3 text-muted">To'lov</h6>
-                    <p class="mb-1"><strong>To'lov turi:</strong> ${paymentType}</p>
+                    <p class="mb-1"><strong>To'lov turi:</strong> ${escapeHtml(paymentType)}</p>
                     <p class="mb-1"><strong>To'lov summasi:</strong> ${parseFloat(paymentAmount || 0).toLocaleString()} so'm</p>
                     ${parseFloat(paymentAmount) < totals.finalAmount ? `<p class="mb-1 text-warning"><strong>Qoldiq:</strong> ${(totals.finalAmount - parseFloat(paymentAmount)).toLocaleString()} so'm</p>` : ''}
                     <hr>
@@ -1638,19 +1743,19 @@ class WizardController {
             const uniqueId = `addon-${containerType}-${Date.now()}-${index}`;
             const sourceType = addon.sourceType || containerType;
             html += `
-                <div class="service-addon-item" data-price="${addon.amount}" data-id="${addon.id || index}" data-source-type="${sourceType}">
+                <div class="service-addon-item" data-price="${Number(addon.amount || 0)}" data-id="${Number(addon.id || index)}" data-source-type="${escapeHtml(sourceType)}">
                     <div class="d-flex align-items-center flex-grow-1">
                         <input type="checkbox"
                             class="form-check-input service-addon-checkbox service-addon-checkbox-${containerType}"
                             id="${uniqueId}"
-                            data-price="${addon.amount}"
-                            data-name="${addon.name}"
-                            data-id="${addon.id || index}"
+                            data-price="${Number(addon.amount || 0)}"
+                            data-name="${escapeHtml(addon.name)}"
+                            data-id="${Number(addon.id || index)}"
                             data-container="${containerType}"
-                            data-source-type="${sourceType}">
+                            data-source-type="${escapeHtml(sourceType)}">
                         <label for="${uniqueId}" class="flex-grow-1 mb-0 cursor-pointer">
-                            <div class="service-addon-name">${addon.name}</div>
-                            ${addon.description ? `<small class="text-muted">${addon.description}</small>` : ''}
+                            <div class="service-addon-name">${escapeHtml(addon.name)}</div>
+                            ${addon.description ? `<small class="text-muted">${escapeHtml(addon.description)}</small>` : ''}
                         </label>
                     </div>
                     <div class="service-addon-price">${parseFloat(addon.amount).toLocaleString()} so'm</div>
@@ -1758,6 +1863,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
+        const selectedFilial = document.getElementById('document_filial_id')?.value;
+        if (selectedFilial) data.filial_id = selectedFilial;
 
         try {
             const response = await fetch(`${apiBase}/clients`, {
@@ -1817,7 +1924,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const alertHtml = `
             <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
                  role="alert" style="z-index: 9999;">
-                <i class="bi bi-check-circle-fill me-2"></i>${message}
+                <i class="bi bi-check-circle-fill me-2"></i>${escapeHtml(message)}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         `;
@@ -1832,7 +1939,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const alertHtml = `
             <div class="alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
                  role="alert" style="z-index: 9999;">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>${message}
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>${escapeHtml(message)}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         `;

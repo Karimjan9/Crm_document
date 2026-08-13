@@ -19,7 +19,12 @@ body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
 
 @section('body')
 <div class="page-wrapper">
-    <form action="{{ route('admin_filial.document.update', $document->id) }}" method="POST">
+    @php
+        $documentRoutePrefix = $documentRoutePrefix ?? 'admin_filial';
+        $addonsUrlTemplate = $addonsUrlTemplate ?? route('admin_filial.get_service_addons', ['service' => ':id']);
+    @endphp
+
+    <form action="{{ route($documentRoutePrefix . '.document.update', $document->id) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -195,9 +200,13 @@ body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
 $(function(){
     if ($.fn.select2) $('.select2').select2({ width: '100%' });
 
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[character]));
+
     let selectedAddons = @json($document->addons->pluck('id')) || [];
     selectedAddons = selectedAddons.map(x => String(x));
-    const addonsBaseTemplate = "{{ route('admin_filial.get_service_addons', ['service' => ':id']) }}";
+    const addonsBaseTemplate = @json($addonsUrlTemplate);
 
     function debounce(fn, wait) {
         let t;
@@ -220,15 +229,15 @@ $(function(){
                 let checked = preSelected.includes(String(a.id)) ? 'checked' : '';
                 html += `<label class="addon-box">
                             <div>
-                                <b>${a.name}</b><br>
+                                <b>${escapeHtml(a.name)}</b><br>
                                 <small class="text-muted">${Number(a.price).toLocaleString()} so'm</small>
                             </div>
                             <input
                                 type="checkbox"
                                 name="addons[]"
                                 class="addonCheckbox"
-                                data-price="${a.price}"
-                                value="${a.id}"
+                                data-price="${Number(a.price || 0)}"
+                                value="${Number(a.id || 0)}"
                                 ${checked}
                             />
                         </label>`;

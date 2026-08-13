@@ -11,6 +11,7 @@ use App\Models\DocumentTypeAdditionModel;
 use App\Models\DocumentTypeModel;
 use App\Models\DirectionTypeModel;
 use App\Models\PackageTemplate;
+use App\Models\FilialModel;
 use App\Models\ServiceAddonModel;
 use App\Models\ServicesModel;
 use App\Support\PackageTemplateSupport;
@@ -25,7 +26,10 @@ class PackageTemplateController extends Controller
     {
         $templates = PackageTemplate::query()
             ->whereHas('items')
-            ->with($this->itemRelations())
+            ->with(array_merge($this->itemRelations(), [
+                'packageFilials.filial:id,name',
+                'packageAddons.serviceAddon:id,name,price,deadline',
+            ]))
             ->ordered()
             ->get();
 
@@ -43,7 +47,7 @@ class PackageTemplateController extends Controller
     {
         $validated = $this->validatePayload($request);
 
-        if ((float) $validated['template']['promo_price'] > (float) $validated['template']['base_price']) {
+        if ((float) $validated['template']['promo_price'] > (float) $validated['template']['standard_price']) {
             return redirect()
                 ->back()
                 ->withErrors(['promo_price' => "Aksiya narxi umumiy summadan katta bo'lishi mumkin emas."])
@@ -52,6 +56,7 @@ class PackageTemplateController extends Controller
 
         $template = PackageTemplate::create($validated['template']);
         $template->items()->createMany($validated['items']);
+        $this->syncProductRelations($template, $validated);
 
         return redirect()
             ->route('superadmin.template_package.index')
@@ -60,7 +65,10 @@ class PackageTemplateController extends Controller
 
     public function edit(PackageTemplate $templatePackage)
     {
-        $templatePackage->load($this->itemRelations());
+        $templatePackage->load(array_merge($this->itemRelations(), [
+            'packageFilials',
+            'packageAddons.serviceAddon',
+        ]));
 
         return view('super_admin.package_templates.edit', $this->formData([
             'templatePackage' => $templatePackage,
@@ -71,7 +79,7 @@ class PackageTemplateController extends Controller
     {
         $validated = $this->validatePayload($request);
 
-        if ((float) $validated['template']['promo_price'] > (float) $validated['template']['base_price']) {
+        if ((float) $validated['template']['promo_price'] > (float) $validated['template']['standard_price']) {
             return redirect()
                 ->back()
                 ->withErrors(['promo_price' => "Aksiya narxi umumiy summadan katta bo'lishi mumkin emas."])
@@ -81,6 +89,7 @@ class PackageTemplateController extends Controller
         $templatePackage->update($validated['template']);
         $templatePackage->items()->delete();
         $templatePackage->items()->createMany($validated['items']);
+        $this->syncProductRelations($templatePackage, $validated);
 
         return redirect()
             ->route('superadmin.template_package.index')
@@ -101,6 +110,7 @@ class PackageTemplateController extends Controller
         $documentTypes = DocumentTypeModel::query()->orderBy('name')->get(['id', 'name']);
         $directions = DirectionTypeModel::query()->orderBy('name')->get(['id', 'name']);
         $services = ServicesModel::query()->orderBy('name')->get(['id', 'name', 'price', 'deadline']);
+        $filials = FilialModel::query()->orderBy('name')->get(['id', 'name', 'code']);
         $serviceAddons = ServiceAddonModel::query()->orderBy('name')->get(['id', 'service_id', 'name', 'price', 'deadline', 'description']);
         $documentAddons = DocumentTypeAdditionModel::query()->orderBy('name')->get(['id', 'document_type_id', 'name', 'amount', 'day', 'description']);
         $directionAddons = DocumentDirectionAdditionModel::query()->orderBy('name')->get(['id', 'document_direction_id', 'name', 'amount', 'day', 'description']);
@@ -112,6 +122,7 @@ class PackageTemplateController extends Controller
             'documentTypes' => $documentTypes,
             'directions' => $directions,
             'services' => $services,
+            'filials' => $filials,
             'serviceAddons' => $serviceAddons,
             'documentAddons' => $documentAddons,
             'directionAddons' => $directionAddons,
@@ -125,19 +136,42 @@ class PackageTemplateController extends Controller
     {
         $data = $request->all();
         $data['is_active'] = $request->boolean('is_active');
+        $data['is_sellable'] = $request->has('is_sellable')
+            ? $request->boolean('is_sellable')
+            : true;
         $data['items_payload'] = $this->decodeItemsPayload($request->input('items_payload'));
+        $data['filial_ids'] = array_values(array_filter(array_map('intval', (array) $request->input('filial_ids', []))));
+        $data['additional_addon_ids'] = array_values(array_filter(array_map('intval', (array) $request->input('additional_addon_ids', []))));
 
         $validator = Validator::make($data, [
             'name' => 'required|string|max:255',
+            'product_code' => 'nullable|string|max:64',
             'highlight' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:5000',
-            'promo_price' => 'required|numeric|min:0',
+            'promo_price' => 'nullable|numeric|min:0',
+            'standard_price' => 'nullable|numeric|min:0',
+            'express_price' => 'nullable|numeric|min:0',
+            'standard_deadline_days' => 'nullable|integer|min:0|max:3650',
+            'express_deadline_days' => 'nullable|integer|min:0|max:3650',
+            'margin_percent' => 'nullable|numeric|min:0|max:100',
+            'delivery_type' => ['nullable', Rule::in(['pickup', 'courier', 'digital', 'branch'])],
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
+            'is_sellable' => 'boolean',
+            'filial_ids' => 'array',
+            'filial_ids.*' => 'integer|exists:filial,id',
+            'additional_addon_ids' => 'array',
+            'additional_addon_ids.*' => 'integer|exists:service_addons,id',
             'items_payload' => 'required|array|min:1',
         ]);
 
         $validator->after(function ($validator) use ($data) {
+            $standardPrice = (float) ($data['standard_price'] ?? $data['promo_price'] ?? 0);
+            $expressPrice = (float) ($data['express_price'] ?? $standardPrice);
+            if ($expressPrice > 0 && $standardPrice > 0 && $expressPrice < $standardPrice) {
+                $validator->errors()->add('express_price', 'Express narx standard narxdan past bo‘lishi mumkin emas.');
+            }
+
             foreach (($data['items_payload'] ?? []) as $index => $item) {
                 $itemValidator = Validator::make($item, [
                     'document_type_id' => 'required|exists:document_type,id',
@@ -185,6 +219,41 @@ class PackageTemplateController extends Controller
             }
         });
 
+        $validator->after(function ($validator) use ($data) {
+            if (! empty($data['product_code'])) {
+                $current = request()->route('templatePackage');
+                $query = PackageTemplate::query()->where('product_code', $data['product_code']);
+                if ($current instanceof PackageTemplate) {
+                    $query->where('id', '<>', $current->id);
+                }
+                if ($query->exists()) {
+                    $validator->errors()->add('product_code', 'Bu mahsulot kodi allaqachon ishlatilgan.');
+                }
+            }
+
+            $serviceIds = collect($data['items_payload'] ?? [])
+                ->pluck('service_id')
+                ->map(fn ($id) => (int) $id)
+                ->filter()
+                ->unique();
+
+            if ($serviceIds->isEmpty() || empty($data['additional_addon_ids'])) {
+                return;
+            }
+
+            $validAddonIds = ServiceAddonModel::query()
+                ->whereIn('id', $data['additional_addon_ids'])
+                ->whereIn('service_id', $serviceIds)
+                ->pluck('id');
+
+            if ($validAddonIds->count() !== count($data['additional_addon_ids'])) {
+                $validator->errors()->add(
+                    'additional_addon_ids',
+                    'Qo\'shimcha xizmatlar paket tarkibidagi xizmatlardan tanlanishi kerak.'
+                );
+            }
+        });
+
         $validated = $validator->validate();
         $items = collect($validated['items_payload'])
             ->values()
@@ -201,10 +270,22 @@ class PackageTemplateController extends Controller
 
         $basePrice = (float) $items->sum('base_price');
         $firstItem = $items->first();
+        $calculatedDeadline = (int) $items->map(function (array $item): int {
+            return (int) (PackageTemplateSupport::calculateItemPricing($item)['deadline'] ?? 0);
+        })->max();
+        $standardPrice = $validated['standard_price'] ?? null;
+        $standardPrice = $standardPrice === null
+            ? ((float) ($validated['promo_price'] ?? 0) ?: $basePrice)
+            : (float) $standardPrice;
+        $expressPrice = $validated['express_price'] ?? null;
+        $expressPrice = $expressPrice === null ? $standardPrice : (float) $expressPrice;
+        $promoPrice = (float) ($validated['promo_price'] ?? 0);
+        $promoPrice = $promoPrice > 0 ? $promoPrice : $standardPrice;
 
         return [
             'template' => [
                 'name' => $validated['name'],
+                'product_code' => $validated['product_code'] ?? null,
                 'highlight' => $validated['highlight'] ?? null,
                 'description' => $validated['description'] ?? null,
                 'process_mode' => $firstItem['process_mode'],
@@ -218,15 +299,52 @@ class PackageTemplateController extends Controller
                 'consulate_type_id' => $firstItem['consulate_type_id'],
                 'selected_addons' => $firstItem['selected_addons'],
                 'base_price' => $basePrice,
-                'promo_price' => (float) $validated['promo_price'],
+                'promo_price' => $promoPrice,
+                'standard_price' => $standardPrice,
+                'express_price' => $expressPrice,
+                'standard_deadline_days' => (int) ($validated['standard_deadline_days'] ?? $calculatedDeadline),
+                'express_deadline_days' => (int) ($validated['express_deadline_days'] ?? max(1, (int) ceil($calculatedDeadline / 2))),
+                'margin_percent' => (float) ($validated['margin_percent'] ?? 0),
+                'delivery_type' => $validated['delivery_type'] ?? 'pickup',
                 'is_active' => (bool) $validated['is_active'],
+                'is_sellable' => (bool) $validated['is_sellable'],
                 'sort_order' => (int) ($validated['sort_order'] ?? 0),
             ],
             'items' => $items->map(fn (array $item) => collect($item)
                 ->except('package_template_id')
                 ->all())
                 ->all(),
+            'filial_ids' => $data['filial_ids'],
+            'additional_addon_ids' => $data['additional_addon_ids'],
         ];
+    }
+
+    protected function syncProductRelations(PackageTemplate $template, array $validated): void
+    {
+        if (! $template->product_code) {
+            $template->forceFill([
+                'product_code' => 'PKG-' . str_pad((string) $template->id, 6, '0', STR_PAD_LEFT),
+            ])->save();
+        }
+
+        $template->packageFilials()->delete();
+        foreach ($validated['filial_ids'] ?? [] as $filialId) {
+            $template->packageFilials()->create([
+                'filial_id' => $filialId,
+                'is_available' => true,
+            ]);
+        }
+
+        $template->packageAddons()->delete();
+        foreach ($validated['additional_addon_ids'] ?? [] as $index => $addonId) {
+            $template->packageAddons()->create([
+                'service_addon_id' => $addonId,
+                'is_included' => false,
+                'quantity' => 1,
+                'sort_order' => $index,
+                'is_active' => true,
+            ]);
+        }
     }
 
     protected function decodeItemsPayload($payload): array

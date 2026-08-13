@@ -136,7 +136,7 @@ class DeadlineBellData
             ])
             ->where('document_couriers.courier_id', $user->id)
             ->whereIn('document_couriers.status', ['sent', 'accepted'])
-            ->where('documents.status_doc', '!=', 'finish');
+            ->whereNotIn('documents.status_doc', ['finish', 'completed', 'delivered', 'cancelled', 'refunded']);
 
         $indexUrl = route('courier.documents.index');
         $now = Carbon::now();
@@ -201,7 +201,7 @@ class DeadlineBellData
                 'user:id,name',
                 'filial:id,name',
             ])
-            ->where('status_doc', '!=', 'finish');
+            ->whereNotIn('status_doc', ['finish', 'completed', 'delivered', 'cancelled', 'refunded']);
     }
 
     protected static function mapDocument(DocumentsModel $document, User $user, string $scope, string $indexUrl, ?Carbon $dueAt = null): array

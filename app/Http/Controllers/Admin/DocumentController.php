@@ -16,11 +16,20 @@ use App\Models\ServiceAddonModel;
 use App\Models\ServicesModel;
 use App\Models\User;
 use App\Support\PackageTemplateSupport;
+use App\Support\StoresDocuments;
+use App\Http\Requests\Admin\DocumentCreateRequest;
+use App\Http\Requests\Admin\DocumentUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
+use App\Services\OrderCaseService;
+use App\Models\Order;
 
 class DocumentController extends Controller
 {
+    use StoresDocuments;
+
     protected array $monthNames = [
         1 => 'Yanvar',
         2 => 'Fevral',
@@ -40,6 +49,7 @@ class DocumentController extends Controller
         'cash' => 'Naqd',
         'card' => 'Plastik karta',
         'online' => 'Onlayn',
+        'transfer' => 'Bank transfer',
         'admin_entry' => 'Boshqalar',
     ];
 
@@ -50,8 +60,7 @@ class DocumentController extends Controller
     ];
 
     protected array $statusLabels = [
-        'process' => 'Jarayonda',
-        'finish' => 'Tugallangan',
+        ...DocumentsModel::STATUS_LABELS,
     ];
 
     protected function routePrefix(): string
@@ -88,7 +97,7 @@ class DocumentController extends Controller
     }
 
     
-    public function create()
+    public function create(Request $request)
     {
         $documentTypes = DocumentTypeModel::all();
         $directions = DirectionTypeModel::all();
@@ -98,6 +107,9 @@ class DocumentController extends Controller
         $consuls = ConsulModel::all();
         $consul_price = 1000;
         $apostilStatics = ApostilStatikModel::all();
+        $filials = auth()->user()?->filial_id === null
+            ? FilialModel::query()->orderBy('name')->get(['id', 'name'])
+            : collect();
         $packageTemplates = PackageTemplateSupport::buildSelectionPayloads(
             PackageTemplate::query()
                 ->active()
@@ -116,7 +128,7 @@ class DocumentController extends Controller
         );
         $apiBase = url($this->routePrefix() . '/api');
 
-        return view('admin_filial.admin_filial_document.refactor.create', compact(
+        return view('admin_filial.admin_filial_document.refactor.create', array_merge(compact(
             'services',
             'addons',
             'documentTypes',
@@ -126,37 +138,140 @@ class DocumentController extends Controller
             'apostilStatics',
             'consuls',
             'packageTemplates',
+            'filials',
             'apiBase'
+        ), [
+            'orderId' => $request->integer('order_id') ?: null,
+        ]));
+    }
+
+    public function store(DocumentCreateRequest $request)
+    {
+        $document = $this->storeDocumentFromRequest($request);
+
+        return redirect($request->filled('order_id')
+            ? route('orders.show', $document->order_id)
+            : route('superadmin.document.index'))
+            ->with('success', 'Hujjat muvaffaqiyatli yaratildi.');
+    }
+
+    public function show($id)
+    {
+        $document = DocumentsModel::query()
+            ->with([
+                'client',
+                'service',
+                'filial',
+                'documentType',
+                'directionType',
+                'consulateType',
+                'user' => fn ($query) => $query->withTrashed(),
+                'assignedTo',
+                'qaUser',
+                'files',
+                'payments' => fn ($query) => $query->latest(),
+                'courierAssignment.courier',
+                'pricingApprovals.requestedBy',
+                'pricingApprovals.approvedBy',
+                'statusHistories.changedBy',
+                'assignmentHistories.assignedTo',
+                'assignmentHistories.qaUser',
+                'assignmentHistories.assignedBy',
+                'checklists.completedBy',
+                'latestQaReview.reviewer',
+            ])
+            ->findOrFail($id);
+
+        $this->authorize('view', $document);
+
+        return view('admin.document.show', [
+            'document' => $document,
+            'routePrefix' => $this->routePrefix(),
+        ]);
+    }
+
+    public function edit($id)
+    {
+        $document = DocumentsModel::query()
+            ->with([
+                'addons',
+                'document_type_addons',
+                'document_direction_addons',
+                'client',
+                'payments',
+            ])
+            ->findOrFail($id);
+
+        $this->authorize('update', $document);
+
+        $services = ServicesModel::query()->orderBy('name')->get();
+        $addons = ServiceAddonModel::query()->orderBy('name')->get();
+        $documentTypes = DocumentTypeModel::query()->orderBy('name')->get();
+        $directions = DirectionTypeModel::query()->orderBy('name')->get();
+        $consulates = ConsulationTypeModel::query()->orderBy('name')->get();
+        $documentRoutePrefix = $this->routePrefix();
+        $addonsUrlTemplate = route($documentRoutePrefix . '.api.addons.index', [
+            'type' => 'service',
+            'id' => ':id',
+        ]);
+
+        return view('admin_filial.admin_filial_document.edit', compact(
+            'document',
+            'services',
+            'addons',
+            'documentTypes',
+            'directions',
+            'consulates',
+            'documentRoutePrefix',
+            'addonsUrlTemplate'
         ));
     }
 
-    public function store(Request $request)
+    public function update(DocumentUpdateRequest $request, $id)
     {
-        //
+        $document = DocumentsModel::query()->findOrFail($id);
+        $this->authorize('update', $document);
+        $this->updateDocumentFromRequest($document, $request);
+
+        return redirect()
+            ->route($this->routePrefix() . '.document.index')
+            ->with('success', 'Hujjat muvaffaqiyatli yangilandi.');
     }
 
-  
-    public function show($id)
-    {
-        //
-    }
-
-   
-    public function edit($id)
-    {
-        //
-    }
-
-   
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    
     public function destroy($id)
     {
-        //
+        $document = DocumentsModel::query()
+            ->with('files')
+            ->findOrFail($id);
+        $this->authorize('update', $document);
+
+        $paths = $document->files->pluck('file_path')->filter()->values()->all();
+
+        if ($document->payments()->exists()) {
+            throw ValidationException::withMessages([
+                'document' => 'Payment ledger mavjud bo‘lgan hujjatni o‘chirib bo‘lmaydi. Avval to‘lovni cancel/refund qiling.',
+            ]);
+        }
+
+        DB::transaction(function () use ($document): void {
+            // Several legacy pivot tables do not have ON DELETE CASCADE. Clean
+            // those rows explicitly so a valid document can always be removed.
+            $document->addons()->detach();
+            $document->document_type_addons()->detach();
+            $document->document_direction_addons()->detach();
+            $document->processCharges()->delete();
+            $document->courierAssignment()->delete();
+            $document->files()->delete();
+            $document->delete();
+        });
+
+        if ($paths !== []) {
+            Storage::disk('private')->delete($paths);
+        }
+
+        return redirect()
+            ->route($this->routePrefix() . '.document.index')
+            ->with('success', 'Hujjat o\'chirildi.');
     }
 
     public function statistika(Request $request)
@@ -179,7 +294,10 @@ class DocumentController extends Controller
         $request->validate([
             'document_id' => 'required|exists:documents,id',
             'amount' => 'required|numeric|min:1000',
-            'payment_type' => 'required|in:cash,card,online,admin_entry',
+            'payment_type' => 'required|in:cash,card,online,transfer,admin_entry',
+            'cash_session_id' => 'nullable|integer|exists:cash_sessions,id',
+            'online_transaction_id' => 'nullable|string|max:160',
+            'payment_proof' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
 
         return DB::transaction(function () use ($request) {
@@ -187,6 +305,23 @@ class DocumentController extends Controller
                 ->whereKey($request->document_id)
                 ->lockForUpdate()
                 ->firstOrFail();
+
+            if ($document->order_id) {
+                app(OrderCaseService::class)->recordPayment(
+                    Order::query()->findOrFail((int) $document->order_id),
+                    (float) $request->amount,
+                    (string) $request->payment_type,
+                    auth()->user(),
+                    (int) $document->id,
+                    [
+                        'cash_session_id' => $request->filled('cash_session_id') ? (int) $request->cash_session_id : null,
+                        'online_transaction_id' => $request->input('online_transaction_id'),
+                        'payment_proof' => $request->file('payment_proof'),
+                    ]
+                );
+
+                return response()->json(['status' => 'success']);
+            }
 
             $balance = max((float) $document->final_price - (float) $document->paid_amount, 0);
 
@@ -197,15 +332,23 @@ class DocumentController extends Controller
                 ], 422);
             }
 
-            PaymentsModel::create([
-                'document_id' => $document->id,
-                'amount' => $request->amount,
-                'payment_type' => $request->payment_type,
-                'paid_by_admin_id' => auth()->id(),
-            ]);
+            app(\App\Services\PaymentService::class)->recordForDocument(
+                $document,
+                (float) $request->amount,
+                (string) $request->payment_type,
+                auth()->user(),
+                [
+                    'cash_session_id' => $request->filled('cash_session_id') ? (int) $request->cash_session_id : null,
+                    'online_transaction_id' => $request->input('online_transaction_id'),
+                    'payment_proof' => $request->file('payment_proof'),
+                ],
+            );
 
-            $document->paid_amount = (float) $document->paid_amount + (float) $request->amount;
-            $document->save();
+            if ($document->order_id) {
+                app(OrderCaseService::class)->recalculate(
+                    Order::query()->findOrFail((int) $document->order_id)
+                );
+            }
 
             return response()->json(['status' => 'success']);
         });
@@ -214,17 +357,22 @@ class DocumentController extends Controller
     public function paymentHistory(DocumentsModel $document)
     {
         $payments = PaymentsModel::query()
-            ->with(['paidByAdmin' => fn ($q) => $q->withTrashed()->select('id', 'name', 'login')])
+            ->with(['paidByAdmin' => fn ($q) => $q->withTrashed()->select('id', 'name', 'login'), 'cashier' => fn ($q) => $q->withTrashed()->select('id', 'name', 'login')])
             ->where('document_id', $document->id)
             ->orderByDesc('created_at')
-            ->get(['id', 'amount', 'payment_type', 'paid_by_admin_id', 'created_at'])
+            ->get(['id', 'amount', 'payment_type', 'status', 'confirmation_status', 'receipt_number', 'refund_amount', 'online_transaction_id', 'paid_by_admin_id', 'cashier_id', 'created_at'])
             ->map(function (PaymentsModel $payment) {
                 return [
                     'amount' => (float) $payment->amount,
                     'payment_type' => $payment->payment_type,
                     'payment_type_label' => $this->paymentTypes[$payment->payment_type] ?? $payment->payment_type,
+                    'status' => $payment->status,
+                    'confirmation_status' => $payment->confirmation_status,
+                    'receipt_number' => $payment->receipt_number,
+                    'refund_amount' => (float) $payment->refund_amount,
+                    'online_transaction_id' => $payment->online_transaction_id,
                     'paid_by_admin_id' => $payment->paid_by_admin_id,
-                    'paid_by_name' => $payment->paidByAdmin?->name ?? 'Noma\'lum',
+                    'paid_by_name' => $payment->cashier?->name ?: ($payment->paidByAdmin?->name ?? 'Noma\'lum'),
                     'created_at' => optional($payment->created_at)->toIso8601String(),
                 ];
             });
@@ -348,8 +496,8 @@ class DocumentController extends Controller
             'balance' => (float) (clone $query)
                 ->selectRaw('COALESCE(SUM(CASE WHEN COALESCE(final_price, 0) - COALESCE(paid_amount, 0) > 0 THEN COALESCE(final_price, 0) - COALESCE(paid_amount, 0) ELSE 0 END), 0) as total')
                 ->value('total'),
-            'finished' => (clone $query)->where('status_doc', 'finish')->count(),
-            'process' => (clone $query)->where('status_doc', 'process')->count(),
+            'finished' => (clone $query)->whereIn('status_doc', ['finish', 'completed', 'delivered'])->count(),
+            'process' => (clone $query)->whereNotIn('status_doc', ['finish', 'completed', 'delivered', 'cancelled', 'refunded'])->count(),
             'paid_documents' => (clone $query)->whereRaw('COALESCE(paid_amount, 0) >= COALESCE(final_price, 0)')->count(),
             'partial_documents' => (clone $query)->whereRaw('COALESCE(paid_amount, 0) > 0 AND COALESCE(paid_amount, 0) < COALESCE(final_price, 0)')->count(),
             'debt_documents' => (clone $query)->whereRaw('COALESCE(final_price, 0) > 0 AND COALESCE(paid_amount, 0) <= 0')->count(),
@@ -405,7 +553,7 @@ class DocumentController extends Controller
     protected function groupedStats($query, string $column, array $labels): array
     {
         return (clone $query)
-            ->selectRaw("{$column}, COUNT(*) as documents_count, COALESCE(SUM(final_price), 0) as final_price, COALESCE(SUM(paid_amount), 0) as paid_amount, SUM(CASE WHEN status_doc = 'finish' THEN 1 ELSE 0 END) as finished_count")
+            ->selectRaw("{$column}, COUNT(*) as documents_count, COALESCE(SUM(final_price), 0) as final_price, COALESCE(SUM(paid_amount), 0) as paid_amount, SUM(CASE WHEN status_doc IN ('finish', 'completed', 'delivered') THEN 1 ELSE 0 END) as finished_count")
             ->groupBy($column)
             ->orderByDesc('documents_count')
             ->limit(12)

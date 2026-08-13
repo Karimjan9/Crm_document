@@ -26,7 +26,9 @@ use App\Http\Controllers\Admin\FCalendar\CalendarController as FCalendarControll
 Route::name('superadmin.')->prefix('superadmin')->group(function(){
     Route::middleware('role:super_admin')->prefix('monthly-notifications')->name('monthly_notifications.')->group(function () {
         Route::get('/', [MonthlyNotificationController::class, 'index'])->name('index');
-        Route::get('/sql-backup', [MonthlyNotificationController::class, 'downloadSqlBackup'])->name('sql_backup');
+        Route::post('/sql-backup/queue', [MonthlyNotificationController::class, 'queueSqlBackup'])->name('sql_backup.queue');
+        Route::get('/sql-backup/status/{token}', [MonthlyNotificationController::class, 'sqlBackupStatus'])->name('sql_backup.status');
+        Route::get('/sql-backup/file/{token}', [MonthlyNotificationController::class, 'queuedSqlBackup'])->name('sql_backup.file');
         Route::post('/{notification}/read', [MonthlyNotificationController::class, 'markAsRead'])->name('read');
     });
 
@@ -82,6 +84,7 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
     Route::resource('/filial',FilialController::class)->except(['show']);
 
     Route::resource('/expense',ExpenseController::class);
+    Route::post('/expense/{expense}/approve', [ExpenseController::class, 'approve'])->name('expense.approve');
 
     Route::get('/expense_static', [ExpenseController::class, 'statistika'])->name('statistika');
 
@@ -125,9 +128,11 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
     Route::resource('/sms_message_text', SMSMessageTextController::class)->except(['show']);
 
     Route::middleware('role:super_admin')->prefix('excel')->name('excel.')->group(function () {
-        Route::get('/{dataset}', [ExcelExportController::class, 'download'])
+        Route::post('/{dataset}/queue', [ExcelExportController::class, 'queue'])
             ->where('dataset', 'clients|documents|employees|all')
-            ->name('download');
+            ->name('queue');
+        Route::get('/status/{token}', [ExcelExportController::class, 'status'])->name('status');
+        Route::get('/file/{token}', [ExcelExportController::class, 'file'])->name('file');
     });
 
     Route::resource('document_type/{document_type}/type_addition',TypeAdditionController::class)->except(['show']);

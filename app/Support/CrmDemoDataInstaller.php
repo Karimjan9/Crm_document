@@ -533,6 +533,156 @@ class CrmDemoDataInstaller
 
             $this->storeTemplate($package);
         }
+
+        $this->seedNamedPackageProducts(
+            $documentTypes,
+            $services,
+            $directions,
+            $apostilGroup1,
+            $apostilGroup2,
+            $consul,
+            $consulateType,
+            $serviceAddonFor
+        );
+    }
+
+    private function seedNamedPackageProducts(
+        Collection $documentTypes,
+        Collection $services,
+        Collection $directions,
+        object $apostilGroup1,
+        object $apostilGroup2,
+        object $consul,
+        object $consulateType,
+        callable $serviceAddonFor
+    ): void {
+        $documentIds = $documentTypes->values()->pluck('id')->all();
+        $serviceIds = $services->values()->pluck('id')->all();
+        $directionId = $directions->values()->first();
+        $filialIds = FilialModel::query()->orderBy('id')->pluck('id')->all();
+
+        if (count($documentIds) < 1 || count($serviceIds) < 1 || ! $directionId) {
+            return;
+        }
+
+        $item = function (int $documentIndex, int $serviceIndex, string $mode = 'service', array $extra = []) use ($documentIds, $serviceIds): array {
+            return $this->itemConfig(array_merge([
+                'document_type_id' => $documentIds[$documentIndex % count($documentIds)],
+                'service_id' => $serviceIds[$serviceIndex % count($serviceIds)],
+                'process_mode' => $mode,
+            ], $extra));
+        };
+
+        $packages = [
+            [
+                'name' => 'Student Abroad Package',
+                'product_code' => 'PKG-STUDENT-ABROAD',
+                'highlight' => 'Talabalar uchun to‘liq paket',
+                'description' => 'Chet elda o‘qish uchun tarjima, notarial tayyorlash va topshiruvga tayyorgarlik xizmatlari.',
+                'promo_price' => 1200000,
+                'standard_price' => 1200000,
+                'express_price' => 1650000,
+                'standard_deadline_days' => 10,
+                'express_deadline_days' => 5,
+                'margin_percent' => 35,
+                'delivery_type' => 'pickup',
+                'filial_ids' => $filialIds,
+                'additional_addon_ids' => array_values(array_filter([$serviceAddonFor($serviceIds[0], 0), $serviceAddonFor($serviceIds[0], 1)])),
+                'sort_order' => 40,
+                'is_active' => true,
+                'items' => array_filter([
+                    $item(0, 0, 'service'),
+                    $item(1, min(1, count($serviceIds) - 1), 'service'),
+                ]),
+            ],
+            [
+                'name' => 'Apostille Full Package',
+                'product_code' => 'PKG-APOSTILLE-FULL',
+                'highlight' => 'Apostilni boshidan oxirigacha',
+                'description' => 'Apostil hujjatini tayyorlash, tekshirish va rasmiy jarayon uchun to‘liq xizmat.',
+                'promo_price' => 450000,
+                'standard_price' => 450000,
+                'express_price' => 650000,
+                'standard_deadline_days' => 5,
+                'express_deadline_days' => 2,
+                'margin_percent' => 30,
+                'delivery_type' => 'pickup',
+                'filial_ids' => $filialIds,
+                'additional_addon_ids' => array_values(array_filter([$serviceAddonFor($serviceIds[0], 0)])),
+                'sort_order' => 50,
+                'is_active' => true,
+                'items' => [$item(2, 0, 'apostil', [
+                    'direction_type_id' => $directionId->id,
+                    'apostil_group1_id' => $apostilGroup1->id,
+                    'apostil_group2_id' => $apostilGroup2->id,
+                ])],
+            ],
+            [
+                'name' => 'Visa Document Package',
+                'product_code' => 'PKG-VISA-DOCUMENT',
+                'highlight' => 'Visa hujjatlari uchun',
+                'description' => 'Visa topshiruvi uchun hujjatlarni tayyorlash, tarjima va konsullik yo‘nalishida maslahat.',
+                'promo_price' => 1100000,
+                'standard_price' => 1100000,
+                'express_price' => 1650000,
+                'standard_deadline_days' => 12,
+                'express_deadline_days' => 5,
+                'margin_percent' => 32,
+                'delivery_type' => 'pickup',
+                'filial_ids' => $filialIds,
+                'additional_addon_ids' => array_values(array_filter([$serviceAddonFor($serviceIds[0], 0)])),
+                'sort_order' => 60,
+                'is_active' => true,
+                'items' => [$item(3, min(1, count($serviceIds) - 1), 'consul', [
+                    'selection_mode' => 'mixed',
+                    'consul_id' => $consul->id,
+                    'consulate_type_id' => $consulateType->id,
+                ])],
+            ],
+            [
+                'name' => 'Corporate Translation Package',
+                'product_code' => 'PKG-CORPORATE-TRANSLATION',
+                'highlight' => 'Korporativ mijozlar uchun',
+                'description' => 'Kompaniyalar uchun ko‘p hujjatli tarjima, notarial tasdiq va arxiv tayyorlash paketi.',
+                'promo_price' => 900000,
+                'standard_price' => 900000,
+                'express_price' => 1300000,
+                'standard_deadline_days' => 7,
+                'express_deadline_days' => 3,
+                'margin_percent' => 40,
+                'delivery_type' => 'courier',
+                'filial_ids' => $filialIds,
+                'additional_addon_ids' => array_values(array_filter([$serviceAddonFor($serviceIds[0], 0), $serviceAddonFor($serviceIds[0], 1)])),
+                'sort_order' => 70,
+                'is_active' => true,
+                'items' => array_filter([
+                    $item(0, 0, 'service'),
+                    $item(4, min(1, count($serviceIds) - 1), 'service'),
+                ]),
+            ],
+            [
+                'name' => 'Express 24 Hours Package',
+                'product_code' => 'PKG-EXPRESS-24H',
+                'highlight' => '24 soatlik tezkor xizmat',
+                'description' => 'Shoshilinch tarjima yoki hujjat tayyorlash uchun bir kunlik express oqim.',
+                'promo_price' => 350000,
+                'standard_price' => 350000,
+                'express_price' => 450000,
+                'standard_deadline_days' => 3,
+                'express_deadline_days' => 1,
+                'margin_percent' => 45,
+                'delivery_type' => 'digital',
+                'filial_ids' => $filialIds,
+                'additional_addon_ids' => array_values(array_filter([$serviceAddonFor($serviceIds[0], 1)])),
+                'sort_order' => 80,
+                'is_active' => true,
+                'items' => [$item(5, 0, 'service')],
+            ],
+        ];
+
+        foreach ($packages as $package) {
+            $this->storeTemplate($package);
+        }
     }
 
     private function seedDocumentsAndExpenses(): void
@@ -935,6 +1085,21 @@ class CrmDemoDataInstaller
                 );
             }
 
+            PaymentsModel::query()
+                ->where('document_id', $document->id)
+                ->get()
+                ->each(function (PaymentsModel $payment) use ($document): void {
+                    $payment->forceFill([
+                        'filial_id' => $document->filial_id,
+                        'receipt_number' => $payment->receipt_number ?: 'DEMO-RCPT-' . $payment->id,
+                        'status' => $payment->status ?: 'confirmed',
+                        'confirmation_status' => $payment->confirmation_status ?: 'confirmed',
+                        'confirmed_by_id' => $payment->confirmed_by_id ?: $payment->paid_by_admin_id,
+                        'confirmed_at' => $payment->confirmed_at ?: $payment->created_at,
+                        'cashier_id' => $payment->cashier_id ?: $payment->paid_by_admin_id,
+                    ])->saveQuietly();
+                });
+
             if (! empty($definition['courier_status']) && $couriers->isNotEmpty()) {
                 $courier = $this->pick($couriers, $index);
                 $timestamps = $this->courierTimestamps($definition['courier_status'], $createdAt);
@@ -1007,27 +1172,43 @@ class CrmDemoDataInstaller
         $firstItem = $items->first();
 
         DB::transaction(function () use ($package, $items, $basePrice, $promoPrice, $firstItem) {
+            $attributes = [
+                'highlight' => $package['highlight'] ?? null,
+                'description' => $package['description'] ?? null,
+                'process_mode' => $firstItem['process_mode'],
+                'selection_mode' => $firstItem['selection_mode'],
+                'document_type_id' => $firstItem['document_type_id'],
+                'service_id' => $firstItem['service_id'],
+                'direction_type_id' => $firstItem['direction_type_id'],
+                'apostil_group1_id' => $firstItem['apostil_group1_id'],
+                'apostil_group2_id' => $firstItem['apostil_group2_id'],
+                'consul_id' => $firstItem['consul_id'],
+                'consulate_type_id' => $firstItem['consulate_type_id'],
+                'selected_addons' => $firstItem['selected_addons'],
+                'base_price' => $basePrice,
+                'promo_price' => $promoPrice,
+                'standard_price' => (float) ($package['standard_price'] ?? $promoPrice),
+                'express_price' => (float) ($package['express_price'] ?? $package['standard_price'] ?? $promoPrice),
+                'standard_deadline_days' => (int) ($package['standard_deadline_days'] ?? 0),
+                'express_deadline_days' => (int) ($package['express_deadline_days'] ?? 0),
+                'margin_percent' => (float) ($package['margin_percent'] ?? 0),
+                'delivery_type' => $package['delivery_type'] ?? 'pickup',
+                'is_active' => (bool) ($package['is_active'] ?? true),
+                'is_sellable' => (bool) ($package['is_sellable'] ?? true),
+                'sort_order' => (int) ($package['sort_order'] ?? 0),
+            ];
+            if (! empty($package['product_code'])) {
+                $attributes['product_code'] = $package['product_code'];
+            }
+
             $template = PackageTemplate::query()->updateOrCreate(
                 ['name' => $package['name']],
-                [
-                    'highlight' => $package['highlight'] ?? null,
-                    'description' => $package['description'] ?? null,
-                    'process_mode' => $firstItem['process_mode'],
-                    'selection_mode' => $firstItem['selection_mode'],
-                    'document_type_id' => $firstItem['document_type_id'],
-                    'service_id' => $firstItem['service_id'],
-                    'direction_type_id' => $firstItem['direction_type_id'],
-                    'apostil_group1_id' => $firstItem['apostil_group1_id'],
-                    'apostil_group2_id' => $firstItem['apostil_group2_id'],
-                    'consul_id' => $firstItem['consul_id'],
-                    'consulate_type_id' => $firstItem['consulate_type_id'],
-                    'selected_addons' => $firstItem['selected_addons'],
-                    'base_price' => $basePrice,
-                    'promo_price' => $promoPrice,
-                    'sort_order' => (int) ($package['sort_order'] ?? 0),
-                    'is_active' => (bool) ($package['is_active'] ?? true),
-                ]
+                $attributes
             );
+
+            if (! $template->product_code) {
+                $template->forceFill(['product_code' => 'PKG-' . str_pad((string) $template->id, 6, '0', STR_PAD_LEFT)])->save();
+            }
 
             $template->items()->delete();
             $template->items()->createMany(
@@ -1036,6 +1217,25 @@ class CrmDemoDataInstaller
                     ->all())
                     ->all()
             );
+
+            $template->packageFilials()->delete();
+            foreach ($package['filial_ids'] ?? [] as $filialId) {
+                $template->packageFilials()->create([
+                    'filial_id' => $filialId,
+                    'is_available' => true,
+                ]);
+            }
+
+            $template->packageAddons()->delete();
+            foreach (array_values(array_unique(array_map('intval', $package['additional_addon_ids'] ?? []))) as $index => $addonId) {
+                $template->packageAddons()->create([
+                    'service_addon_id' => $addonId,
+                    'is_included' => false,
+                    'quantity' => 1,
+                    'sort_order' => $index,
+                    'is_active' => true,
+                ]);
+            }
         });
     }
 

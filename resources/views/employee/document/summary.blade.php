@@ -237,6 +237,14 @@
 
 <script>
 $(document).ready(function(){
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    }[character]));
+
     function showBootstrapModal(modalId) {
         const modalElement = document.getElementById(modalId);
 
@@ -326,8 +334,8 @@ $(document).ready(function(){
                     tbody += `<tr>
                         <td>${index + 1}</td>
                         <td>${Number(payment.amount).toLocaleString()} so'm</td>
-                        <td>${payment.payment_type_label || paymentTypeLabels[payment.payment_type] || payment.payment_type}</td>
-                        <td>${payment.paid_by_name || payment.paid_by_admin_id || '-'}</td>
+                        <td>${escapeHtml(payment.payment_type_label || paymentTypeLabels[payment.payment_type] || payment.payment_type)}</td>
+                        <td>${escapeHtml(payment.paid_by_name || payment.paid_by_admin_id || '-')}</td>
                         <td>${formatted}</td>
                     </tr>`;
                 });

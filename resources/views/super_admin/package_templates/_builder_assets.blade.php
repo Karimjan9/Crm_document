@@ -77,7 +77,14 @@
             : [emptyItem()],
     };
 
-    const optionHtml = (items, label) => items.map(item => `<option value="${item.id}">${label(item)}</option>`).join('');
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    }[character]));
+    const optionHtml = (items, label) => items.map(item => `<option value="${Number(item.id || 0)}">${escapeHtml(label(item))}</option>`).join('');
     const money = value => `${Number(value || 0).toLocaleString()} so'm`;
     const addonKey = item => `${item.sourceType}:${item.id}`;
 
@@ -120,7 +127,7 @@
                 <div class="item-card__head">
                     <div>
                         <strong>Element #${index + 1}</strong>
-                        <div class="item-card__meta"><span class="item-summary">${buildSummary(item)}</span></div>
+                        <div class="item-card__meta"><span class="item-summary">${escapeHtml(buildSummary(item))}</span></div>
                     </div>
                     <div class="item-card__meta">
                         <span class="chip item-price">${money(calculate(item).basePrice)}</span>
@@ -311,8 +318,8 @@
                     <label class="addon-item ${selected ? 'is-selected' : ''}">
                         <input type="checkbox" data-addon-group="${type}" data-addon-id="${entry.id}" ${selected ? 'checked' : ''}>
                         <div class="addon-item__copy">
-                            <strong>${entry.name}</strong>
-                            <span>${entry.description || 'Izoh kiritilmagan'}</span>
+                            <strong>${escapeHtml(entry.name)}</strong>
+                            <span>${escapeHtml(entry.description || 'Izoh kiritilmagan')}</span>
                         </div>
                         <div class="addon-item__meta">
                             <strong>${money(entry.amount ?? entry.price ?? 0)}</strong>
@@ -411,7 +418,7 @@
             return `
                 <div class="preview-item">
                     <div>
-                        <strong>${buildSummary(item)}</strong>
+                        <strong>${escapeHtml(buildSummary(item))}</strong>
                         <small>${result.deadline ? `Deadline: ${result.deadline} kun` : 'Deadline xizmatlardan olinadi'}</small>
                     </div>
                     <span class="chip">${money(result.basePrice)}</span>

@@ -11,6 +11,7 @@ class PackageTemplate extends Model
 
     protected $fillable = [
         'name',
+        'product_code',
         'highlight',
         'description',
         'process_mode',
@@ -25,7 +26,14 @@ class PackageTemplate extends Model
         'selected_addons',
         'base_price',
         'promo_price',
+        'standard_price',
+        'express_price',
+        'standard_deadline_days',
+        'express_deadline_days',
+        'margin_percent',
+        'delivery_type',
         'is_active',
+        'is_sellable',
         'sort_order',
     ];
 
@@ -33,7 +41,13 @@ class PackageTemplate extends Model
         'selected_addons' => 'array',
         'base_price' => 'float',
         'promo_price' => 'float',
+        'standard_price' => 'float',
+        'express_price' => 'float',
+        'standard_deadline_days' => 'integer',
+        'express_deadline_days' => 'integer',
+        'margin_percent' => 'float',
         'is_active' => 'boolean',
+        'is_sellable' => 'boolean',
     ];
 
     public function documentType()
@@ -78,6 +92,34 @@ class PackageTemplate extends Model
             ->orderBy('id');
     }
 
+    public function packageFilials()
+    {
+        return $this->hasMany(PackageTemplateFilial::class, 'package_template_id');
+    }
+
+    public function filials()
+    {
+        return $this->belongsToMany(
+            FilialModel::class,
+            'package_template_filials',
+            'package_template_id',
+            'filial_id'
+        )->withPivot([
+            'is_available',
+            'standard_price',
+            'express_price',
+            'standard_deadline_days',
+            'express_deadline_days',
+        ])->withTimestamps();
+    }
+
+    public function packageAddons()
+    {
+        return $this->hasMany(PackageTemplateAddon::class, 'package_template_id')
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
@@ -86,5 +128,10 @@ class PackageTemplate extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order')->orderBy('name');
+    }
+
+    public function scopeSellable($query)
+    {
+        return $query->where('is_sellable', true);
     }
 }

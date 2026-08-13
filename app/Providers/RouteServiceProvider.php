@@ -39,7 +39,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware(['web', 'auth', 'role:admin_manager|super_admin'])
                 ->group(base_path('routes/admin_manager/admin.php'));
 
-            Route::middleware(['web', 'auth', 'role:admin_manager|super_admin'])
+            Route::middleware(['web', 'auth', 'role:super_admin'])
                 ->group(base_path('routes/super_admin/super_admin.php'));
 
             Route::middleware(['web', 'auth', 'role:employee'])
@@ -50,6 +50,9 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::middleware(['web', 'auth', 'role:admin_filial'])
                 ->group(base_path('routes/admin_filial/admin_filial.php'));
+
+            Route::middleware(['web', 'auth', 'role:partner_admin|partner_operator'])
+                ->group(base_path('routes/partner.php'));
         });
     }
 
@@ -62,6 +65,10 @@ class RouteServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('weather', function (Request $request) {
+            return Limit::perMinute(30)->by($request->user()?->id ?: $request->ip());
         });
     }
 }

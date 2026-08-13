@@ -323,7 +323,11 @@
          
                         <div class="dropdown-divider mb-0"></div>
                     </li>
-                    <li><a class="dropdown-item" href="{{ route('destroy') }}"><i class='bx bx-log-out-circle'></i><span>Chiqish</span></a>
+                    <li>
+                        <form method="POST" action="{{ route('destroy') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item border-0 bg-transparent w-100 text-start"><i class='bx bx-log-out-circle'></i><span>Chiqish</span></button>
+                        </form>
                     </li>
                 </ul>
             </div>

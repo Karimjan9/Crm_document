@@ -9,6 +9,14 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
+    # Document files are private. Deny legacy public-disk URLs as well as
+    # newly generated URLs; authorized access goes through Laravel instead.
+    RewriteRule ^storage/(documents|files)(/|$) - [F,L,NC]
+
+    # Source maps can disclose implementation details and are not needed by
+    # production browsers.
+    RewriteRule \.map$ - [F,L,NC]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$

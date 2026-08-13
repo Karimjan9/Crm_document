@@ -153,17 +153,22 @@
 @endsection
 
 @section('body')
+@php
+    $filialRoutePrefix = auth()->user()?->hasRole('super_admin') ? 'superadmin' : 'admin';
+    $holidayDates = old('holiday_dates', '');
+    $holidayDates = is_array($holidayDates) ? implode(', ', $holidayDates) : $holidayDates;
+@endphp
 <div class="page-wrapper">
     <div class="page-content">
 
         <div class="page-breadcrumb mb-3">
             <div class="breadcrumb-title">Yangi Filial Qo‘shish</div>
-            <a href="{{ route('superadmin.filial.index') }}" class="btn btn-outline">← Orqaga</a>
+            <a href="{{ route($filialRoutePrefix . '.filial.index') }}" class="btn btn-outline">← Orqaga</a>
         </div>
 
         <div class="card radius-10">
             <div class="card-body">
-                <form action="{{ route('superadmin.filial.store') }}" method="POST">
+                <form action="{{ route($filialRoutePrefix . '.filial.store') }}" method="POST">
                     @csrf
 
                     <div class="mb-3">
@@ -176,6 +181,63 @@
                         <input type="text" id="filial_kodi" name="code" class="form-control" placeholder="Masalan: TSH001" required>
                     </div>
 
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="phone">Telefon</label>
+                            <input type="text" id="phone" name="phone" value="{{ old('phone') }}" class="form-control" placeholder="+998 90 000 00 00">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="manager_id">Filial manageri</label>
+                            <select id="manager_id" name="manager_id" class="form-control">
+                                <option value="">Biriktirilmagan</option>
+                                @foreach($managers as $manager)
+                                    <option value="{{ $manager->id }}" @selected((int) old('manager_id') === (int) $manager->id)>{{ $manager->name }}{{ $manager->filial_id ? ' — filial #' . $manager->filial_id : '' }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="address">Manzil</label>
+                            <input type="text" id="address" name="address" value="{{ old('address') }}" class="form-control" placeholder="Filial manzili">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="work_start_time">Ish boshlanishi</label>
+                            <input type="time" id="work_start_time" name="work_start_time" value="{{ old('work_start_time', '09:00') }}" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="work_end_time">Ish tugashi</label>
+                            <input type="time" id="work_end_time" name="work_end_time" value="{{ old('work_end_time', '18:00') }}" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="monthly_expense">Oylik xarajat rejasi</label>
+                            <input type="number" min="0" step="0.01" id="monthly_expense" name="monthly_expense" value="{{ old('monthly_expense', 0) }}" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="target_amount">Target</label>
+                            <input type="number" min="0" step="0.01" id="target_amount" name="target_amount" value="{{ old('target_amount', 0) }}" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="commission_percent">Commission (%)</label>
+                            <input type="number" min="0" max="100" step="0.01" id="commission_percent" name="commission_percent" value="{{ old('commission_percent', 0) }}" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="daily_capacity">Maksimal kunlik capacity</label>
+                            <input type="number" min="0" id="daily_capacity" name="daily_capacity" value="{{ old('daily_capacity') }}" class="form-control" placeholder="Masalan: 30">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Haftalik ish kunlari</label>
+                            <div class="d-flex flex-wrap gap-3 pt-2">
+                                @foreach([1 => 'Du', 2 => 'Se', 3 => 'Cho', 4 => 'Pa', 5 => 'Ju', 6 => 'Sha', 7 => 'Ya'] as $day => $label)
+                                    <label class="d-flex gap-1 align-items-center"><input type="checkbox" name="working_days[]" value="{{ $day }}" @checked(in_array($day, array_map('intval', old('working_days', [1,2,3,4,5,6]))))> {{ $label }}</label>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label for="holiday_dates">Filial dam olish sanalari</label>
+                            <input type="text" id="holiday_dates" name="holiday_dates" value="{{ $holidayDates }}" class="form-control" placeholder="2026-01-01, 2026-03-21">
+                            <small class="text-muted">Sanalarni vergul yoki bo‘sh joy bilan ajrating. Umumiy bayramlar alohida kalendardan olinadi.</small>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label for="description">Filial izoh</label>
                         <textarea id="description" name="description" rows="4" class="form-control" placeholder="Filial haqida qisqacha ma’lumot..."></textarea>
@@ -183,7 +245,7 @@
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="submit" class="btn btn-custom">Saqlash</button>
-                        <a href="{{ route('superadmin.filial.index') }}" class="btn btn-outline">Bekor qilish</a>
+                        <a href="{{ route($filialRoutePrefix . '.filial.index') }}" class="btn btn-outline">Bekor qilish</a>
                     </div>
                 </form>
             </div>

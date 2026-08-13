@@ -15,4 +15,16 @@ class ServicesModel extends Model
     public function addons() {
         return $this->hasMany(ServiceAddonModel::class, 'service_id');
     }
+
+    public function priceTariffs()
+    {
+        return $this->hasMany(PriceTariff::class, 'service_id');
+    }
+
+    public function checklistItems()
+    {
+        return $this->hasMany(ServiceChecklistItem::class, 'service_id')
+            ->where('is_active', true)
+            ->orderBy('sort_order');
+    }
 }

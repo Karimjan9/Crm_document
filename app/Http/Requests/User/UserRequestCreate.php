@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UserRequestCreate extends FormRequest
 {
@@ -13,7 +14,7 @@ class UserRequestCreate extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->user()?->hasAnyRole(['admin_manager', 'super_admin']) ?? false;
     }
 
     /**
@@ -29,7 +30,7 @@ class UserRequestCreate extends FormRequest
             'login' => ['required', 'unique:users,login'],
             'departament_id' => ['nullable'],
             'role' => ['nullable'],
-            'password' => ['required', 'confirmed']
+            'password' => ['required', 'string', 'confirmed', Password::min(12)]
 
         ];
     }

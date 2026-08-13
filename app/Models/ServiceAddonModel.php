@@ -25,5 +25,10 @@ class ServiceAddonModel extends Model
         'addon_id',
         'document_id'
     );
-}
+    }
+
+    public function priceTariffs()
+    {
+        return $this->hasMany(PriceTariff::class, 'service_addon_id');
+    }
 }

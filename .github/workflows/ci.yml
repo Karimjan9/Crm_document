@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, bcmath, pdo_sqlite
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare Laravel
+        shell: bash
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+          php artisan config:clear
+
+      - name: Validate Composer metadata
+        run: composer validate --strict
+
+      - name: Run focused Pint gate
+        run: >-
+          vendor/bin/pint --test
+          app/Http/Controllers/WeatherController.php
+          app/Policies/DocumentFilePolicy.php
+          tests/Feature/BusinessIntegrityTest.php
+
+      - name: Run feature tests
+        run: php artisan test --no-ansi
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Audit dependencies
+        run: |
+          composer audit --no-interaction
+          npm audit --audit-level=high
+

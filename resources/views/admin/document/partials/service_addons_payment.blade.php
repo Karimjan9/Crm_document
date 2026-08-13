@@ -71,6 +71,7 @@
             <option value="cash" {{ old('payment_type') == 'cash' ? 'selected':'' }}>Naqd</option>
             <option value="card" {{ old('payment_type') == 'card' ? 'selected':'' }}>Plastik karta</option>
             <option value="online" {{ old('payment_type') == 'online' ? 'selected':'' }}>Onlayn</option>
+            <option value="transfer" {{ old('payment_type') == 'transfer' ? 'selected':'' }}>Bank transfer</option>
             <option value="admin_entry" {{ old('payment_type') == 'admin_entry' ? 'selected':'' }}>Boshqalar</option>
         </select>
         @error('payment_type')
@@ -81,6 +82,10 @@
 
 {{-- JS --}}
 <script>
+const escapeAddonHtml = (value) => String(value ?? '').replace(/[&<>"']/g, character => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+}[character]));
+
 let servicePrice = parseFloat($('#servicePrice').val()) || 0;
 let addons = {};
 let addonsChecked = {};
@@ -109,7 +114,7 @@ $('#serviceSelect').on('change', function(){
                 <div class="addon-badge">
                     <label>
                         <input type="checkbox" name="addons[]" value="${a.id}" class="addon-checkbox" data-id="${a.id}">
-                        ${a.name}
+                        ${escapeAddonHtml(a.name)}
                         <small class="text-primary d-block">Narx: ${a.price}</small>
                     </label>
                 </div>`;

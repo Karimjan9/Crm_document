@@ -172,7 +172,7 @@
         @endif
         <div class="page-breadcrumb mb-3">
             <div class="breadcrumb-title">Yangi Hujjat turi qo'shimchasi Qo‘shish</div>
-            <a href="{{ route('superadmin.type_addition.index',['document_type'=>$id]) }}" class="btn btn-outline">← Orqaga</a>
+            <a href="{{ route('superadmin.direction_addition.index',['direction_type'=>$id]) }}" class="btn btn-outline">← Orqaga</a>
         </div>
 
         <div class="card radius-10">

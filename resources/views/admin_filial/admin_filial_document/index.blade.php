@@ -328,11 +328,7 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                   </td>
                   <td>
 
-                     @if( $doc->status_doc == "process" )
-                      <span class="badge bg-warning"> {{  $doc->status_doc }}</span>
-                    @else
-                      <span class="badge bg-success">{{  $doc->status_doc }}</span>
-                    @endif
+                      <span class="badge bg-{{ $doc->status_color }}">{{ $doc->status_label }}</span>
                   </td>
                   <td>
                     @if($courierAssignment)
@@ -369,7 +365,7 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
                     </div>
                   </td>
                   <td>
-                    @if($doc->status_doc === 'finish')
+                    @if(in_array($doc->workflow_status, ['ready_for_delivery', 'courier_sent', 'delivered', 'completed'], true))
                       <span class="badge bg-success" style="padding:8px 14px; border-radius:10px; opacity:0.7;">
                         Tugallangan
                       </span>
@@ -501,10 +497,13 @@ tbody tr:hover { background: #eef4ff; transform: translateX(2px); }
               Bekor qilish
           </button>
 
-          <a id="confirmComplete" href="#" 
-             style="padding:8px 16px; border-radius:10px; border:none; background:#ef4444; color:white;">
-             Ha, tugatildi
-          </a>
+           <form id="confirmComplete" method="POST" action="#" style="margin:0;">
+               @csrf
+               <button type="submit"
+                   style="padding:8px 16px; border-radius:10px; border:none; background:#ef4444; color:white;">
+                   Ha, tugatildi
+               </button>
+           </form>
       </div>
   </div>
 
@@ -525,8 +524,7 @@ document.addEventListener('DOMContentLoaded', function () {
         btn.addEventListener('click', function () {
             let id = this.dataset.id;
 
-            // Modal dagi tasdiqlash linkiga route ulaymiz
-            confirmBtn.href = completeBaseUrl.replace('__id__', id);
+             confirmBtn.action = completeBaseUrl.replace('__id__', id);
 
             modal.style.display = "flex";
         });

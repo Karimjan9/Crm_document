@@ -301,6 +301,13 @@
                         </div>
 
                         <div class="package-index-meta">
+                            <span>{{ $template->product_code ?: 'PKG-'.$template->id }}</span>
+                            <span>Standart: {{ number_format($template->standard_price ?: $template->promo_price, 0, '', ' ') }} so'm</span>
+                            <span>Express: {{ number_format($template->express_price ?: $template->standard_price ?: $template->promo_price, 0, '', ' ') }} so'm</span>
+                            <span>Marja: {{ number_format($template->margin_percent, 1) }}%</span>
+                        </div>
+
+                        <div class="package-index-meta">
                             <span>{{ $payload['item_count'] ?? 0 }} ta element</span>
                             <span>{{ number_format($payload['savings_amount'] ?? 0, 0, '', ' ') }} so'm tejash</span>
                             <span>Sort: {{ $template->sort_order }}</span>
@@ -313,6 +320,12 @@
                                 @endforeach
                             </div>
                         @endif
+
+                        <div class="package-index-items">
+                            <span>{{ $template->standard_deadline_days }} kun standard</span>
+                            <span>{{ $template->express_deadline_days }} kun express</span>
+                            <span>{{ $template->packageFilials->isEmpty() ? 'Barcha filiallar' : $template->packageFilials->where('is_available', true)->count().' ta filial' }}</span>
+                        </div>
 
                         <div class="package-index-actions">
                             <a href="{{ route('superadmin.template_package.edit', $template) }}" class="package-index-btn package-index-btn--primary">Tahrirlash</a>

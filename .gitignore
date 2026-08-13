@@ -3,6 +3,11 @@
 /public/build
 /public/hot
 /public/storage
+/public/assets_2
+/public/**/*.map
+/summary_response.html
+/storage/app/backups/
+/storage/app/deployments/
 /storage/*.key
 /vendor
 

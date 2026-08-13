@@ -168,6 +168,7 @@
                 <form action="{{ route('superadmin.service.update',['service'=>$service->id]) }}" method="POST">
                     @csrf
                     @method('PUT')
+                    <input type="hidden" name="checklist_configured" value="1">
                     <div class="mb-3">
                         <label for="filial_nomi">Service nomi</label>
                         <input type="text" id="filial_nomi" name="name" value="{{ $service->name }}" class="form-control" placeholder="Tarjima qilish" required>
@@ -181,6 +182,22 @@
                     <div class="mb-3">
                         <label for="filial_deadline">Service deadline (kun)</label>
                         <input type="number" id="filial_deadline" name="deadline" value="{{ $service->deadline }}" class="form-control" placeholder="000000" required>
+                    </div>
+
+                    <div class="mb-4 p-3 border rounded bg-light">
+                        <h6 class="mb-1">Majburiy hujjatlar checklisti</h6>
+                        <p class="small text-muted mb-2">Xizmat uchun kerak bo‘ladigan hujjatlarni tanlang. O‘zgarish yangi hujjatlarga qo‘llanadi.</p>
+                        @php($enabledChecklist = $service->checklistItems->where('is_active', true)->pluck('code')->all())
+                        <div class="row g-2">
+                            @foreach(\App\Services\DocumentChecklistService::DEFAULT_ITEMS as $code => $item)
+                                <div class="col-md-6">
+                                    <label class="d-flex align-items-center gap-2 mb-1 text-dark">
+                                        <input type="checkbox" name="checklist[{{ $code }}]" value="1" @checked(in_array($code, $enabledChecklist, true))>
+                                        <span>{{ $item['title'] }} <small class="text-muted">{{ $item['requires_file'] ? '(fayl kerak)' : '(manual tekshiruv)' }}</small></span>
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
 
                     <div class="mb-3">

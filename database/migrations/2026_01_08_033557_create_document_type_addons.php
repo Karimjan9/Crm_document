@@ -31,11 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('document_type_addons', function (Blueprint $table) {
-            $table->dropForeign(['document_id']);
-            $table->dropForeign(['addon_id']);
-
-        });
-         Schema::dropIfExists('document_type_addons');
+        Schema::dropIfExists('document_type_addons');
     }
 };
