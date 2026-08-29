@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ConsulationTypeSeeder::class,
             ConsulSeeder::class,
             ApostilStaticSeeder::class,
+            CrmDemoDataSeeder::class,
         ]);
     }
 }
