@@ -15,16 +15,21 @@ use Throwable;
 
 class SeedCrmDemoDataCommand extends Command
 {
-    protected $signature = 'crm:demo-data';
+    protected $signature = 'crm:demo-data
+                            {--force : Allow demo data to be seeded on the designated production demo server}';
 
-    protected $description = 'Seed demo CRM data for local/testing environments only';
+    protected $description = 'Seed idempotent CRM demo data for local/testing or an explicitly confirmed demo server';
 
     public function handle(): int
     {
-        if (app()->environment('production')) {
-            $this->error('This command is blocked in production environment.');
+        if (app()->environment('production') && ! $this->option('force')) {
+            $this->error('Production is blocked. Run only on the designated demo server with --force.');
 
             return self::FAILURE;
+        }
+
+        if (app()->environment('production')) {
+            $this->warn('Production demo mode confirmed. Existing data is not deleted; demo records are added or updated.');
         }
 
         $seeders = [
@@ -63,7 +68,7 @@ class SeedCrmDemoDataCommand extends Command
         }
 
         $this->info('Demo CRM data seeded successfully.');
-        $this->line('Command: php artisan crm:demo-data');
+        $this->line('Command: php artisan crm:demo-data' . (app()->environment('production') ? ' --force' : ''));
 
         return self::SUCCESS;
     }
