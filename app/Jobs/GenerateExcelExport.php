@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Http\Controllers\SuperAdmin\ExcelExportController;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,7 +27,7 @@ class GenerateExcelExport implements ShouldQueue
 
     public function handle(ExcelExportController $controller): void
     {
-        $export = $controller->buildQueuedExport($this->dataset);
+        $export = $controller->buildQueuedExport($this->dataset, User::query()->find($this->userId));
         $path = 'exports/'.$this->token.'.xls';
 
         Storage::disk('private')->put($path, $export['content']);

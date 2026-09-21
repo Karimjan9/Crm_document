@@ -88,24 +88,20 @@
     <ul>
         <li><a href="{{ route('superadmin.document.statistika') }}"><i class='bx bx-bar-chart'></i> Document</a></li>
         <li><a href="{{ route('superadmin.document.index') }}"><i class='bx bx-task'></i> Document work</a></li>
-        <li><a href="{{ route('documents.workflow.index') }}"><i class='bx bx-columns'></i> Ishlar Kanban</a></li>
-        <li><a href="{{ route('orders.index') }}"><i class='bx bx-layer'></i> Buyurtmalar</a></li>
-        <li><a href="{{ route('admin.partners.index') }}"><i class='bx bx-briefcase-alt-2'></i> B2B Partners</a></li>
-        <li><a href="{{ route('admin.pricing.index') }}"><i class='bx bx-purchase-tag'></i> Tariflar</a></li>
+        @role('super_admin')
+        <li><a href="{{ route('documents.workflow.index') }}"><i class='bx bx-columns'></i> Kanban doska</a></li>
+        @endrole
+        <li><a href="{{ route('operations.dashboard') }}"><i class='bx bx-list-check'></i> Bugungi ishlar</a></li>
+        <li><a href="{{ route('leads.index') }}"><i class='bx bx-trending-up'></i> Lead voronkasi</a></li>
     </ul>
 </li>
 
 <!-- Users -->
 <li>
-    <a href="javascript:;" class="has-arrow">
+    <a href="{{ route('superadmin.index') }}">
         <div class="parent-icon"><i class='bx bx-user'></i></div>
         <div class="menu-title">Foydalanuvchilar</div>
     </a>
-    <ul>
-        <li><a href="{{ route('superadmin.index') }}"><i class='bx bx-user'></i> Foydalanuvchilar</a></li>
-        <li><a href="{{ route('superadmin.filial.index') }}"><i class='bx bx-group'></i> Bo'limlar</a></li>
-        <li><a href="{{ route('superadmin.service.index') }}"><i class='bx bx-cog'></i> Jihozlar</a></li>
-    </ul>
 </li>
 
 <!-- Filial -->
@@ -116,18 +112,6 @@
     </a>
     <ul>
         <li><a href="{{ route('superadmin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi</a></li>
-    </ul>
-</li>
-
-<!-- Kuryer -->
-<li>
-    <a href="javascript:;" class="has-arrow">
-        <div class="parent-icon"><i class='bx bx-package'></i></div>
-        <div class="menu-title">Kuryer</div>
-    </a>
-    <ul>
-        <li><a href="#"><i class='bx bx-id-card'></i> Employee</a></li>
-        <li><a href="#"><i class='bx bx-cycling'></i> Courier</a></li>
     </ul>
 </li>
 
@@ -156,6 +140,7 @@
         <li><a href="{{ route('superadmin.document_type.index') }}"><i class='bx bx-file'></i> Legalizatsiya</a></li>
         <li><a href="{{ route('superadmin.direction_type.index') }}"><i class='bx bx-map-alt'></i> Apostil</a></li>
         <li><a href="{{ route('superadmin.consulation.index') }}"><i class='bx bx-user-check'></i> Konsullik</a></li>
+        <li><a href="{{ route('superadmin.service.index') }}"><i class='bx bx-briefcase'></i> Xizmatlar</a></li>
         <li><a href="{{ route('superadmin.template_package.index') }}"><i class='bx bx-layer'></i> Shablonlar</a></li>
     </ul>
 </li>
@@ -180,27 +165,19 @@
     </a>
 </li>
 
-<!-- Xizmat -->
-<li>
-    <a href="{{ route('superadmin.service.index') }}">
-        <div class="parent-icon"><i class='bx bx-briefcase'></i></div>
-        <div class="menu-title">Xizmatlar</div>
-    </a>
-</li>
-
 @endrole
 
 @hasanyrole('employee|admin_filial')
 <li>
-    <a href="{{ route('orders.index') }}">
-        <div class="parent-icon"><i class='bx bx-layer'></i></div>
-        <div class="menu-title">Buyurtmalar</div>
+    <a href="{{ route('operations.dashboard') }}">
+        <div class="parent-icon"><i class='bx bx-list-check'></i></div>
+        <div class="menu-title">Bugungi ishlar</div>
     </a>
 </li>
 <li>
-    <a href="{{ route('documents.workflow.index') }}">
-        <div class="parent-icon"><i class='bx bx-columns'></i></div>
-        <div class="menu-title">Ishlar Kanban</div>
+    <a href="{{ route('leads.index') }}">
+        <div class="parent-icon"><i class='bx bx-trending-up'></i></div>
+        <div class="menu-title">Leadlar</div>
     </a>
 </li>
 @endrole

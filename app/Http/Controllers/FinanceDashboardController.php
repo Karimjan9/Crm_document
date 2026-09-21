@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FilialModel;
 use App\Services\FinanceDashboardService;
 use Illuminate\Http\Request;
 
@@ -24,6 +25,8 @@ class FinanceDashboardController extends Controller
             return response()->json($dashboard);
         }
 
-        return view('admin.finance.dashboard', compact('dashboard'));
+        $filials = FilialModel::query()->orderBy('name')->get(['id', 'name', 'code']);
+
+        return view('admin.finance.dashboard', compact('dashboard', 'filials'));
     }
 }

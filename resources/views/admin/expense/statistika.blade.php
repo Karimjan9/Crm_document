@@ -73,7 +73,7 @@
 
     .expense-filter-grid {
         display: grid;
-        grid-template-columns: repeat(6, minmax(140px, 1fr));
+        grid-template-columns: repeat(7, minmax(120px, 1fr));
         gap: 12px;
         align-items: end;
     }
@@ -246,8 +246,8 @@
     $monthlyCounts = collect($monthlyStats)->pluck('expenses')->all();
     $filialLabels = collect($filialStats)->pluck('label')->all();
     $filialAmounts = collect($filialStats)->pluck('amount')->all();
-    $userLabels = collect($userStats)->pluck('label')->all();
-    $userAmounts = collect($userStats)->pluck('amount')->all();
+    $categoryLabels = collect($categoryStats)->pluck('label')->all();
+    $categoryAmounts = collect($categoryStats)->pluck('amount')->all();
 @endphp
 
 <div class="page-wrapper expense-dashboard">
@@ -255,7 +255,7 @@
         <div class="expense-header">
             <div class="expense-title">
                 <h4>Xarajatlar statistikasi</h4>
-                <p>Filial, xodim va davr bo'yicha xarajatlar nazorati.</p>
+                <p>Filial, kategoriya va davr bo'yicha xarajatlar tahlili.</p>
             </div>
             <a href="{{ route($routePrefix . '.expense.index') }}" class="expense-link">
                 <i class="bx bx-receipt"></i>
@@ -271,15 +271,6 @@
                         <option value="">Barchasi</option>
                         @foreach($filials as $filial)
                             <option value="{{ $filial->id }}" @selected((string) request('filial_id') === (string) $filial->id)>{{ $filial->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="expense-field">
-                    <label>Foydalanuvchi</label>
-                    <select name="user_id">
-                        <option value="">Barchasi</option>
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}" @selected((string) request('user_id') === (string) $user->id)>{{ $user->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -308,6 +299,15 @@
                     <label>Sana gacha</label>
                     <input type="date" name="date_to" value="{{ request('date_to') }}">
                 </div>
+                <div class="expense-field">
+                    <label>Tasdiqlash holati</label>
+                    <select name="approval_status">
+                        <option value="">Barchasi</option>
+                        <option value="approved" @selected(request('approval_status') === 'approved')>Tasdiqlangan</option>
+                        <option value="pending" @selected(request('approval_status') === 'pending')>Kutilmoqda</option>
+                        <option value="rejected" @selected(request('approval_status') === 'rejected')>Rad etilgan</option>
+                    </select>
+                </div>
                 <div class="expense-filter-actions">
                     <button type="submit" class="btn btn-primary">
                         <i class="bx bx-filter-alt"></i>
@@ -332,12 +332,12 @@
                 <strong>{{ $summary['filial_count'] }}</strong>
             </div>
             <div class="expense-card" style="--accent:#f59e0b">
-                <span>Xodimlar</span>
-                <strong>{{ $summary['user_count'] }}</strong>
+                <span>Kategoriyalar</span>
+                <strong>{{ $summary['category_count'] }}</strong>
             </div>
             <div class="expense-card" style="--accent:#dc2626">
-                <span>O'rtacha xarajat</span>
-                <strong>{{ $money($summary['average_amount']) }} so'm</strong>
+                <span>Tasdiq kutilmoqda</span>
+                <strong>{{ $summary['pending_count'] }}</strong>
             </div>
         </div>
 
@@ -353,11 +353,11 @@
             </div>
             <div class="expense-panel">
                 <div class="expense-panel-header">
-                    <h5>Xodimlar ulushi</h5>
+                    <h5>Xarajat kategoriyalari</h5>
                     <span>Top 12</span>
                 </div>
                 <div class="expense-chart-box">
-                    <canvas id="expenseUserChart"></canvas>
+                    <canvas id="expenseCategoryChart"></canvas>
                 </div>
             </div>
         </div>
@@ -414,7 +414,7 @@
                         <thead>
                             <tr>
                                 <th>Sana</th>
-                                <th>Xodim</th>
+                                <th>Kategoriya</th>
                                 <th>Filial</th>
                                 <th>Summa</th>
                             </tr>
@@ -426,7 +426,7 @@
                                         {{ optional($expense->created_at)->format('d.m.Y') }}
                                         <div class="expense-muted">{{ optional($expense->created_at)->format('H:i') }}</div>
                                     </td>
-                                    <td>{{ $expense->user?->name ?? 'Noma\'lum' }}</td>
+                                    <td>{{ $expense->category?->name ?? 'Umumiy xarajat' }}</td>
                                     <td>{{ $expense->filial?->name ?? 'Noma\'lum' }}</td>
                                     <td><span class="expense-money">{{ $money($expense->amount) }}</span></td>
                                 </tr>
@@ -559,13 +559,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    const userTotal = @json(array_sum($userAmounts));
-    new Chart(document.getElementById('expenseUserChart'), {
+    const categoryTotal = @json(array_sum($categoryAmounts));
+    new Chart(document.getElementById('expenseCategoryChart'), {
         type: 'doughnut',
         data: {
-            labels: @json($userLabels),
+            labels: @json($categoryLabels),
             datasets: [{
-                data: @json($userAmounts),
+                data: @json($categoryAmounts),
                 backgroundColor: palette,
                 borderColor: '#ffffff',
                 borderWidth: 3
@@ -576,7 +576,7 @@ document.addEventListener('DOMContentLoaded', function () {
             maintainAspectRatio: false,
             cutoutPercentage: 68,
             centerText: {
-                title: moneyFormatter(userTotal),
+                title: moneyFormatter(categoryTotal),
                 subtitle: 'jami'
             },
             legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, fontColor: '#475569' } },

@@ -11,9 +11,11 @@ use Illuminate\Support\Facades\Storage;
 
 class DocumentOcrService
 {
+    public function __construct(private readonly FileSecurityService $security) {}
+
     public function upload(IntakeSession $session, UploadedFile $file, ?User $actor = null): IntakeOcrDocument
     {
-        $path = $file->store('intake-ocr/' . $session->token, 'private');
+        $path = $this->security->store($file, 'intake-ocr/'.$session->token);
 
         try {
             $record = $session->ocrDocuments()->create([
@@ -48,10 +50,13 @@ class DocumentOcrService
                 'extracted_data' => is_array($extracted) ? $extracted : ['value' => $extracted],
             ])->save() ? $record->fresh() : $record;
         } catch (\Throwable $exception) {
+            report($exception);
+
             if (isset($record)) {
                 $record->forceFill([
                     'status' => 'failed',
-                    'error_message' => $exception->getMessage(),
+                    // Provider responses can contain implementation detail.
+                    'error_message' => 'OCR xizmati faylni qayta ishlay olmadi.',
                 ])->save();
             } else {
                 Storage::disk('private')->delete($path);

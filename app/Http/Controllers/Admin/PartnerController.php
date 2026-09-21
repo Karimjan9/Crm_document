@@ -21,7 +21,7 @@ class PartnerController extends Controller
 
         $partners = Partner::query()
             ->withCount(['orders', 'users'])
-            ->with('filials:id,name')
+            ->with(['filials:id,name', 'accountManager:id,name'])
             ->when($request->filled('q'), function ($query) use ($request): void {
                 $search = trim((string) $request->input('q'));
                 $query->where(function ($builder) use ($search): void {
@@ -44,6 +44,7 @@ class PartnerController extends Controller
             'partner' => new Partner(['status' => 'active', 'currency' => 'UZS', 'payment_terms_days' => 30]),
             'filials' => FilialModel::query()->orderBy('name')->get(['id', 'name']),
             'types' => Partner::TYPES,
+            'accountManagers' => User::query()->whereHas('roles', fn ($q) => $q->whereIn('name', ['admin_manager', 'super_admin']))->orderBy('name')->get(['id', 'name']),
             'isEdit' => false,
         ]);
     }
@@ -80,6 +81,7 @@ class PartnerController extends Controller
             'partner' => $partner->load('filials:id,name'),
             'filials' => FilialModel::query()->orderBy('name')->get(['id', 'name']),
             'types' => Partner::TYPES,
+            'accountManagers' => User::query()->whereHas('roles', fn ($q) => $q->whereIn('name', ['admin_manager', 'super_admin']))->orderBy('name')->get(['id', 'name']),
             'isEdit' => true,
         ]);
     }
@@ -101,13 +103,17 @@ class PartnerController extends Controller
             'code' => ['required', 'string', 'max:40', 'alpha_dash', Rule::unique('partners', 'code')->ignore($partner?->id)],
             'type' => ['required', Rule::in(Partner::TYPES)],
             'contact_name' => ['nullable', 'string', 'max:120'],
+            'account_manager_id' => ['nullable', 'integer', 'exists:users,id'],
             'email' => ['nullable', 'email', 'max:180'],
             'phone' => ['nullable', 'string', 'max:40'],
             'tax_id' => ['nullable', 'string', 'max:40'],
             'billing_email' => ['nullable', 'email', 'max:180'],
             'discount_percent' => ['required', 'numeric', 'min:0', 'max:100'],
             'credit_limit' => ['required', 'numeric', 'min:0'],
+            'minimum_margin_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'payment_terms_days' => ['required', 'integer', 'min:0', 'max:365'],
+            'contract_starts_at' => ['nullable', 'date'],
+            'contract_ends_at' => ['nullable', 'date', 'after_or_equal:contract_starts_at'],
             'currency' => ['required', 'string', 'size:3'],
             'status' => ['required', Rule::in(Partner::STATUSES)],
             'brand_name' => ['nullable', 'string', 'max:180'],
@@ -132,13 +138,17 @@ class PartnerController extends Controller
             'code' => strtoupper($data['code']),
             'type' => $data['type'],
             'contact_name' => $data['contact_name'] ?? null,
+            'account_manager_id' => $data['account_manager_id'] ?? null,
             'email' => $data['email'] ?? null,
             'phone' => $data['phone'] ?? null,
             'tax_id' => $data['tax_id'] ?? null,
             'billing_email' => $data['billing_email'] ?? null,
             'discount_percent' => $data['discount_percent'],
             'credit_limit' => $data['credit_limit'],
+            'minimum_margin_percent' => $data['minimum_margin_percent'] ?? null,
             'payment_terms_days' => $data['payment_terms_days'],
+            'contract_starts_at' => $data['contract_starts_at'] ?? null,
+            'contract_ends_at' => $data['contract_ends_at'] ?? null,
             'currency' => strtoupper($data['currency']),
             'status' => $data['status'],
             'brand_name' => $data['brand_name'] ?? null,

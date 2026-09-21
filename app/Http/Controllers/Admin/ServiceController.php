@@ -9,7 +9,6 @@ use App\Http\Requests\ServiceRequest;
 use App\Http\Requests\ServiceEditRequest;
 use Illuminate\Database\QueryException;
 use App\Services\PricingService;
-use App\Services\DocumentChecklistService;
 
 class ServiceController extends Controller
 {
@@ -33,10 +32,6 @@ class ServiceController extends Controller
         $service->deadline=$request->deadline;
         $service->save();
         app(PricingService::class)->publishServicePrice($service, (float) $service->price, (int) $service->deadline);
-        app(DocumentChecklistService::class)->syncServiceRequirements(
-            $service,
-            $request->boolean('checklist_configured') ? array_keys((array) $request->input('checklist', [])) : null,
-        );
         return redirect()->route('superadmin.service.index')->with('success','Service muvaffaqiyatli yaratildi.');
     }
 
@@ -55,10 +50,6 @@ class ServiceController extends Controller
         $service->deadline=$request->deadline;
         $service->save();
         app(PricingService::class)->publishServicePrice($service, (float) $service->price, (int) $service->deadline);
-        app(DocumentChecklistService::class)->syncServiceRequirements(
-            $service,
-            $request->boolean('checklist_configured') ? array_keys((array) $request->input('checklist', [])) : null,
-        );
         return redirect()->route('superadmin.service.index')->with('success','Service muvaffaqiyatli yangilandi.');
     }
 

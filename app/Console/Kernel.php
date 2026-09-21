@@ -10,7 +10,6 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
@@ -21,6 +20,18 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('notifications:deliver')
             ->everyFiveMinutes()
+            ->withoutOverlapping();
+
+        $schedule->command('bot:send-lead-follow-ups')
+            ->everyTenMinutes()
+            ->withoutOverlapping();
+
+        $schedule->command('bot:request-feedback')
+            ->dailyAt('11:00')
+            ->withoutOverlapping();
+
+        $schedule->command('bot:purge-files')
+            ->dailyAt('02:40')
             ->withoutOverlapping();
 
         $schedule->command('expenses:generate-recurring')
@@ -41,6 +52,22 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('b2b:generate-invoices')
             ->monthlyOn(1, '00:20')
+            ->withoutOverlapping();
+
+        $schedule->command('backup:database --keep=7')
+            ->dailyAt('01:30')
+            ->withoutOverlapping();
+
+        $schedule->command('backup:verify')
+            ->monthlyOn(1, '02:10')
+            ->withoutOverlapping();
+
+        $schedule->command('security:monitor')
+            ->everyFiveMinutes()
+            ->withoutOverlapping();
+
+        $schedule->command('security:purge-temporary-files')
+            ->hourly()
             ->withoutOverlapping();
     }
 

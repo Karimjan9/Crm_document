@@ -54,6 +54,9 @@ class AccountController extends Controller
             'password' => Hash::make($request->validated()['password']),
         ])->save();
 
+        // A stolen API token must stop working after the owner changes a password.
+        $user->tokens()->delete();
+
         return response()->json([
             'message' => 'Parol muvaffaqiyatli yangilandi.',
         ]);

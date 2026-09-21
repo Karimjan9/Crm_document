@@ -3,18 +3,21 @@
 namespace Tests\Feature;
 
 use App\Http\Middleware\RoleMiddleware;
+use App\Models\AuditLog;
 use App\Models\ClientsModel;
 use App\Models\DocumentFileModel;
 use App\Models\DocumentsModel;
 use App\Models\ExpenseAdminModel;
 use App\Models\FilialModel;
 use App\Models\Holiday;
-use App\Models\ServicesModel;
 use App\Models\ServiceAddonModel;
+use App\Models\ServicesModel;
 use App\Models\User;
+use App\Support\LoginRateLimiter;
 use App\Support\StoresDocuments;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\Sanctum;
@@ -51,6 +54,69 @@ class SecurityTest extends TestCase
         );
 
         $this->assertSame('ok', $response->getContent());
+    }
+
+    public function test_login_is_locked_for_fifteen_minutes_after_five_failed_attempts(): void
+    {
+        $credentials = [
+            'login' => 'lockout-test-user',
+            'password' => 'incorrect-password',
+        ];
+
+        $request = Request::create('/login', 'POST', $credentials);
+        $key = app(LoginRateLimiter::class)->accountKey($request);
+        RateLimiter::clear($key);
+
+        for ($attempt = 0; $attempt < 5; $attempt++) {
+            $this->post(route('login_post'), $credentials)
+                ->assertSessionHasErrors('login');
+        }
+
+        $this->assertGreaterThanOrEqual(895, RateLimiter::availableIn($key));
+
+        $this->post(route('login_post'), $credentials)
+            ->assertSessionHasErrors('login');
+    }
+
+    public function test_api_login_uses_the_same_lockout_policy(): void
+    {
+        $credentials = [
+            'login' => 'api-lockout-test-user',
+            'password' => 'incorrect-password',
+        ];
+
+        for ($attempt = 0; $attempt < 5; $attempt++) {
+            $this->postJson('/api/v1/auth/token', $credentials)
+                ->assertUnprocessable()
+                ->assertJsonValidationErrors('login');
+        }
+
+        $this->postJson('/api/v1/auth/token', $credentials)
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('login');
+    }
+
+    public function test_audit_log_keeps_actor_and_before_after_values(): void
+    {
+        $actor = User::factory()->create();
+        $this->actingAs($actor);
+        $client = ClientsModel::create([
+            'name' => 'Audit original',
+            'phone_number' => '901234590',
+        ]);
+
+        $client->update(['name' => 'Audit updated']);
+
+        $audit = AuditLog::query()
+            ->where('event', 'updated')
+            ->where('auditable_type', ClientsModel::class)
+            ->where('auditable_id', $client->id)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertSame($actor->id, $audit->user_id);
+        $this->assertSame('Audit original', $audit->old_values['name']);
+        $this->assertSame('Audit updated', $audit->new_values['name']);
     }
 
     public function test_role_middleware_rejects_users_without_required_role(): void

@@ -70,5 +70,9 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('weather', function (Request $request) {
             return Limit::perMinute(30)->by($request->user()?->id ?: $request->ip());
         });
+
+        RateLimiter::for('health', function (Request $request) {
+            return Limit::perMinute(30)->by($request->ip());
+        });
     }
 }

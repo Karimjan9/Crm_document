@@ -26,58 +26,58 @@ class ExpenseManagementService
 
         try {
             $saved = DB::transaction(function () use ($data, $expense, $receipt, $actor, &$newReceipt): ExpenseAdminModel {
-            $attributes = Arr::except($data, ['allocations', 'receipt']);
-            $attributes['user_id'] ??= $actor?->id;
-            $attributes['expense_date'] ??= today()->toDateString();
-            $attributes['currency'] ??= 'UZS';
-            $attributes['payment_method'] ??= 'cash';
-            $attributes['expense_type'] ??= 'branch';
-            $attributes['approval_status'] ??= 'pending';
-            $attributes['is_recurring'] = filter_var(
-                $attributes['is_recurring'] ?? ! empty($attributes['recurrence_rule']),
-                FILTER_VALIDATE_BOOLEAN
-            );
+                $attributes = Arr::except($data, ['allocations', 'receipt']);
+                $attributes['user_id'] ??= $actor?->id;
+                $attributes['expense_date'] ??= today()->toDateString();
+                $attributes['currency'] ??= 'UZS';
+                $attributes['payment_method'] ??= 'cash';
+                $attributes['expense_type'] ??= 'branch';
+                $attributes['approval_status'] ??= 'pending';
+                $attributes['is_recurring'] = filter_var(
+                    $attributes['is_recurring'] ?? ! empty($attributes['recurrence_rule']),
+                    FILTER_VALIDATE_BOOLEAN
+                );
 
-            if (($attributes['approval_status'] ?? null) === 'approved') {
-                $attributes['approver_id'] ??= $actor?->id;
-                $attributes['approved_at'] ??= now();
-            }
+                if (($attributes['approval_status'] ?? null) === 'approved') {
+                    $attributes['approver_id'] ??= $actor?->id;
+                    $attributes['approved_at'] ??= now();
+                }
 
-            if (! ($attributes['is_recurring'] ?? false)) {
-                $attributes['recurrence_rule'] = null;
-                $attributes['recurrence_start'] = null;
-                $attributes['recurrence_end'] = null;
-                $attributes['next_occurrence'] = null;
-            } elseif (empty($attributes['next_occurrence'])) {
-                $attributes['next_occurrence'] = $attributes['recurrence_start'] ?: today()->toDateString();
-            }
+                if (! ($attributes['is_recurring'] ?? false)) {
+                    $attributes['recurrence_rule'] = null;
+                    $attributes['recurrence_start'] = null;
+                    $attributes['recurrence_end'] = null;
+                    $attributes['next_occurrence'] = null;
+                } elseif (empty($attributes['next_occurrence'])) {
+                    $attributes['next_occurrence'] = $attributes['recurrence_start'] ?: today()->toDateString();
+                }
 
-            if (empty($attributes['category_id'])) {
-                $attributes['category_id'] = ExpenseCategory::query()
-                    ->where('code', 'general')
-                    ->value('id');
-            }
+                if (empty($attributes['category_id'])) {
+                    $attributes['category_id'] = ExpenseCategory::query()
+                        ->where('code', 'general')
+                        ->value('id');
+                }
 
-            $record = $expense ?: new ExpenseAdminModel();
-            $record->fill($attributes);
-            $record->save();
+                $record = $expense ?: new ExpenseAdminModel;
+                $record->fill($attributes);
+                $record->save();
 
-            if ($receipt) {
-                $path = $receipt->store('expense-receipts', 'private');
-                $newReceipt = $path;
-                $record->forceFill([
-                    'receipt_path' => $path,
-                    'receipt_original_name' => $receipt->getClientOriginalName(),
-                ])->save();
-            }
+                if ($receipt) {
+                    $path = app(FileSecurityService::class)->store($receipt, 'expense-receipts');
+                    $newReceipt = $path;
+                    $record->forceFill([
+                        'receipt_path' => $path,
+                        'receipt_original_name' => $receipt->getClientOriginalName(),
+                    ])->save();
+                }
 
-            if (array_key_exists('allocations', $data)) {
-                $this->replaceAllocations($record, $data['allocations'] ?: [], (int) $record->filial_id, (float) $record->amount);
-            } elseif (! $record->allocations()->exists()) {
-                $this->replaceAllocations($record, [], (int) $record->filial_id, (float) $record->amount);
-            }
+                if (array_key_exists('allocations', $data)) {
+                    $this->replaceAllocations($record, $data['allocations'] ?: [], (int) $record->filial_id, (float) $record->amount);
+                } elseif (! $record->allocations()->exists()) {
+                    $this->replaceAllocations($record, [], (int) $record->filial_id, (float) $record->amount);
+                }
 
-            return $record->fresh(['allocations']);
+                return $record->fresh(['allocations']);
             });
         } catch (\Throwable $exception) {
             if ($newReceipt) {

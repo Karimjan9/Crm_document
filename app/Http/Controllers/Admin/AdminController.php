@@ -20,16 +20,56 @@ class AdminController extends Controller
     }
 
    
-    public function index()
+    public function index(Request $request)
     {
-        // dd('here');
-        $users = User::role(['employee', 'courier','admin_filial'])
-        ->with('roles', 'filial')
-        ->orderBy('id', 'desc')
-        ->get();
-        // $filial=FilialModel::
-        // dd($users[0]->roles[0]->name);
-        return view('admin.index',compact('users'));
+        $visibleRoles = ['employee', 'courier', 'admin_filial'];
+        $filterRole = $request->string('role')->toString();
+        $search = trim((string) $request->input('search', ''));
+        $filialId = (int) $request->input('filial_id', 0);
+
+        if (! in_array($filterRole, $visibleRoles, true)) {
+            $filterRole = null;
+        }
+
+        $users = User::query()
+            ->when(
+                $filterRole,
+                fn ($query) => $query->role($filterRole),
+                fn ($query) => $query->role($visibleRoles),
+            )
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($users) use ($search): void {
+                    $users->where('name', 'like', "%{$search}%")
+                        ->orWhere('login', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
+                });
+            })
+            ->when($filialId > 0, fn ($query) => $query->where('filial_id', $filialId))
+            ->with('roles', 'filial')
+            ->orderByDesc('id')
+            ->get();
+
+        $roleLabels = [
+            'employee' => 'Xodim',
+            'courier' => 'Kuryer',
+            'admin_filial' => 'Filial administratori',
+        ];
+
+        $stats = [
+            'total' => User::role($visibleRoles)->count(),
+            'employee' => User::role('employee')->count(),
+            'courier' => User::role('courier')->count(),
+            'admin_filial' => User::role('admin_filial')->count(),
+        ];
+
+        $filters = [
+            'search' => $search,
+            'role' => $filterRole,
+            'filial_id' => $filialId > 0 ? $filialId : null,
+        ];
+        $filials = FilialModel::query()->orderBy('name')->get(['id', 'name']);
+
+        return view('admin.index', compact('users', 'filters', 'stats', 'filials', 'roleLabels'));
     }
 
    /**
@@ -37,12 +77,17 @@ class AdminController extends Controller
  * @method bool hasAnyRole(array|string $roles)
  * @method bool hasAllRoles(array|string $roles)
  */
-    public function create()
+    public function create(Request $request)
     {
         $rols = Role::whereIn('name', $this->allowedRoles())->orderBy('name')->get();
         $filials = FilialModel::query()->orderBy('name')->get();
+        $selectedRole = $request->string('role')->toString();
 
-        return view('admin.create', compact('rols', 'filials'));
+        if (! in_array($selectedRole, $this->allowedRoles(), true)) {
+            $selectedRole = null;
+        }
+
+        return view('admin.create', compact('rols', 'filials', 'selectedRole'));
     }
 
         public function store(StoreUserRequest $request)
@@ -63,7 +108,12 @@ class AdminController extends Controller
        
         $user->assignRole($request->role);
 
-        return redirect()->route($this->userRoutePrefix() . '.index')
+        $returnRole = $request->string('return_role')->toString();
+        $returnParameters = in_array($returnRole, ['employee', 'courier', 'admin_filial'], true)
+            ? ['role' => $returnRole]
+            : [];
+
+        return redirect()->route($this->userRoutePrefix() . '.index', $returnParameters)
             ->with('success', 'Foydalanuvchi muvaffaqiyatli qo‘shildi va roli biriktirildi ✅');
     }
 

@@ -28,13 +28,17 @@ class Partner extends Model
         'code',
         'type',
         'contact_name',
+        'account_manager_id',
         'email',
         'phone',
         'tax_id',
         'billing_email',
         'discount_percent',
         'credit_limit',
+        'minimum_margin_percent',
         'payment_terms_days',
+        'contract_starts_at',
+        'contract_ends_at',
         'currency',
         'status',
         'brand_name',
@@ -49,11 +53,19 @@ class Partner extends Model
         'discount_percent' => 'decimal:2',
         'credit_limit' => 'decimal:2',
         'payment_terms_days' => 'integer',
+        'minimum_margin_percent' => 'decimal:2',
+        'contract_starts_at' => 'date',
+        'contract_ends_at' => 'date',
     ];
 
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function accountManager()
+    {
+        return $this->belongsTo(User::class, 'account_manager_id')->withTrashed();
     }
 
     public function filials()

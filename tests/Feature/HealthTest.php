@@ -22,8 +22,10 @@ class HealthTest extends TestCase
     {
         $this->getJson('/health')
             ->assertHeader('X-Content-Type-Options', 'nosniff')
-            ->assertHeader('X-Frame-Options', 'SAMEORIGIN')
+            ->assertHeader('X-Frame-Options', 'DENY')
             ->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
-            ->assertHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+            ->assertHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+            ->assertHeader('Cross-Origin-Opener-Policy', 'same-origin')
+            ->assertHeader('Cross-Origin-Resource-Policy', 'same-origin');
     }
 }

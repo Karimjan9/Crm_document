@@ -11,6 +11,12 @@
   <php>
     <env name="APP_ENV" value="testing"/>
     <env name="APP_DEBUG" value="false"/>
+    <!-- Keep tests isolated from development's optimized Laravel cache files. -->
+    <env name="APP_CONFIG_CACHE" value="bootstrap/cache/config.testing.php"/>
+    <env name="APP_EVENTS_CACHE" value="bootstrap/cache/events.testing.php"/>
+    <env name="APP_PACKAGES_CACHE" value="bootstrap/cache/packages.testing.php"/>
+    <env name="APP_SERVICES_CACHE" value="bootstrap/cache/services.testing.php"/>
+    <env name="APP_ROUTES_CACHE" value="bootstrap/cache/routes.testing.php"/>
     <env name="DEBUGBAR_ENABLED" value="false"/>
     <env name="BCRYPT_ROUNDS" value="4"/>
     <env name="CACHE_DRIVER" value="array"/>

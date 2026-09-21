@@ -4,17 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Global Voice — Kirish</title>
-<link rel="icon" href="{{ url('logo.png') }}" type="image/png"/>
+<link rel="icon" href="{{ asset('favicon.svg') }}?v=3" type="image/svg+xml" sizes="any"/>
+<link rel="shortcut icon" href="{{ asset('favicon.svg') }}?v=3" type="image/svg+xml"/>
+<meta name="theme-color" content="#be123c">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
+.icon{display:inline-block;width:1em;height:1em;vertical-align:-.125em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.icon-sprite{position:absolute;width:0;height:0;overflow:hidden}
+
 :root{
-  --blue:#3b82f6;
-  --blue-d:#1d4ed8;
-  --cyan:#22d3ee;
-  --indigo:#818cf8;
+  --blue:#e11d48;
+  --blue-d:#9f1239;
+  --cyan:#fb7185;
+  --indigo:#f97316;
   --text:#e2e8f0;
   --muted:#64748b;
   --dim:#334155;
@@ -37,25 +41,25 @@ html,body{
   align-items:center;justify-content:center;
   background:#070d1a;overflow:hidden;
 }
-#welcome.hide{animation:wOut .7s ease forwards}
+#welcome.hide{animation:wOut .25s ease forwards}
 @keyframes wOut{to{opacity:0;pointer-events:none}}
 
 .w-bg-grid{
   position:absolute;inset:0;
   background-image:
-    linear-gradient(rgba(59,130,246,.06) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(59,130,246,.06) 1px,transparent 1px);
+    linear-gradient(rgba(225,29,72,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(225,29,72,.06) 1px,transparent 1px);
   background-size:52px 52px;
 }
 .w-orb{position:absolute;border-radius:50%;pointer-events:none}
 .w-orb1{
   width:460px;height:460px;top:-140px;left:-120px;
-  background:radial-gradient(circle,rgba(59,130,246,.2),transparent 68%);
+  background:radial-gradient(circle,rgba(225,29,72,.22),transparent 68%);
   animation:wDrift1 7s ease-in-out infinite;
 }
 .w-orb2{
   width:360px;height:360px;bottom:-80px;right:-80px;
-  background:radial-gradient(circle,rgba(34,211,238,.16),transparent 68%);
+  background:radial-gradient(circle,rgba(251,113,133,.16),transparent 68%);
   animation:wDrift2 9s ease-in-out infinite;
 }
 @keyframes wDrift1{0%,100%{transform:translate(0,0)}50%{transform:translate(22px,28px)}}
@@ -65,7 +69,7 @@ html,body{
 .w-ring-wrap{position:relative;width:100px;height:100px;margin:0 auto 28px}
 .w-ring{
   position:absolute;inset:0;border-radius:50%;
-  border:1.5px solid rgba(59,130,246,.35);
+  border:1.5px solid rgba(225,29,72,.35);
   animation:wRingPop 1.8s ease-out infinite;
 }
 .w-ring:nth-child(2){animation-delay:.6s}
@@ -76,7 +80,7 @@ html,body{
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,var(--blue),var(--blue-d));
   border-radius:50%;font-size:32px;color:#fff;
-  animation:wLogoIn .5s cubic-bezier(.34,1.56,.64,1) .3s both;
+  animation:wLogoIn .3s cubic-bezier(.34,1.56,.64,1) .05s both;
 }
 @keyframes wLogoIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 
@@ -84,22 +88,22 @@ html,body{
   font-family:'Orbitron',sans-serif;
   font-size:clamp(2rem,6vw,3.4rem);
   font-weight:700;color:#fff;letter-spacing:4px;
-  opacity:0;animation:wFadeUp .7s ease .8s forwards;
+  opacity:0;animation:wFadeUp .3s ease .25s forwards;
 }
 .w-title span{color:var(--blue)}
 .w-sub{
   font-size:15px;color:var(--muted);margin-top:10px;
-  opacity:0;animation:wFadeUp .6s ease 1.2s forwards;
+  opacity:0;animation:wFadeUp .25s ease .45s forwards;
 }
 .w-progress{
   width:180px;height:2px;background:var(--border);
   border-radius:2px;margin:28px auto 0;overflow:hidden;
-  opacity:0;animation:wFadeUp .5s ease 1.4s forwards;
+  opacity:0;animation:wFadeUp .2s ease .58s forwards;
 }
 .w-bar{
   height:100%;width:0;
   background:linear-gradient(90deg,var(--blue),var(--cyan));
-  animation:wBarFill 1.2s ease 1.6s forwards;
+  animation:wBarFill .28s ease .68s forwards;
 }
 @keyframes wBarFill{to{width:100%}}
 @keyframes wFadeUp{
@@ -111,7 +115,7 @@ html,body{
 #page{
   position:relative;height:100vh;
   display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:opacity .9s ease;
+  opacity:0;transition:opacity .25s ease;
 }
 #page.on{opacity:1}
 
@@ -120,25 +124,25 @@ html,body{
 .bg-grid{
   position:absolute;inset:0;
   background-image:
-    linear-gradient(rgba(59,130,246,.045) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(59,130,246,.045) 1px,transparent 1px);
+    linear-gradient(rgba(225,29,72,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(225,29,72,.045) 1px,transparent 1px);
   background-size:52px 52px;
 }
 .bg-orb{position:absolute;border-radius:50%}
 .bg-orb1{
   width:600px;height:600px;top:-180px;left:-160px;
-  background:radial-gradient(circle,rgba(59,130,246,.16),transparent 65%);
+  background:radial-gradient(circle,rgba(225,29,72,.16),transparent 65%);
   animation:bgDA 14s ease-in-out infinite;
 }
 .bg-orb2{
   width:500px;height:500px;bottom:-120px;right:-100px;
-  background:radial-gradient(circle,rgba(34,211,238,.12),transparent 65%);
+  background:radial-gradient(circle,rgba(251,113,133,.12),transparent 65%);
   animation:bgDB 18s ease-in-out infinite;
 }
 .bg-orb3{
   width:340px;height:340px;top:50%;left:50%;
   transform:translate(-50%,-50%);
-  background:radial-gradient(circle,rgba(129,140,248,.1),transparent 68%);
+  background:radial-gradient(circle,rgba(249,115,22,.1),transparent 68%);
   animation:bgDA 11s ease-in-out 3s infinite reverse;
 }
 @keyframes bgDA{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,26px)}}
@@ -152,7 +156,7 @@ html,body{
   display:flex;align-items:center;justify-content:flex-end;
   padding-right:30px;overflow:hidden;
 }
-.globe-wrap{width:min(400px,90%);height:min(400px,90%);flex-shrink:0}
+.globe-wrap{width:min(400px,90%);height:min(400px,90%);flex-shrink:0;filter:hue-rotate(138deg) saturate(1.45)}
 .globe-wrap svg{width:100%;height:100%}
 
 .gRA{animation:gRA 14s linear infinite;transform-origin:160px 160px}
@@ -175,58 +179,19 @@ html,body{
 .gSig{stroke-dasharray:6 4;animation:gSigM 2.4s linear infinite}
 @keyframes gSigM{to{stroke-dashoffset:-40}}
 
-/* ===== RIGHT — Stat cards ===== */
-.side-right{
-  position:fixed;right:0;top:0;bottom:0;
-  width:calc(50% - 215px);
-  z-index:1;pointer-events:none;
-  display:flex;align-items:center;justify-content:flex-start;
-  padding-left:30px;overflow:hidden;
-}
-.cards-wrap{position:relative;width:min(240px,90%);height:min(380px,90%)}
-
-.float-card{
-  position:absolute;
-  background:rgba(15,25,50,.7);
-  border:1px solid rgba(59,130,246,.18);
-  border-radius:14px;
-  padding:14px 16px;
-  animation:fcFloat 6s ease-in-out infinite;
-  width:210px;
-}
-.float-card:nth-child(1){top:4%;  left:0; animation-delay:0s;   animation-duration:6s}
-.float-card:nth-child(2){top:36%; left:14px; animation-delay:1.8s; animation-duration:7.5s}
-.float-card:nth-child(3){top:68%; left:0; animation-delay:3.4s; animation-duration:5.8s}
-@keyframes fcFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
-
-.fc-lbl{font-size:10px;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px}
-.fc-val{font-size:19px;font-weight:600;color:var(--blue)}
-.fc-sub{font-size:11px;color:var(--dim);margin-top:2px}
-.fc-bars{display:flex;flex-direction:column;gap:6px;margin-top:8px}
-.fc-row-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin-bottom:2px}
-.fc-bar-bg{height:4px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden}
-.fc-bar-f{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--cyan))}
-
-/* floating dots */
-.pdot{
-  position:absolute;width:5px;height:5px;border-radius:50%;
-  opacity:.35;animation:pdotF 8s ease-in-out infinite;
-}
-@keyframes pdotF{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-18px) scale(1.4)}}
-
 /* ===== CENTER — Login card ===== */
 .login-wrap{position:relative;z-index:10;width:420px;max-width:92vw}
 
 .login-card{
   background:rgba(10,18,36,.84);
   backdrop-filter:blur(24px);
-  border:1px solid rgba(59,130,246,.22);
+  border:1px solid rgba(225,29,72,.22);
   border-radius:22px;
   padding:2.6rem 2.2rem;
   box-shadow:
-    0 0 0 1px rgba(59,130,246,.07) inset,
+    0 0 0 1px rgba(225,29,72,.07) inset,
     0 32px 80px rgba(0,0,0,.55),
-    0 0 60px rgba(59,130,246,.07);
+    0 0 60px rgba(225,29,72,.10);
 }
 
 .card-top{display:flex;align-items:center;gap:11px;margin-bottom:1.8rem}
@@ -286,9 +251,9 @@ html,body{
 }
 .field-input::placeholder{color:#2a3a50}
 .field-input:focus{
-  border-color:rgba(59,130,246,.55);
-  background:rgba(59,130,246,.07);
-  box-shadow:0 0 0 3px rgba(59,130,246,.1);
+  border-color:rgba(225,29,72,.55);
+  background:rgba(225,29,72,.07);
+  box-shadow:0 0 0 3px rgba(225,29,72,.1);
 }
 .field-input.err{border-color:rgba(239,68,68,.45);background:rgba(239,68,68,.05)}
 .err-msg{font-size:11px;color:#f87171;margin-top:3px;display:none}
@@ -307,7 +272,7 @@ html,body{
   display:flex;align-items:center;justify-content:center;gap:8px;
   transition:opacity .2s,transform .15s,box-shadow .2s;
 }
-.login-btn:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 8px 28px rgba(59,130,246,.35)}
+.login-btn:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 8px 28px rgba(225,29,72,.35)}
 .login-btn:active{transform:scale(.98)}
 .btn-spinner{
   display:none;width:16px;height:16px;
@@ -316,6 +281,7 @@ html,body{
 }
 .login-btn.loading .btn-text{display:none}
 .login-btn.loading .btn-spinner{display:block}
+.btn-text{display:inline-flex;align-items:center;gap:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .sep{display:flex;align-items:center;gap:10px;margin:1.2rem 0}
@@ -347,12 +313,13 @@ html,body{
   transition:background .2s,transform .2s;
 }
 .theme-btn:hover{background:rgba(255,255,255,.12);transform:scale(1.08)}
+.theme-btn:focus-visible{outline:3px solid rgba(225,29,72,.45);outline-offset:3px}
 
 /* Light mode */
-body.light{background:#eef2ff}
+body.light,body.light #page{background:#fff1f2}
 body.light .login-card{
   background:rgba(255,255,255,.93);
-  border-color:rgba(59,130,246,.22);
+  border-color:rgba(225,29,72,.22);
   box-shadow:0 32px 80px rgba(0,0,0,.1);
 }
 body.light .card-title{color:#0f172a}
@@ -363,15 +330,21 @@ body.light .field-input{
   border-color:rgba(0,0,0,.1);
 }
 body.light .field-input::placeholder{color:#cbd5e1}
-body.light .float-card{background:rgba(255,255,255,.7);border-color:rgba(59,130,246,.2)}
-body.light .fc-lbl{color:#94a3b8}
-body.light .fc-sub{color:#94a3b8}
-
+body.light .theme-btn{
+  background:#fff;color:#9f1239;border-color:#fb7185;
+  box-shadow:0 4px 14px rgba(15,23,42,.16);
+}
+body.light .theme-btn:hover{background:#ffe4e6}
+body.light .bg-grid{
+  background-image:
+    linear-gradient(rgba(225,29,72,.10) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(225,29,72,.10) 1px,transparent 1px);
+}
 /* ===== RESPONSIVE ===== */
 
 /* Tablet — yon animatsiyalar yashirinadi */
 @media(max-width:960px){
-  .side-left,.side-right{display:none}
+  .side-left{display:none}
   #page{background:#070d1a}
 }
 
@@ -413,6 +386,20 @@ body.light .fc-sub{color:#94a3b8}
 </head>
 <body>
 
+<!-- Local SVG icons: always available, including after a refresh. -->
+<svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.4 2.5 3.6 5.5 3.6 9S14.4 18.5 12 21M12 3c-2.4 2.5-3.6 5.5-3.6 9s1.2 6.5 3.6 9"/></symbol>
+  <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.4 15.3A9 9 0 0 1 8.7 3.6 9 9 0 1 0 20.4 15.3z"/></symbol>
+  <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="icon-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></symbol>
+  <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></symbol>
+  <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v2"/></symbol>
+  <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+  <symbol id="icon-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.2A10.8 10.8 0 0 1 12 6c6 0 9.5 6 9.5 6a17.4 17.4 0 0 1-3.1 3.7M6.1 6.1A17.5 17.5 0 0 0 2.5 12S6 18 12 18a10.8 10.8 0 0 0 3-.5"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
+  <symbol id="icon-login" viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></symbol>
+  <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.7-2.8 8.3-7 10-4.2-1.7-7-5.3-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+</svg>
+
 <!-- ===== WELCOME ===== -->
 <div id="welcome">
   <div class="w-bg-grid"></div>
@@ -423,7 +410,7 @@ body.light .fc-sub{color:#94a3b8}
       <div class="w-ring"></div>
       <div class="w-ring"></div>
       <div class="w-ring"></div>
-      <div class="w-logo"><i class="ti ti-globe" aria-hidden="true"></i></div>
+      <div class="w-logo"><svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg></div>
     </div>
     <h1 class="w-title">GLOBAL <span>VOICE</span></h1>
     <p class="w-sub">Xush kelibsiz</p>
@@ -442,7 +429,7 @@ body.light .fc-sub{color:#94a3b8}
   </div>
 
   <button class="theme-btn" id="themeBtn" aria-label="Mavzuni o'zgartirish">
-    <i class="ti ti-moon" id="themeIcon" aria-hidden="true"></i>
+    <svg class="icon" aria-hidden="true"><use id="themeIcon" href="#icon-moon"/></svg>
   </button>
 
   <!-- LEFT — Globe -->
@@ -530,49 +517,12 @@ body.light .fc-sub{color:#94a3b8}
         <line class="gSig" x1="210" y1="212" x2="252" y2="255" stroke="#818cf8" stroke-width=".8" opacity=".4"/>
         <circle cx="252" cy="255" r="3" fill="#818cf8" opacity=".6"/>
 
-        <text x="160" y="167" text-anchor="middle" font-size="22" fill="#93c5fd" opacity=".85" font-family="sans-serif">⊕</text>
+        <g transform="translate(160 160)" fill="none" stroke="#93c5fd" stroke-width="1.3" opacity=".85">
+          <circle r="10"/>
+          <path d="M-10 0h20M0-10c3 3 3 7 0 10M0-10c-3 3-3 7 0 10"/>
+        </g>
         <text x="160" y="300" text-anchor="middle" font-size="10" fill="#3b82f6" opacity=".55" font-family="'Orbitron',sans-serif" letter-spacing="3">GLOBAL VOICE</text>
       </svg>
-    </div>
-  </div>
-
-  <!-- RIGHT — Floating stat cards -->
-  <div class="side-right" aria-hidden="true">
-    <div class="cards-wrap">
-
-      <div class="float-card">
-        <div class="fc-lbl">Foydalanuvchilar</div>
-        <div class="fc-val">2,418</div>
-        <div class="fc-sub">&#8593; 12% bu oy</div>
-      </div>
-
-      <div class="float-card">
-        <div class="fc-lbl">Faollik darajasi</div>
-        <div class="fc-bars">
-          <div class="fc-row-lbl"><span>Savol</span><span>87%</span></div>
-          <div class="fc-bar-bg"><div class="fc-bar-f" style="width:87%"></div></div>
-          <div class="fc-row-lbl"><span>Yechim</span><span>94%</span></div>
-          <div class="fc-bar-bg"><div class="fc-bar-f" style="width:94%;background:linear-gradient(90deg,#818cf8,#22d3ee)"></div></div>
-        </div>
-      </div>
-
-      <div class="float-card" style="display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;border-radius:50%;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;font-size:16px;color:#22c55e;flex-shrink:0">
-          <i class="ti ti-shield-check" aria-hidden="true"></i>
-        </div>
-        <div>
-          <div class="fc-lbl" style="margin-bottom:2px">Tizim holati</div>
-          <div style="font-size:13px;font-weight:600;color:#22c55e">Online — 99.9%</div>
-          <div class="fc-sub">SSL • Xavfsiz</div>
-        </div>
-      </div>
-
-      <!-- floating dots -->
-      <div class="pdot" style="top:5%;left:70%;background:#22d3ee;animation-delay:0s"></div>
-      <div class="pdot" style="top:22%;left:85%;background:#3b82f6;animation-delay:1.3s"></div>
-      <div class="pdot" style="top:52%;left:78%;background:#818cf8;animation-delay:2.7s"></div>
-      <div class="pdot" style="top:78%;left:68%;background:#22d3ee;animation-delay:4s"></div>
-      <div class="pdot" style="top:90%;left:82%;background:#3b82f6;animation-delay:5.2s"></div>
     </div>
   </div>
 
@@ -582,7 +532,7 @@ body.light .fc-sub{color:#94a3b8}
 
       <div class="card-top">
         <div class="card-logo-circle">
-          <i class="ti ti-globe" aria-hidden="true"></i>
+          <svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg>
         </div>
         <span class="card-brand">GLOBAL VOICE</span>
         <div class="card-online">
@@ -595,13 +545,13 @@ body.light .fc-sub{color:#94a3b8}
       <p class="card-sub">Login va parolingizni kiriting</p>
 
       <div class="alert-box" id="alertBox" role="alert">
-        <i class="ti ti-alert-circle" aria-hidden="true"></i>
+        <svg class="icon" aria-hidden="true"><use href="#icon-alert"/></svg>
         <span id="alertMsg">Login yoki parol noto'g'ri.</span>
       </div>
 
       @if(session('error'))
         <div class="alert-box" style="display:flex">
-          <i class="ti ti-alert-circle" aria-hidden="true"></i>
+          <svg class="icon" aria-hidden="true"><use href="#icon-alert"/></svg>
           {{ session('error') }}
         </div>
       @endif
@@ -611,7 +561,7 @@ body.light .fc-sub{color:#94a3b8}
 
         <label class="field-lbl" for="loginInput">Login</label>
         <div class="field-wrap">
-          <i class="ti ti-user fi" aria-hidden="true"></i>
+          <svg class="icon fi" aria-hidden="true"><use href="#icon-user"/></svg>
           <input class="field-input @error('login') err @enderror"
             type="text" id="loginInput" name="login"
             value="{{ old('login') }}"
@@ -624,13 +574,13 @@ body.light .fc-sub{color:#94a3b8}
 
         <label class="field-lbl" for="passwordInput">Parol</label>
         <div class="field-wrap">
-          <i class="ti ti-lock fi" aria-hidden="true"></i>
+          <svg class="icon fi" aria-hidden="true"><use href="#icon-lock"/></svg>
           <input class="field-input @error('password') err @enderror"
             type="password" id="passwordInput" name="password"
             placeholder="parolni kiriting"
             autocomplete="current-password" required>
           <button type="button" class="eye-btn" id="eyeBtn" aria-label="Parolni ko'rsatish">
-            <i class="ti ti-eye" id="eyeIcon" aria-hidden="true"></i>
+            <svg class="icon" aria-hidden="true"><use id="eyeIcon" href="#icon-eye"/></svg>
           </button>
         </div>
         @error('password')
@@ -644,7 +594,7 @@ body.light .fc-sub{color:#94a3b8}
 
         <button type="submit" class="login-btn" id="loginBtn">
           <span class="btn-text">
-            <i class="ti ti-login" aria-hidden="true"></i>
+            <svg class="icon" aria-hidden="true"><use href="#icon-login"/></svg>
             Kirish
           </span>
           <div class="btn-spinner"></div>
@@ -659,7 +609,7 @@ body.light .fc-sub{color:#94a3b8}
 
       <div class="sec-badge">
         <div class="online-dot"></div>
-        <i class="ti ti-shield-check" aria-hidden="true" style="font-size:14px;color:#22c55e"></i>
+        <svg class="icon" aria-hidden="true" style="font-size:14px;color:#22c55e"><use href="#icon-shield"/></svg>
         <span class="sec-txt">Xavfsiz ulanish faol</span>
       </div>
 
@@ -670,19 +620,34 @@ body.light .fc-sub{color:#94a3b8}
 
 <script>
 (function(){
-  var w=document.getElementById('welcome');
-  var p=document.getElementById('page');
+  var welcome=document.getElementById('welcome');
+  var page=document.getElementById('page');
+  var skipWelcomeAfterLogout=@json(request()->boolean('logged_out'));
+
+  if(skipWelcomeAfterLogout){
+    welcome.style.display='none';
+    page.classList.add('on');
+    return;
+  }
+
   setTimeout(function(){
-    w.classList.add('hide');
-    setTimeout(function(){w.style.display='none';p.classList.add('on')},700);
+    welcome.classList.add('hide');
+    setTimeout(function(){welcome.style.display='none';page.classList.add('on')},250);
   },2000);
 })();
 
-var isLight=false;
-document.getElementById('themeBtn').addEventListener('click',function(){
-  isLight=!isLight;
+var themeStorageKey='global-voice-theme';
+var themeIcon=document.getElementById('themeIcon');
+function setTheme(isLight){
   document.body.classList.toggle('light',isLight);
-  document.getElementById('themeIcon').className=isLight?'ti ti-sun':'ti ti-moon';
+  themeIcon.setAttribute('href',isLight?'#icon-sun':'#icon-moon');
+  try{localStorage.setItem(themeStorageKey,isLight?'light':'dark')}catch(e){}
+}
+var savedTheme='';
+try{savedTheme=localStorage.getItem(themeStorageKey)||''}catch(e){}
+setTheme(savedTheme==='light');
+document.getElementById('themeBtn').addEventListener('click',function(){
+  setTheme(!document.body.classList.contains('light'));
 });
 
 var pwdInput=document.getElementById('passwordInput');
@@ -690,7 +655,7 @@ var eyeIcon=document.getElementById('eyeIcon');
 document.getElementById('eyeBtn').addEventListener('click',function(){
   var show=pwdInput.type==='text';
   pwdInput.type=show?'password':'text';
-  eyeIcon.className=show?'ti ti-eye':'ti ti-eye-off';
+  eyeIcon.setAttribute('href',show?'#icon-eye':'#icon-eye-off');
 });
 
 var form=document.getElementById('loginForm');
@@ -705,6 +670,9 @@ form.addEventListener('submit',function(e){
     ab.style.display='flex';
     return;
   }
+  // Kabinet layouti ushbu qiymatdan tema tanlaydi. Login ekranidagi
+  // tema qanday bo'lishidan qat'i nazar, tizim light mode'da ochiladi.
+  try{localStorage.setItem('theme','semi')}catch(e){}
   loginBtn.classList.add('loading');
   loginBtn.disabled=true;
 });

@@ -143,7 +143,9 @@ class DocumentWorkflowService
                 'reason' => $reason, 'comment' => $comment,
                 'metadata' => array_merge($metadata, ['forced' => $forced]),
             ]);
-            return $locked->fresh(['assignedTo', 'qaUser']);
+            $fresh = $locked->fresh(['assignedTo', 'qaUser', 'user']);
+            app(WorkflowResponsibilityService::class)->sync($fresh, $target, $actor);
+            return $fresh;
         });
     }
 
@@ -197,7 +199,9 @@ class DocumentWorkflowService
                 'queue' => $queue, 'priority' => $priority, 'estimated_workload_minutes' => $minutes,
                 'source' => $source, 'notes' => $notes, 'metadata' => ['previous_assigned_to_id' => $previousAssignee],
             ]);
-            return $locked->fresh(['assignedTo', 'qaUser']);
+            $fresh = $locked->fresh(['assignedTo', 'qaUser', 'user']);
+            app(WorkflowResponsibilityService::class)->reassign($fresh);
+            return $fresh;
         });
     }
 
@@ -230,7 +234,7 @@ class DocumentWorkflowService
 
     public function visibleDocuments(User $actor, array $filters = []): Builder
     {
-        $query = DocumentsModel::query()->with(['client:id,name,phone_number', 'service:id,name', 'assignedTo:id,name,filial_id', 'qaUser:id,name,filial_id', 'checklists', 'latestQaReview']);
+        $query = DocumentsModel::query()->with(['client:id,name,phone_number', 'service:id,name', 'filial:id,name', 'assignedTo:id,name,filial_id', 'qaUser:id,name,filial_id', 'checklists', 'latestQaReview']);
         if ($actor->hasAnyRole(['super_admin', 'admin_manager'])) {
             $query->when(! empty($filters['filial_id']), fn (Builder $q) => $q->where('filial_id', (int) $filters['filial_id']));
         } elseif ($actor->hasRole('admin_filial')) {
@@ -257,8 +261,8 @@ class DocumentWorkflowService
         ])->values()->all();
         $base = $this->visibleDocuments($actor, $filters);
         $filialId = $filters['filial_id'] ?? ($actor->filial_id ?: null);
-        $workers = $this->workersQuery($filialId)->get(['id', 'name', 'filial_id'])->map(fn (User $worker): array => [
-            'id' => $worker->id, 'name' => $worker->name, 'filial_id' => $worker->filial_id,
+        $workers = $this->workersQuery($filialId)->with('filial:id,name')->get(['id', 'name', 'filial_id'])->map(fn (User $worker): array => [
+            'id' => $worker->id, 'name' => $worker->name, 'filial_id' => $worker->filial_id, 'filial' => $worker->filial?->name,
             'active_count' => $this->activeCount($worker->id, $filialId), 'workload_minutes' => $this->workloadMinutes($worker->id, $filialId),
             'review_count' => DocumentsModel::query()->where('qa_user_id', $worker->id)->whereIn('status_doc', ['waiting_review', 'qa_failed'])->count(),
         ])->values()->all();
@@ -275,7 +279,7 @@ class DocumentWorkflowService
     private function card(DocumentsModel $document): array
     {
         $status = $this->normalizeStatus($document->status_doc);
-        return ['id' => $document->id, 'document_code' => $document->document_code, 'status' => $status, 'status_label' => $this->label($status), 'allowed_transitions' => array_map(fn (string $key): array => ['key' => $key, 'label' => $this->label($key)], array_merge([$status], $this->allowedTransitions($status))), 'priority' => $document->priority ?: 'normal', 'queue' => $document->queue ?: $this->queueForStatus($status), 'client' => $document->client?->name ?: 'Mijoz ko‘rsatilmagan', 'phone' => $document->client?->phone_number, 'service' => $document->service?->name ?: 'Xizmat', 'assigned_to_id' => $document->assigned_to_id, 'assigned_to' => $document->assignedTo?->name, 'qa_user_id' => $document->qa_user_id, 'qa_user' => $document->qaUser?->name, 'workload_minutes' => (int) $document->estimated_workload_minutes, 'rework_count' => (int) $document->rework_count, 'deadline' => $document->deadline_due_at?->format('d.m.Y H:i'), 'final_price' => (float) $document->final_price, 'paid_amount' => (float) $document->paid_amount, 'created_at' => $document->created_at?->format('d.m.Y H:i')];
+        return ['id' => $document->id, 'document_code' => $document->document_code, 'status' => $status, 'status_label' => $this->label($status), 'priority' => $document->priority ?: 'normal', 'queue' => $document->queue ?: $this->queueForStatus($status), 'filial_id' => $document->filial_id, 'filial' => $document->filial?->name, 'client' => $document->client?->name ?: 'Mijoz ko‘rsatilmagan', 'phone' => $document->client?->phone_number, 'service' => $document->service?->name ?: 'Xizmat', 'assigned_to_id' => $document->assigned_to_id, 'assigned_to' => $document->assignedTo?->name, 'qa_user_id' => $document->qa_user_id, 'qa_user' => $document->qaUser?->name, 'workload_minutes' => (int) $document->estimated_workload_minutes, 'rework_count' => (int) $document->rework_count, 'deadline' => $document->deadline_due_at?->format('d.m.Y H:i'), 'final_price' => (float) $document->final_price, 'paid_amount' => (float) $document->paid_amount, 'created_at' => $document->created_at?->format('d.m.Y H:i')];
     }
 
     private function assertUserInBranch(DocumentsModel $document, ?int $userId, string $field): void

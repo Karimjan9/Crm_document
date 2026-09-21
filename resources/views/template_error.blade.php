@@ -5,9 +5,9 @@
 	<!-- Required meta tags -->
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!--favicon-->
-	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/favicon-32x32.png') }}" />
-	<link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
+	<!-- favicon: login va kabinet uchun yagona brand icon -->
+	<link rel="icon" href="{{ asset('favicon.svg') }}?v=3" type="image/svg+xml" sizes="any" />
+	<link rel="shortcut icon" href="{{ asset('favicon.svg') }}?v=3" type="image/svg+xml" />
 	<!-- loader-->
 	<link href="{{ url('assets/css/pace.min.css') }}" rel="stylesheet" />
 	<script src="{{ url('assets/js/pace.min.js') }}"></script>

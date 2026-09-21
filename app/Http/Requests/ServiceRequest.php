@@ -26,11 +26,8 @@ class ServiceRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'deadline' => 'required|integer',
-            'checklist' => 'nullable|array|max:20',
-            'checklist.*' => 'boolean',
-            'checklist_configured' => 'nullable|boolean',
+            'price' => 'required|numeric|min:0',
+            'deadline' => 'required|integer|min:0',
         ];
     }
 }

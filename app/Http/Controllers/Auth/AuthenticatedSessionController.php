@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +18,7 @@ class AuthenticatedSessionController extends Controller
     {
         return view('login');
     }
+
     /**
      * Handle an incoming authentication request.
      */
@@ -41,33 +41,39 @@ class AuthenticatedSessionController extends Controller
                 'total_ms' => (int) (($t3 - $t0) * 1000),
             ]);
         }
-      
+
         $roles = $user->getRoleNames();
         if ($roles->contains('admin_manager') || $roles->contains('super_admin')) {
             // dd('here');
             return redirect()->route('superadmin.index');
 
-        }
-        else if ($roles->contains('admin_filial')) {
+        } elseif ($roles->contains('admin_filial')) {
             // dd(1);
-                    return redirect()->route('admin_filial.index');
+            return redirect()->route('admin_filial.index');
 
-        }else if ($roles->contains('employee')) {
+        } elseif ($roles->contains('employee')) {
             // dd(1);
-                return redirect()->route('employee.document.index');
+            return redirect()->route('employee.document.index');
 
-        }else if ($roles->contains('courier')) {
+        } elseif ($roles->contains('courier')) {
 
-                 return redirect()->route('courier.documents.index'); 
-        }else if ($roles->contains('partner_admin') || $roles->contains('partner_operator')) {
+            return redirect()->route('courier.documents.index');
+        } elseif ($roles->contains('partner_admin') || $roles->contains('partner_operator')) {
 
-                 return redirect()->route('partner.dashboard');
+            return redirect()->route('partner.dashboard');
+        } elseif ($roles->contains('user')) {
+
+            return redirect()->route('account.home');
+        } else {
+            // An account without an application role must not retain a session.
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->withErrors([
+                'login' => 'Bu hisob uchun tizimga kirish ruxsati yo\'q.',
+            ]);
         }
-        else{
-                 return redirect()->route('login'); 
-
-        }
-      
 
     }
 
@@ -87,6 +93,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('login');
+        // Logoutdan so'ng sahifa darhol ochilsin. Oddiy /login refresh'da
+        // welcome intro avvalgidek ko'rsatiladi.
+        return to_route('login', ['logged_out' => 1]);
     }
 }

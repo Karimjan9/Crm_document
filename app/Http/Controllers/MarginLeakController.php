@@ -31,6 +31,7 @@ class MarginLeakController extends Controller
 
     public function scan(Request $request)
     {
+        abort_unless($request->user()->hasRole('admin_manager'), 403);
         $data = $request->validate([
             'date_from' => ['nullable', 'date'],
             'date_to' => ['nullable', 'date', 'after_or_equal:date_from'],
@@ -43,8 +44,9 @@ class MarginLeakController extends Controller
         return redirect()->route('finance.margin-leaks.index')->with('success', 'Margin leak tekshiruvi bajarildi.');
     }
 
-    public function resolve(MarginLeak $marginLeak)
+    public function resolve(Request $request, MarginLeak $marginLeak)
     {
+        abort_unless($request->user()->hasRole('admin_manager'), 403);
         $this->detector->resolve($marginLeak);
 
         return redirect()->back()->with('success', 'Signal yopildi.');

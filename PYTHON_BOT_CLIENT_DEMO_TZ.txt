@@ -1,0 +1,253 @@
+ TEXNIK TOPSHIRIQ
+
+Bot Client platformasiga ulangan bo'ladi va undan faqat mijozlar foydalanadi. Bu ichki xodimlar uchun yana bitta alohida kabinet yoki murakkab tizim emas. Mijoz Telegram orqali yozadi, bot kerakli ma'lumotlarni yig'adi, hammasini Client-demo platformasiga yuboradi. Xodimlar esa odatdagidek platformaning o'zidan ishlaydi.
+
+Asosiy maqsad — mijoz yozgan zahoti uni e'tiborsiz qoldirmaslik. Hozir ko'p joyda mijoz Instagramdan, Telegramdan yoki tanishining tavsiyasi bilan yozadi, keyin esa xabarlar orasida uning so'rovi yo'qolib qolishi mumkin. Bu botda har bir murojaat platformaga tushadi, qayerdan kelgani ko'rinadi va keyingi javobgarlik aniq bo'ladi.
+
+Botning tili oddiy, muloyim va odamga yaqin bo'lishi kerak. U mijoz bilan rasmiy robotday emas, yaxshi operatorning dastlabki javobidek gaplashadi. Masalan:
+
+"Assalomu alaykum. Hujjatingiz bo'yicha yordam beramiz. Qaysi davlat yoki qaysi maqsad uchun tayyorlamoqchisiz? Agar qulay bo'lsa, hujjat rasmini ham yuboring — operatorimiz aniq narx va muddatni ko'rib aytadi."
+
+Bot hech qachon aniq bilmagan narsasini o'ylab topib aytmasligi kerak. Ayniqsa narx, muddat, apostil, viza yoki huquqiy masalalarda. U dastlabki yo'nalish beradi, kerakli ma'lumotni oladi va yakuniy javob uchun platformadagi mas'ul xodimga uzatadi.
+
+BOTGA MIJOZ QANDAY KIRADI
+
+Mijoz botga Telegram havolasi orqali kiradi. Havola Instagram reklamasida, bio'da, saytga qo'yilgan tugmada, QR-kodda yoki xodim yuborgan xabarda bo'lishi mumkin.
+
+Har bir reklama uchun alohida havola berish kerak. Masalan, diplom tarjimasi reklamasi, apostil reklamasi, universitet bo'yicha reklama yoki ma'lum bloger tavsiyasi uchun alohida havola bo'ladi. Shunda mijoz botga kirganda platforma uning qayerdan kelganini saqlab qoladi.
+
+Masalan, mijoz Instagramdagi "Koreyaga hujjat tayyorlash" reklamasi orqali botga kirdi. Keyinchalik u buyurtma bersa, rahbar shu buyurtma aynan qaysi reklamadan kelganini ko'ra oladi. Bu marketingga pul qaysi tomondan foyda berayotganini tushunish uchun kerak.
+
+Bot ishga tushganda mijozga qisqa menyu chiqadi:
+
+- yangi xizmat bo'yicha maslahat olish;
+- hujjat yoki rasm yuborish;
+- buyurtmam holatini ko'rish;
+- to'lov bo'yicha ma'lumot;
+- operator bilan bog'lanish;
+- manzil va ish vaqti.
+
+Menyu juda ko'p tugmadan iborat bo'lmasin. Mijoz nimani tanlashni tushunmasa ham, oddiy xabar yozib yubora olishi kerak. Bot u yozgan matnni yo'qotmasdan platformaga yuboradi.
+
+YANGI MIJOZ SO'ROVI QANDAY YURADI
+
+Mijoz "Yangi xizmat"ni tanlasa, bot uni uzun anketa bilan charchatmasligi kerak. Savollar bittadan beriladi va faqat kerakli ma'lumotlar olinadi.
+
+Avval bot nimaga hujjat kerakligini so'raydi. Masalan: o'qishga topshirish, ishga topshirish, chet elga chiqish, notarial ish yoki boshqa maqsad. Keyin hujjat turini aniqlaydi: diplom, pasport, tug'ilganlik guvohnomasi, nikoh guvohnomasi yoki boshqasi.
+
+Shundan keyin bot mijozdan hujjat rasmini yoki faylini so'rashi mumkin. Rasm bo'lsa, operator aniqroq narx va muddat ayta oladi. Lekin rasm yuborish majburiy bo'lmaydi: mijoz "keyin yuboraman" deb davom eta oladi.
+
+Bot so'rov oxirida quyidagi ma'lumotlarni oladi:
+
+- mijozning ismi;
+- telefon raqami;
+- hujjat turi;
+- qaysi davlat yoki maqsad uchun kerakligi;
+- shoshilinchligi;
+- yuborilgan rasm yoki fayllar;
+- mijozning o'z izohi;
+- botga qaysi havola yoki reklama orqali kirgani.
+
+Telefon raqami so'ralganda Telegramning "Kontaktni yuborish" tugmasi ishlatiladi. Bu raqamni xato yozib yuborish ehtimolini kamaytiradi.
+
+Mijoz ma'lumotlarini tasdiqlagandan keyin bot shunday mazmunda javob beradi:
+
+"Rahmat, so'rovingiz qabul qilindi. Mutaxassisimiz hujjatingizni ko'rib, narx va muddat bo'yicha sizga aloqaga chiqadi."
+
+Shu paytda Client-demo platformasida yangi lid yaratiladi. Agar shu telefon raqami bilan mijoz avval ham bo'lgan bo'lsa, yangi mijoz kartasi ochilmaydi. Yangi so'rov mavjud mijozning tarixiga qo'shiladi. Bu bazada bitta odam bir necha marta takror paydo bo'lib ketmasligi uchun muhim.
+
+Platformada yangi lid bilan birga quyidagilar ko'rinib turishi kerak: mijoz yozgan birinchi xabar, yuborgan fayllari, qayerdan kelgani, qaysi xizmat qiziqtirayotgani, so'rov qachon kelgani va hali xodim javob berganmi-yo'qmi.
+
+MIJOZNING OPERATOR BILAN BOG'LANISHI
+
+Botning eng muhim vazifalaridan biri — mijozni kerakli paytda tirik odamga tez ulash. Mijoz "operator", "narx kerak", "tezroq bog'laning" kabi tugmani bosganda yoki shunga o'xshash xabar yozganda, uning so'rovi Client-demo platformasidagi mas'ul xodimga tushadi.
+
+Xodim mijozga platformadan javob yozadi. Mijozning ko'zida esa barcha javoblar bot chatining ichida keladi. Unga xodim boshqa joyda o'tirib javob berayotgani sezilmaydi.
+
+Xodim javob bera boshlagandan keyin bot ortiqcha avtomatik savollar bermaydi. Aks holda mijozga bir vaqtning o'zida ham bot, ham odam yozib, chalkashlik bo'ladi.
+
+Har bir mijoz xabari va xodim javobi buyurtma yoki lid tarixida saqlanadi. Keyin mijoz "kecha boshqa operator aytgandi" desa, yozishmalarni izlab Telegramdan qidirishga hojat qolmaydi.
+
+Yangi murojaatlar uchun javob vaqti ham nazorat qilinadi. Masalan, ish vaqtida 15 daqiqa ichida javob bo'lmasa, platformada eslatma chiqadi. Bu xodimni jazolash uchun emas, issiq lid sovib qolmasligi uchun kerak.
+
+BUYURTMA HOLATINI MIJOZ O'ZI KO'RISHI
+
+Mijoz botdan "Buyurtmam" tugmasini bossa, bot uning telefon raqamini tekshiradi. Agar u raqam platformadagi mijoz kartasi bilan mos bo'lsa, mijoz faqat o'zining faol buyurtmalarini ko'radi.
+
+Bu joyda maxfiylik juda muhim. Telegram akkaunti boshqa telefonda ochilgan yoki kimdir birovning chatiga kirib olgan bo'lishi mumkin. Shuning uchun buyurtma ma'lumotini ko'rsatishdan oldin telefon raqamni tasdiqlash yoki bir martalik kod yuborish kerak.
+
+Mijozga sodda holatlar ko'rinadi:
+
+- so'rov qabul qilindi;
+- hujjatlar tekshirilmoqda;
+- ish jarayonda;
+- tayyorlanmoqda;
+- tayyor;
+- kuryerga topshirildi;
+- mijozga topshirildi.
+
+Mijoz buyurtma ichida va'da qilingan tayyor sanani, qancha to'laganini, qancha qolgani va olish/yetkazib berish usulini ko'ra oladi. Agar kerak bo'lsa, "Savol berish" tugmasini bosib shu buyurtma bo'yicha xodimga yozadi.
+
+Botga ichki, xodimlar uchun mo'ljallangan ma'lumotlar chiqmasligi kerak: tannarx, chegirma sababi, xodim izohlari, boshqa mijozlar ma'lumoti va hokazo.
+
+BUYURTMA BO'YICHA XABARLAR
+
+Client-demo platformasida buyurtma holati o'zgarsa, bot mijozga tayyor va muloyim xabar yuboradi. Bunday xabarlar reklama emas, xizmatga oid xabarlardir.
+
+Kerakli xabarlar:
+
+- so'rov qabul qilingani;
+- narx taklifi tayyor bo'lgani;
+- qo'shimcha hujjat yoki ma'lumot kerakligi;
+- to'lov qabul qilingani;
+- buyurtma ishga olingani;
+- hujjat tayyor bo'lgani;
+- kuryerga topshirilgani;
+- buyurtma topshirilgani;
+- to'lovdan qoldiq borligi.
+
+Masalan, tayyor bo'lganda xabar shunday bo'lishi mumkin:
+
+"Assalomu alaykum, hujjatingiz tayyor bo'ldi. Uni bugun soat 18:00 gacha filialdan olib ketishingiz mumkin. Agar kuryer kerak bo'lsa, shu yerga yozing."
+
+Har bir shablon platformadan o'zgartiriladigan bo'lishi kerak. Xabar matnini almashtirish uchun dasturchiga murojaat qilish shart bo'lmasin.
+
+Bir xil holat uchun xabar ikki marta ketib qolmasligi kerak. Qaysi xabar qachon yuborilgani va mijozga yetib borgan-bormagani platformada qayd etiladi.
+
+TO'LOV BILAN ISHLASH
+
+Bot karta raqami yoki to'lov ma'lumotlarini saqlamaydi. Agar Client-demo'da onlayn to'lov havolasi yaratilsa, bot faqat shu xavfsiz havolani mijozga yuboradi.
+
+Mijoz to'laganidan keyin to'lov provayderi Client-demo platformasiga tasdiq yuboradi. Platforma buyurtma to'lovini yangilaydi, bot esa mijozga tasdiq xabarini jo'natadi.
+
+To'lov qoldig'i bo'lsa, bot muloyim eslatma yuborishi mumkin. Bu eslatmalar bezovta qiladigan darajada ko'p bo'lmasin. Masalan, tayyor buyurtmadan oldin bitta eslatma, keyin xodim belgilagan vaqtda yana bitta eslatma.
+
+Mijoz "keyinroq to'layman" yoki "operator bilan gaplashaman" desa, bu javob lid/buyurtma tarixiga tushadi va xodim ko'radi.
+
+BOT ORQALI MA'LUMOT BERISH VA REKLAMA
+
+Botning marketingdagi asosiy vazifasi odamga shunchaki reklama tashlash emas. Avval foydali ma'lumot berish, keyin kerak bo'lsa aynan o'sha odamga mos xizmatni taklif qilish kerak. Shunda bot mijoz uchun ham foydali bo'ladi, biznes uchun ham lid va buyurtma olib keladi.
+
+Bot menyusida "Foydali ma'lumotlar" degan alohida bo'lim bo'ladi. U yerda mijoz o'zi qiziqqan yo'nalishni tanlaydi. Masalan:
+
+- diplom yoki attestatni tayyorlash uchun nimalar kerak;
+- apostil nima va qachon kerak bo'ladi;
+- notarial tasdiq qaysi holatda kerak;
+- qaysi hujjatlar tarjimaga qabul qilinadi;
+- tayyorlash muddati nimaga qarab o'zgaradi;
+- filiallar manzili va ish vaqti;
+- hujjatni kuryer bilan olish tartibi.
+
+Bu ma'lumotlar qisqa bo'ladi. Mijozga katta maqola yuborilmaydi: 3-4 qatorlik izoh, kerak bo'lsa "batafsil bilish" yoki "operatorga yozish" tugmasi chiqadi. Ma'lumotning ichida xizmatga tabiiy o'tish ham bo'lishi mumkin. Masalan, apostil haqida o'qigan mijozga "Hujjatingizni yuboring, mutaxassisimiz sizga aynan apostil kerakmi-yo'qligini aniqlab beradi" degan tugma ko'rsatiladi.
+
+Platformadagi mas'ul xodim bu ma'lumotlar, rasm va tugmalarni o'zgartira olishi kerak. Narx, muddat yoki talab yangrasa, botdagi eskirgan ma'lumot qolib ketmasin. Har bir ma'lumotning oxirgi yangilangan sanasi saqlanadi.
+
+Reklama orqali kirgan har bir mijoz qaysi havoladan kelgani bilan platformada saqlanadi. Masalan, Instagram reklamasidan nechta lid kelgani, qaysi video yoki bloger ko'proq buyurtma olib kelgani, qaysi reklama faqat yozishma olib kelib, qaysi biri tushum bergani ko'rinadi.
+
+Masalan, diplom tarjimasi reklamasi orqali 100 ta mijoz yozib, 15 tasi buyurtma bersa, boshqa reklama orqali 30 ta mijoz yozib, 12 tasi buyurtma bersa, ikkinchi reklama samaraliroq ekanini ko'rish mumkin. Platforma faqat xabarlar sonini emas, reklama ortidan kelgan buyurtma va tushumni ham ko'rsatishi kerak.
+
+Botdan ikki xil xabar yuboriladi va ular aralashib ketmasligi kerak.
+
+Birinchisi — foydali ma'lumot yoki taklif xabari. Masalan, universitetga hujjat topshirish mavsumi boshlanishi, apostil bo'yicha eslatma, yangi filial ochilgani yoki ma'lum xizmat bo'yicha chegirma. Bunday xabar faqat xabar olishga rozi bo'lgan mijozlarga yuboriladi.
+
+Ikkinchisi — mijozning o'z buyurtmasiga tegishli servis xabari. Masalan, hujjat tayyor bo'lgani, to'lov tasdiqlangani yoki qo'shimcha fayl kerakligi. Bu reklama emas va buyurtma jarayonining bir qismi hisoblanadi.
+
+Reklama xabarini yuborishdan oldin platformada mijozlar tanlanadi. Masalan, oxirgi olti oyda diplom tarjimasi qilganlar, apostil haqida botda ma'lumot o'qiganlar, narx olgan lekin buyurtma qilmaganlar yoki ma'lum reklama orqali kelganlar. Hammaga bir xil xabar yuborish shart emas.
+
+Har bir kampaniyada xabar matni, rasm bo'lsa rasm, kimlarga yuborilishi, yuborish vaqti va maqsadi saqlanadi. Avval bitta test xabari yuboriladi, keyin tasdiqlangandan so'ng umumiy yuborish boshlanadi. Yuborilgan, o'qilgan, tugmani bosgan, botga qayta yozgan, lidga aylangan va buyurtma qilgan mijozlar soni kampaniya ichida ko'rinadi.
+
+Mijoz so'rov qoldirib, narx taklifini olgan, lekin javob bermagan bo'lsa, bot bir marta muloyim eslatma yuborishi mumkin. Masalan:
+
+"Salom. Kecha hujjatingiz bo'yicha narx yuborgandik. Savolingiz qolgan bo'lsa, shu yerga yozing, yordam beramiz."
+
+Bu eslatma mijoz hali qaror qilayotgan paytda yordam berish uchun. U har kuni takrorlanmasligi kerak. Mijoz javob bermasa, lid platformada qoladi va xodim keyingi qadamni o'zi belgilaydi.
+
+Avval xizmat olgan mijozga keyin unga mos foydali taklif yuborish mumkin. Masalan, diplom tarjimasini qilgan mijozga apostil yoki keyingi tayyorlash bosqichlari haqida qisqa ma'lumot yuboriladi. Umumiy va aloqasi yo'q reklama yuborilmaydi.
+
+Marketing xabarlarini olish uchun mijozdan alohida rozilik olinadi. Botda "Foydali ma'lumotlar va takliflarni olishga roziman" degan aniq tanlov bo'ladi. Har reklama xabarida "Xabarlarni to'xtatish" tugmasi chiqadi. Mijoz shu tugmani bossa, unga boshqa reklama yuborilmaydi. Servis xabarlari esa alohida tartibda davom etadi.
+
+MIJOZ FIKRINI OLISH VA MUAMMONI ERTA ANIQLASH
+
+Buyurtma topshirilgandan keyin bir yoki ikki kun o'tib, bot mijozdan qisqa baho so'raydi:
+
+"Xizmatimiz sizga qanchalik ma'qul bo'ldi? 1 dan 5 gacha baholang."
+
+Agar mijoz 4 yoki 5 baho bersa, unga fikr qoldirish yoki tanishiga tavsiya qilish havolasi taklif qilinishi mumkin. Agar 1, 2 yoki 3 baho bersa, bot uni public fikr sahifasiga yubormaydi. Buning o'rniga platformada mas'ul xodimga signal tushadi: mijoz nimadan norozi bo'lganini aniqlab, muammoni hal qilish kerak.
+
+Bu qism reyting yig'ish uchun emas, norozi mijozni vaqtida eshitish uchun kerak.
+
+CLIENT-DEMO PLATFORMASIGA QANDAY ULANADI
+
+Bot Client-demo bilan API orqali ishlaydi. Mijozlar, buyurtmalar, xizmatlar va to'lovlar bo'yicha asosiy ma'lumot platformada qoladi. Bot alohida mijozlar bazasini yaratmaydi.
+
+Bot platformadan quyidagilarni oladi:
+
+- xizmatlar ro'yxati va qisqacha izohi;
+- faol filiallar, manzil va ish vaqti;
+- mijozning ruxsat berilgan buyurtmalari;
+- buyurtma holati, to'lov qoldig'i va tayyor fayllar;
+- xodimning mijozga yozgan javobi;
+- to'lov holati;
+- buyurtmada yuz bergan o'zgarishlar.
+
+Bot platformaga quyidagilarni yuboradi:
+
+- yangi lid va uning manbasi;
+- mijozning xabarlari;
+- telefon raqami va tasdiqlash holati;
+- yuborilgan rasm va fayllar;
+- mijozning marketingga roziligi yoki rad javobi;
+- botdan bosilgan tugmalar va kampaniya natijalari;
+- mijoz bergan baho va izoh.
+
+Platformadagi buyurtma holati o'zgarganda botga xavfsiz webhook yuboriladi. Bot shu asosda kerakli mijozga xabar jo'natadi. Botning o'zi platforma bazasiga to'g'ridan-to'g'ri ulanmaydi.
+
+TEXNIK TOMONDAN QANDAY QILINADI
+
+Bot Python'da yoziladi. Telegram bilan ishlash uchun aiogram, API va webhooklar uchun FastAPI tavsiya qilinadi. Fon rejimida yuboriladigan xabarlar, eslatmalar va qayta urinishlar uchun Redis hamda worker ishlatiladi.
+
+Bot quyidagi qismlarga bo'lib yozilishi kerak:
+
+- Telegramdan kelgan xabarlarni qabul qiladigan qism;
+- mijoz bilan suhbat ssenariylari;
+- Client-demo API bilan bog'lanadigan qism;
+- buyurtma xabarlarini yuboradigan qism;
+- marketing roziligi va eslatmalar qismi;
+- xatolarni yozib borish va monitoring qismi.
+
+Bot Telegram yoki platforma vaqtincha ishlamay qolsa, xabarni yo'qotib yubormasligi kerak. Xabar navbatga tushadi va aloqa tiklangach qayta yuborishga urinadi. Bir xil xabar yoki to'lov hodisasi ikki marta kelib qolsa ham, tizim uni ikki marta yozmasligi kerak.
+
+Soatlar Asia/Tashkent vaqtida ishlaydi. Ish vaqtidan tashqari yozgan mijozga bot darhol javob beradi, lekin operator qachon aloqaga chiqishini rost va aniq aytadi.
+
+Mijoz yuborgan fayllar hajmi va formati tekshiriladi. Fayllar xavfsiz saqlanadi, keraksiz nusxalari bot serverida qolib ketmaydi. Loglarda telefon raqami, token yoki hujjatdagi maxfiy ma'lumot to'liq ko'rinmasligi kerak.
+
+BIRINCHI NAVBATDA TAYYOR BO'LADIGAN QISM
+
+Birinchi versiyada quyidagilar ishga tushishi kerak:
+
+- Telegram botga mijozni qabul qilish;
+- xizmat bo'yicha dastlabki savollar;
+- hujjat rasmi/faylini olish;
+- telefon orqali mijozni topish yoki yangi lid yaratish;
+- lid manbasini (reklama havolasini) saqlash;
+- barcha xabar va fayllarni Client-demo platformasiga yuborish;
+- xodimning platformadan mijozga javob qaytarishi;
+- mijozga o'z buyurtmasi holatini xavfsiz ko'rsatish;
+- buyurtma holati va to'lov bo'yicha servis xabarlari;
+- marketing roziligi va xabarlarni to'xtatish tugmasi;
+- javobsiz lid uchun bitta follow-up eslatmasi;
+- bot ishlashi va xatolarini kuzatish.
+
+Keyingi versiyada reklama kampaniyalarini platformadan segmentlab yuborish, promo-kodlar, tavsiya havolalari, mijoz bahosi va chuqur marketing hisobotlari qo'shiladi.
+
+Kelajakda sun'iy intellekt yordamchisidan foydalanish mumkin, ammo u faqat tasdiqlangan xizmat ma'lumotlari asosida maslahat bersin. U narxni, muddatni yoki huquqiy javobni o'zi to'qib chiqarmasligi kerak. Murakkab savol bo'lsa, bot uni xodimga uzatadi.
+
+YAKUNIY NATIJA
+
+Natijada Client-demo platformasiga ulangan Telegram bot paydo bo'ladi. Mijoz uchun bu oddiy: u Telegramda yozadi, hujjatini yuboradi, buyurtmasi qayerdaligini ko'radi va kerak bo'lsa operator bilan gaplashadi.
+
+Biznes uchun esa har bir murojaat izsiz yo'qolmaydi. Qaysi reklama mijoz olib kelayotgani, kimga javob berilmagani, qaysi mijoz buyurtmani tugatmay qo'ygani va kim qayta xizmat olishi mumkinligi platformada ko'rinadi.
+
+Bot mijozni bezovta qilmasligi, ortiqcha va'da bermasligi va platformadagi yagona ma'lumot tartibini buzmasligi kerak. Shu uchta narsa saqlansa, bot haqiqatan ham savdo va xizmat sifatiga yordam beradi.
+
+

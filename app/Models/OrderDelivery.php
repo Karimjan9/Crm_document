@@ -15,15 +15,22 @@ class OrderDelivery extends Model
         'assigned_by_id',
         'status',
         'tracking_code',
+        'delivery_otp_hash',
         'recipient_name',
         'recipient_phone',
+        'received_by',
         'address',
+        'delivered_latitude',
+        'delivered_longitude',
         'fee',
         'notes',
+        'proof_path',
+        'proof_original_name',
         'scheduled_at',
         'accepted_at',
         'picked_up_at',
         'delivered_at',
+        'received_at',
         'returned_at',
     ];
 
@@ -34,6 +41,9 @@ class OrderDelivery extends Model
         'picked_up_at' => 'datetime',
         'delivered_at' => 'datetime',
         'returned_at' => 'datetime',
+        'received_at' => 'datetime',
+        'delivered_latitude' => 'decimal:7',
+        'delivered_longitude' => 'decimal:7',
     ];
 
     public function order()

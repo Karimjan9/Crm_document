@@ -27,7 +27,7 @@ class DocumentCustodyService
             throw new \InvalidArgumentException('Chain-of-custody eventi noto‘g‘ri.');
         }
 
-        $path = $photo?->store('custody/' . $document->id, 'private');
+        $path = $photo ? app(FileSecurityService::class)->store($photo, 'custody/'.$document->id) : null;
 
         try {
             return DB::transaction(function () use ($document, $eventType, $fromUserId, $toUserId, $notes, $path, $actor): DocumentCustodyEvent {

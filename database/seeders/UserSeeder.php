@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\FilialModel;
+use App\Models\Partner;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -20,6 +21,25 @@ class UserSeeder extends Seeder
         }
 
         $defaultFilialId = FilialModel::query()->value('id');
+
+        $demoPartner = Partner::updateOrCreate(
+            ['code' => 'DEMO-PARTNER'],
+            [
+                'company_name' => 'Demo Partner',
+                'type' => 'other',
+                'contact_name' => 'Demo Partner Admin',
+                'discount_percent' => 0,
+                'credit_limit' => 0,
+                'payment_terms_days' => 30,
+                'currency' => 'UZS',
+                'status' => 'active',
+                'brand_name' => 'Demo Partner',
+            ]
+        );
+
+        $demoPartner->filials()->syncWithoutDetaching([
+            $defaultFilialId => ['is_active' => true],
+        ]);
 
         $roles = [
             'super_admin',
@@ -88,6 +108,24 @@ class UserSeeder extends Seeder
                 'role' => 'courier',
                 'filial_id' => null,
             ],
+            [
+                'name' => 'Demo Partner Admin',
+                'login' => 'partneradmin',
+                'phone' => '1234567894',
+                'password' => Hash::make('partneradmin123'),
+                'role' => 'partner_admin',
+                'filial_id' => null,
+                'partner_id' => $demoPartner->id,
+            ],
+            [
+                'name' => 'Demo Partner Operator',
+                'login' => 'partneroperator',
+                'phone' => '1234567895',
+                'password' => Hash::make('partneroperator123'),
+                'role' => 'partner_operator',
+                'filial_id' => null,
+                'partner_id' => $demoPartner->id,
+            ],
         ];
 
         foreach ($users as $data) {
@@ -99,6 +137,7 @@ class UserSeeder extends Seeder
                     'name' => $data['name'],
                     'phone' => $data['phone'],
                     'filial_id' => $data['filial_id'],
+                    'partner_id' => $data['partner_id'] ?? null,
                     'password' => $data['password'],
                     'settings' => [
                         'seeded' => true,

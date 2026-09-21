@@ -21,6 +21,7 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
@@ -290,6 +291,11 @@ class OrderController extends Controller
             'reason' => ['nullable', 'string', 'max:1000'],
         ]);
 
+        if (in_array($data['status'], ['ready_for_delivery', 'delivered', 'completed'], true)
+            && $order->approvals()->where('type', 'margin_exception')->where('status', 'pending')->exists()) {
+            return back()->withErrors(['status' => 'Margin istisnosi manager tomonidan tasdiqlanmaguncha order yakunlanmaydi.']);
+        }
+
         $this->orders->updateStatus($order, $data['status'], $request->user(), $data['reason'] ?? null);
 
         return redirect()->back()->with('success', 'Order holati yangilandi.');
@@ -417,6 +423,7 @@ class OrderController extends Controller
             'assigned_by_id' => $request->user()->id,
             'status' => 'sent',
             'tracking_code' => 'DLV-' . strtoupper(substr(bin2hex(random_bytes(6)), 0, 10)),
+            'delivery_otp_hash' => Hash::make($deliveryOtp = (string) random_int(100000, 999999)),
             'recipient_name' => $data['recipient_name'] ?? $order->client?->name,
             'recipient_phone' => $data['recipient_phone'] ?? $order->client?->phone_number,
             'address' => $data['address'],
@@ -451,6 +458,7 @@ class OrderController extends Controller
 
         $this->orders->updateStatus($order, 'courier_sent', $request->user(), 'Order kuryerga biriktirildi.');
         $this->orders->createNotification($order, 'delivery_assigned', 'Buyurtma kuryerga berildi: ' . $delivery->tracking_code);
+        $this->orders->createNotification($order, 'delivery_otp', 'Yetkazib berish tasdiq kodi: ' . $deliveryOtp);
 
         return redirect()->back()->with('success', 'Buyurtma kuryerga biriktirildi.');
     }
@@ -463,6 +471,7 @@ class OrderController extends Controller
             'category' => ['required', 'string', 'max:80'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'description' => ['nullable', 'string', 'max:1000'],
+            'margin_reason' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $order->costs()->create([
@@ -472,6 +481,16 @@ class OrderController extends Controller
             'recorded_by_id' => $request->user()->id,
         ]);
         $this->orders->recalculate($order);
+
+        $order->refresh();
+        if (app(\App\Services\BusinessApprovalService::class)->requiresMarginApproval($order)) {
+            $approval = app(\App\Services\BusinessApprovalService::class)->requestMarginException(
+                $order,
+                $request->user(),
+                $data['margin_reason'] ?? 'Xarajat kiritilgach marja minimal chegaradan pastga tushdi.'
+            );
+            return redirect()->back()->with('success', 'Xarajat saqlandi. Past marja uchun manager tasdig‘i yuborildi: #' . $approval->id);
+        }
 
         return redirect()->back()->with('success', 'Order xarajati qo‘shildi, foyda qayta hisoblandi.');
     }

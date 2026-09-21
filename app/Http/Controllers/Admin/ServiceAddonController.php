@@ -14,10 +14,10 @@ class ServiceAddonController extends Controller
 {
     public function create($service_id)
     {
-        ServicesModel::query()->findOrFail($service_id);
+        $service = ServicesModel::query()->findOrFail($service_id);
         $service_addons = ServiceAddonModel::where('service_id', $service_id)->get();
 
-        return view('admin.service_addon.create', compact('service_addons', 'service_id'));
+        return view('admin.service_addon.create', compact('service', 'service_addons', 'service_id'));
     }
 
     public function store(ServiceRequest $request, $service_id)
@@ -37,12 +37,12 @@ class ServiceAddonController extends Controller
 
     public function edit($service_id, $id)
     {
-        ServicesModel::query()->findOrFail($service_id);
+        $service = ServicesModel::query()->findOrFail($service_id);
         $addon = ServiceAddonModel::query()
             ->where('service_id', $service_id)
             ->findOrFail($id);
 
-        return view('admin.service_addon.edit', compact('addon', 'service_id'));
+        return view('admin.service_addon.edit', compact('service', 'addon', 'service_id'));
     }
 
     public function update(ServiceEditRequest $request, $service_id, $id)

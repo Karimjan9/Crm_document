@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\DocumentController;
 use App\Http\Controllers\Api\V1\TokenController;
+use App\Http\Controllers\Api\V1\TelegramBotController;
 use App\Http\Controllers\Api\V1\PartnerOrderController;
 use App\Http\Controllers\DocumentFileController;
 use App\Http\Controllers\PaymentWebhookController;
@@ -29,6 +30,18 @@ Route::post('/webhooks/payments/{provider}', [PaymentWebhookController::class, '
     ->name('payment.webhook');
 
 Route::prefix('v1')->group(function () {
+    Route::prefix('bot')->middleware(['bot.api', 'throttle:120,1'])->group(function (): void {
+        Route::post('/leads', [TelegramBotController::class, 'lead']);
+        Route::post('/leads/{lead}/attachments', [TelegramBotController::class, 'leadAttachment']);
+        Route::post('/messages', [TelegramBotController::class, 'message']);
+        Route::post('/messages/attachments', [TelegramBotController::class, 'messageAttachment']);
+        Route::post('/operator-requests', [TelegramBotController::class, 'operatorRequest']);
+        Route::get('/orders', [TelegramBotController::class, 'orders']);
+        Route::put('/marketing-consents', [TelegramBotController::class, 'marketingConsent']);
+        Route::post('/delivery-reports', [TelegramBotController::class, 'deliveryReport']);
+        Route::post('/feedback', [TelegramBotController::class, 'feedback']);
+        Route::get('/content/{key}', [TelegramBotController::class, 'content']);
+    });
     Route::post('/auth/token', [TokenController::class, 'store'])
         ->middleware('throttle:6,1');
 

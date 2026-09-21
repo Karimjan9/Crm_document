@@ -2,11 +2,12 @@
 
 namespace App\Providers;
 
+use App\Observers\AuditObserver;
 use App\Support\DeadlineBellData;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +28,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (config('security.audit.enabled', true)) {
+            foreach (config('security.audit.models', []) as $model) {
+                $model::observe(AuditObserver::class);
+            }
+        }
+
         View::composer('header', function ($view) {
             $user = auth()->user();
 
@@ -53,7 +60,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Paginator::defaultView('vendor.pagination.bootstrap-5');
- 
+
         Paginator::defaultSimpleView('vendor.pagination.simple-bootstrap-5');
     }
 }

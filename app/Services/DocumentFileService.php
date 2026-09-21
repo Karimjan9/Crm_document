@@ -4,14 +4,20 @@ namespace App\Services;
 
 use App\Models\DocumentFileModel;
 use App\Models\DocumentsModel;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentFileService
 {
+    public function __construct(
+        private readonly FileSecurityService $security,
+        private readonly WatermarkedDownloadService $downloads,
+    ) {}
+
     public function store(DocumentsModel $document, UploadedFile $file): DocumentFileModel
     {
-        $path = $file->store('documents/' . $document->document_code, 'private');
+        $path = $this->security->store($file, 'documents/'.$document->document_code);
 
         return DocumentFileModel::create([
             'document_id' => $document->id,
@@ -22,7 +28,7 @@ class DocumentFileService
         ]);
     }
 
-    public function download(DocumentFileModel $file)
+    public function download(DocumentFileModel $file, ?User $user = null)
     {
         $disk = Storage::disk('private');
         abort_unless($disk->exists($file->file_path), 404);
@@ -33,8 +39,6 @@ class DocumentFileService
             (string) ($file->original_name ?: basename($file->file_path))
         ) ?: 'document-file';
 
-        return $disk->download($file->file_path, $downloadName, [
-            'X-Content-Type-Options' => 'nosniff',
-        ]);
+        return $this->downloads->download($file->file_path, $downloadName, $user);
     }
 }

@@ -181,6 +181,7 @@
 
                 <form action="{{ route('superadmin.store') }}" method="POST">
                     @csrf
+                    @if ($selectedRole)<input type="hidden" name="return_role" value="{{ $selectedRole }}">@endif
 
                     {{-- FIO --}}
                     <div class="mb-3">
@@ -213,7 +214,7 @@
                         <select name="role" id="role" class="form-control" required>
                             <option value="">-- Rolni tanlang --</option>
                             @foreach($rols as $rol)
-                                <option value="{{ $rol->name }}" {{ old('role') == $rol->name ? 'selected' : '' }}>
+                                <option value="{{ $rol->name }}" {{ old('role', $selectedRole) == $rol->name ? 'selected' : '' }}>
                                     {{ ucfirst($rol->name) }}
                                 </option>
                             @endforeach
@@ -270,7 +271,7 @@
                     {{-- TUGMALAR --}}
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="submit" class="btn btn-custom">Saqlash</button>
-                        <a href="{{ route('superadmin.filial.index') }}" class="btn btn-outline">Bekor qilish</a>
+                        <a href="{{ route('superadmin.index', $selectedRole ? ['role' => $selectedRole] : []) }}" class="btn btn-outline">Bekor qilish</a>
                     </div>
                 </form>
             </div>
@@ -286,7 +287,7 @@
         const filialSelect = document.getElementById('filial');
 
         function toggleFilial() {
-            if (roleSelect.value.trim().toLowerCase() === 'employee' || roleSelect.value.trim().toLowerCase() === 'admin_filial') {
+            if (['employee', 'admin_filial', 'courier'].includes(roleSelect.value.trim().toLowerCase())) {
                 filialBox.style.display = 'block';
                 filialSelect.required = true;
             } else {

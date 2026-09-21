@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\LoginRateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -28,15 +29,20 @@ class TokenController extends Controller
             'device_name' => ['nullable', 'string', 'max:100'],
         ]);
 
+        app(LoginRateLimiter::class)->ensureNotLocked($request);
+
         $user = User::query()
             ->where('login', $credentials['login'])
             ->first();
 
-        if (!$user || !Hash::check($credentials['password'], (string) $user->password)) {
+        if (! $user || ! Hash::check($credentials['password'], (string) $user->password)) {
+            app(LoginRateLimiter::class)->recordFailure($request);
             throw ValidationException::withMessages([
                 'login' => 'Login yoki parol noto‘g‘ri.',
             ]);
         }
+
+        app(LoginRateLimiter::class)->clearAccount($request);
 
         $tokenName = trim((string) ($credentials['device_name'] ?? 'api')) ?: 'api';
         $expirationMinutes = max(5, (int) config('sanctum.expiration', 10080));

@@ -21,9 +21,15 @@ use App\Http\Controllers\SuperAdmin\ExcelExportController;
 use App\Http\Controllers\SuperAdmin\StaticApostilController;
 use App\Http\Controllers\SuperAdmin\PackageTemplateController;
 use App\Http\Controllers\SuperAdmin\MonthlyNotificationController;
+use App\Http\Controllers\SuperAdmin\SecurityAuditController;
 use App\Http\Controllers\Admin\FCalendar\CalendarController as FCalendarController;
 
 Route::name('superadmin.')->prefix('superadmin')->group(function(){
+    Route::middleware('role:super_admin')->prefix('security')->name('security.')->group(function () {
+        Route::get('/audit-logs', [SecurityAuditController::class, 'logs'])->name('audit_logs');
+        Route::get('/alerts', [SecurityAuditController::class, 'alerts'])->name('alerts');
+    });
+
     Route::middleware('role:super_admin')->prefix('monthly-notifications')->name('monthly_notifications.')->group(function () {
         Route::get('/', [MonthlyNotificationController::class, 'index'])->name('index');
         Route::post('/sql-backup/queue', [MonthlyNotificationController::class, 'queueSqlBackup'])->name('sql_backup.queue');
@@ -33,10 +39,8 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
     });
 
     Route::prefix('api')->group(function () {
-        Route::post('/document', [ApiDocumentController::class, 'store'])->name('api.document.store');
         Route::get('/clients/search', [ClientController::class, 'search'])->name('api.clients.search');
         Route::apiResource('/clients', ClientController::class);
-        Route::post('/document/save-all', [ApiDocumentController::class, 'storeAll'])->name('api.document.save_all');
         Route::get('/get-addons/{type}/{id}', [ApiDocumentController::class, 'getAddons'])->name('api.addons.index');
     });
 
@@ -88,7 +92,7 @@ Route::name('superadmin.')->prefix('superadmin')->group(function(){
 
     Route::get('/expense_static', [ExpenseController::class, 'statistika'])->name('statistika');
 
-    Route::resource('/document',DocumentController::class);
+    Route::resource('/document',DocumentController::class)->except(['create', 'store']);
 
     Route::get('/document_static', [DocumentController::class, 'statistika'])->name('document.statistika');
 

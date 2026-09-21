@@ -80,19 +80,33 @@ class DocumentWorkflowTest extends TestCase
         $this->assertNotEmpty(collect($dashboard['columns'])->firstWhere('key', 'waiting_documents'));
     }
 
-    public function test_workflow_kanban_page_and_json_endpoint_are_available(): void
+    public function test_workflow_monitor_is_available_only_to_super_admin(): void
     {
-        [$filial, $employee] = $this->documentFixture();
+        [$filial, $employee, $document] = $this->documentFixture();
 
         $this->actingAs($employee)
             ->get(route('documents.workflow.index'))
-            ->assertOk()
-            ->assertSee('Ishlar Kanban');
+            ->assertNotFound();
 
         $this->actingAs($employee)
             ->getJson(route('documents.workflow.data'))
+            ->assertNotFound();
+
+        $superAdmin = $this->user('super_admin', $filial->id);
+
+        $this->actingAs($superAdmin)
+            ->get(route('documents.workflow.index'))
+            ->assertOk()
+            ->assertSee('Kanban doska');
+
+        $this->actingAs($superAdmin)
+            ->getJson(route('documents.workflow.data'))
             ->assertOk()
             ->assertJsonStructure(['data' => ['metrics', 'columns', 'workers', 'statuses']]);
+
+        $this->actingAs($superAdmin)
+            ->post("/documents/{$document->id}/workflow-status", ['status' => 'in_processing'])
+            ->assertNotFound();
     }
 
     private function documentFixture(?FilialModel $filial = null, ?User $employee = null): array

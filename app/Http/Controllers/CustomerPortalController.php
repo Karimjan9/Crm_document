@@ -10,6 +10,7 @@ use App\Models\ServicesModel;
 use App\Services\CustomerPortalService;
 use App\Services\DeadlineRadarService;
 use App\Services\DocumentFileService;
+use App\Services\DocumentWorkflowService;
 use App\Services\OrderCaseService;
 use App\Services\OrderPaymentLinkService;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -26,8 +27,7 @@ class CustomerPortalController extends Controller
         private readonly OrderPaymentLinkService $paymentLinks,
         private readonly DeadlineRadarService $deadlineRadar,
         private readonly DocumentFileService $files,
-    ) {
-    }
+    ) {}
 
     public function show(string $trackingToken)
     {
@@ -79,7 +79,7 @@ class CustomerPortalController extends Controller
     public function qr(string $trackingToken)
     {
         $order = $this->portal->findByToken($trackingToken);
-        $writer = new Writer(new ImageRenderer(new RendererStyle(300, 12), new SvgImageBackEnd()));
+        $writer = new Writer(new ImageRenderer(new RendererStyle(300, 12), new SvgImageBackEnd));
         $trackingUrl = $order->partner
             ? route('orders.partner-track', [
                 'partnerCode' => $order->partner->code,
@@ -108,7 +108,7 @@ class CustomerPortalController extends Controller
         $document = $documentFile->document;
 
         abort_unless($document && (int) $document->order_id === (int) $order->id, 404);
-        abort_unless(app(\App\Services\DocumentWorkflowService::class)->isCompleted($document->status_doc), 404);
+        abort_unless(app(DocumentWorkflowService::class)->isCompleted($document->status_doc), 404);
 
         return $this->files->download($documentFile);
     }

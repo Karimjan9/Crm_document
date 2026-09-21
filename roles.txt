@@ -1,0 +1,15 @@
+LOYIHA ROLLARI VA TEST AKKAUNTLAR
+=================================
+
+  #   ROLE NAME          LOGIN             PAROL
+  --  -----------------  ----------------  ----------------------
+  1   super_admin        superadmin        super123
+  2   admin_manager      adminmanager      manager123
+  3   admin_filial       adminfilial       filial123
+  4   employee           employee          employee123
+  5   user               user              user123
+  6   courier            courier           courier123
+  7   partner_admin      partneradmin      partneradmin123
+  8   partner_operator   partneroperator   partneroperator123
+
+  B2B test partner: DEMO-PARTNER

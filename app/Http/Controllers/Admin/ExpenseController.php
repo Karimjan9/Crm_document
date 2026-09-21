@@ -56,8 +56,18 @@ class ExpenseController extends Controller
             ->when($request->filled('user_id'), fn ($builder) => $builder->where('user_id', $request->integer('user_id')))
             ->when($request->filled('date_from'), fn ($builder) => $builder->whereDate('created_at', '>=', $request->input('date_from')))
             ->when($request->filled('date_to'), fn ($builder) => $builder->whereDate('created_at', '<=', $request->input('date_to')))
+            ->when(
+                in_array($request->input('approval_status'), ['approved', 'pending', 'rejected'], true),
+                fn ($builder) => $builder->where('approval_status', $request->input('approval_status')),
+            )
             ->orderByDesc('id');
 
+        $summary = [
+            'count' => (clone $query)->count(),
+            'total' => (float) (clone $query)->sum('amount'),
+            'approved' => (float) (clone $query)->where('approval_status', 'approved')->sum('amount'),
+            'pending' => (clone $query)->where('approval_status', 'pending')->count(),
+        ];
         $expenses = $query->paginate(25)->withQueryString();
         $filials = FilialModel::query()->orderBy('name')->get(['id', 'name']);
         $users = User::withTrashed()
@@ -70,6 +80,14 @@ class ExpenseController extends Controller
             'filials' => $filials,
             'users' => $users,
             'routePrefix' => $this->routePrefix(),
+            'summary' => $summary,
+            'filters' => [
+                'filial_id' => $request->integer('filial_id') ?: null,
+                'user_id' => $request->integer('user_id') ?: null,
+                'date_from' => $request->input('date_from'),
+                'date_to' => $request->input('date_to'),
+                'approval_status' => $request->input('approval_status'),
+            ],
         ]);
     }
 
@@ -253,22 +271,19 @@ class ExpenseController extends Controller
         $this->applyFilters($query, $request, $selectedYear, $selectedMonth);
 
         $expenses = (clone $query)
-            ->with(['user' => fn ($q) => $q->withTrashed()->select('id', 'name', 'login'), 'filial:id,name'])
+            ->with(['filial:id,name', 'category:id,name'])
             ->orderByDesc('id')
             ->limit(60)
             ->get();
 
         $filials = FilialModel::query()->orderBy('name')->get(['id', 'name']);
-        $users = User::withTrashed()
-            ->whereIn('id', ExpenseAdminModel::query()->select('user_id')->distinct())
-            ->orderBy('name')
-            ->get(['id', 'name', 'login', 'filial_id']);
+        $categories = ExpenseCategory::query()->orderBy('name')->get(['id', 'name']);
 
         return view('admin.expense.statistika', [
             'routePrefix' => $this->routePrefix(),
             'filters' => $request->query(),
             'filials' => $filials,
-            'users' => $users,
+            'categories' => $categories,
             'monthNames' => $this->monthNames,
             'yearOptions' => $this->yearOptions($selectedYear),
             'selectedYear' => $selectedYear,
@@ -276,7 +291,7 @@ class ExpenseController extends Controller
             'summary' => $this->summaryForQuery(clone $query),
             'monthlyStats' => $this->monthlyStats($request, $selectedYear),
             'filialStats' => $this->groupedStats(clone $query, 'filial_id', $filials->pluck('name', 'id')->all()),
-            'userStats' => $this->groupedStats(clone $query, 'user_id', $users->pluck('name', 'id')->all()),
+            'categoryStats' => $this->groupedStats(clone $query, 'category_id', $categories->pluck('name', 'id')->all()),
             'expenses' => $expenses,
         ]);
     }
@@ -289,6 +304,10 @@ class ExpenseController extends Controller
 
         if (!in_array('user_id', $ignore, true) && $request->filled('user_id')) {
             $query->where('user_id', $request->integer('user_id'));
+        }
+
+        if (!in_array('approval_status', $ignore, true) && in_array($request->input('approval_status'), ['approved', 'pending', 'rejected'], true)) {
+            $query->where('approval_status', $request->input('approval_status'));
         }
 
         if (!in_array('year', $ignore, true)) {
@@ -314,7 +333,8 @@ class ExpenseController extends Controller
             'total_amount' => (float) (clone $query)->sum('amount'),
             'expense_count' => (clone $query)->count(),
             'filial_count' => (clone $query)->distinct('filial_id')->count('filial_id'),
-            'user_count' => (clone $query)->distinct('user_id')->count('user_id'),
+            'category_count' => (clone $query)->distinct('category_id')->count('category_id'),
+            'pending_count' => (clone $query)->where('approval_status', 'pending')->count(),
             'average_amount' => (float) ((clone $query)->avg('amount') ?: 0),
         ];
     }

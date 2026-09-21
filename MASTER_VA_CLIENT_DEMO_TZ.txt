@@ -1,0 +1,473 @@
+CRM DOCUMENT PLATFORMASI
+MASTER VA CLIENT-DEMO TALQINLARI BO'YICHA TUSHUNTIRISH
+
+Salom. Quyida platformaning ikkita ko'rinishi oddiy tilda tushuntirilgan:
+
+1. master - hozirgi asosiy platforma;
+2. client-demo - masterdagi imkoniyatlar ustiga qo'shimcha qulayliklar, mijoz bilan ishlash va biznesni nazorat qilish funksiyalari qo'shilgan kengaytirilgan platforma.
+
+Bu hujjatning maqsadi shuki, mijoz platformada nimalar qilishi mumkinligini, qaysi imkoniyat nima uchun kerakligini va client-demo nega alohida qiymat berishini tushunarli qilib ko'rsatish.
+
+Eslatma: SMS, e-mail, WhatsApp, onlayn to'lov yoki hujjatni avtomatik o'qish kabi imkoniyatlar tashqi servisga ulanadi. Ular uchun kerakli akkaunt, kalit va servis tarifi bo'lsa, platforma bilan ishlaydi.
+
+======================================================================
+1. MASTER - ASOSIY ICHKI PLATFORMA
+======================================================================
+
+Master talqini markaz ichidagi ishni tartibga solish uchun yaratilgan. Ya'ni qog'oz, Excel va Telegramdagi alohida yozishmalar o'rniga mijoz, hujjat, to'lov va xodim ishlarini bitta joyda yuritish mumkin.
+
+Oddiy qilib aytganda: mijoz keladi, xodim uni platformaga kiritadi, qanday xizmat kerakligini belgilaydi, hujjatini yaratadi, to'lovini yozadi va ish yakunida kuryerga topshiradi. Bularning hammasi tizimda qoladi.
+
+1.1. Kimlar foydalanadi?
+
+Platformada har bir odamning o'z roli bor. Shuning uchun hamma ham hamma ma'lumotni ko'rmaydi.
+
+- Super administrator - platformaning asosiy egasi. U barcha filiallar, xodimlar, xizmatlar va umumiy sozlamalarni boshqaradi.
+
+  Masalan, yangi filial ochilsa, super administrator shu filialni tizimga qo'shadi va unga xodimlarni biriktiradi.
+
+- Administrator yoki manager - kundalik boshqaruv bilan ishlaydi. Mijozlar, hujjatlar, filiallar, xarajatlar va umumiy jarayonni ko'radi.
+
+  Masalan, manager bugun nechta hujjat olingani yoki qaysi filialda ish ko'pligini tekshirishi mumkin.
+
+- Filial administratori - faqat o'z filialining ishlarini boshqaradi.
+
+  Masalan, Chilonzor filialining administratori boshqa filialning mijozlarini o'zgartira olmaydi, faqat o'z filialidagi ma'lumotlar bilan ishlaydi.
+
+- Xodim - o'ziga tegishli mijozlar va hujjatlar bilan ishlaydi.
+
+  Masalan, xodim kelgan mijozning tarjima hujjatini ochadi, xizmatni tanlaydi va to'lovini kiritadi.
+
+- Kuryer - unga berilgan hujjatlarni qabul qiladi, yetkazadi yoki qaytaradi.
+
+  Masalan, kuryer hujjatni olib ketganda "qabul qildim" deb belgilaydi; mijozga topshirganda esa bu ish yakunlanganini qayd qiladi.
+
+Har bir foydalanuvchi login va parol bilan kiradi. U o'z parolini va profil ma'lumotlarini yangilashi mumkin.
+
+1.2. Filiallar va xodimlar bilan ishlash
+
+Platformaga istalgancha filial qo'shish mumkin. Har bir xodim qaysi filialda ishlashi ko'rsatiladi.
+
+Bu nima uchun kerak? Chunki filiallar aralashib ketmaydi. Har bir filialning mijozlari, hujjatlari va xarajatlari o'zida ko'rinadi.
+
+Masalan, markazning Toshkent, Samarqand va Farg'ona filiallari bo'lsa, rahbar uchalasini umumiy ko'radi. Lekin Samarqanddagi xodim odatda faqat Samarqanddagi ishlar bilan ishlaydi.
+
+Platforma orqali:
+
+- filial qo'shish, tahrirlash va faolligini boshqarish;
+- xodimni filialga biriktirish;
+- filialdagi hujjatlar va xarajatlarni ko'rish;
+- xodimlar ishini kuzatish mumkin.
+
+1.3. Mijozlar bazasi
+
+Mijoz bir marta kiritiladi va keyingi safar qaytib kelsa, uning ma'lumotlarini qayta yozish shart bo'lmaydi.
+
+Masalan, Dilshod aka yanvar oyida pasport tarjimasiga kelgan bo'lsa, may oyida apostil uchun kelganda xodim uning telefon raqamini qidiradi va tayyor mijoz kartasini tanlaydi.
+
+Mijoz kartasida odatda ism, telefon va kerakli ma'lumotlar saqlanadi. Mijozni qidirish, yangisini qo'shish, o'zgartirish va filialga bog'lash mumkin.
+
+Bu xodimning vaqtini tejaydi va bir mijoz bir necha xil nom bilan qayta-qayta ochilib ketishining oldini oladi.
+
+1.4. Xizmatlar va narxlar
+
+Platformada markaz ko'rsatadigan xizmatlar ro'yxati yuritiladi. Har bir xizmatga narx va taxminiy bajarilish muddati beriladi.
+
+Masalan:
+
+- pasport tarjimasi - 1 ish kuni;
+- diplom tarjimasi - 2 ish kuni;
+- notarial tasdiq - alohida qo'shimcha xizmat;
+- apostil yoki konsultatsiya - alohida yo'nalish sifatida kiritiladi.
+
+Xizmatga qo'shimcha xizmatlar ham qo'shish mumkin.
+
+Masalan, mijoz "diplom tarjimasi"ni tanladi. Unga notarial tasdiq va kuryer orqali yetkazib berishni qo'shish mumkin. Platforma asosiy xizmat va qo'shimcha xizmatlarni bitta hujjat ichida saqlaydi.
+
+Yana tayyor paketlar tuzish mumkin.
+
+Masalan, "O'qishga topshirish paketi" ichiga diplom tarjimasi, ilova tarjimasi va notarial tasdiqni birlashtirish mumkin. Xodim bitta-bitta tanlamasdan tayyor paketdan foydalanadi.
+
+1.5. Hujjatni qabul qilish va yuritish
+
+Master talqinidagi asosiy ish birligi - hujjat. Xodim mijoz uchun yangi hujjat ochadi va unda kerakli xizmatlarni belgilaydi.
+
+Hujjatda quyidagilar bo'lishi mumkin:
+
+- qaysi mijozniki;
+- qaysi filialda qabul qilingani;
+- qanday xizmat tanlangani;
+- qo'shimcha xizmatlar;
+- umumiy narx;
+- bajarish muddati;
+- to'lov holati;
+- hujjat hozir qaysi bosqichdaligi.
+
+Masalan, mijoz 3 ta hujjatni tarjimaga olib keldi. Xodim ularni tizimga kiritadi, kerakli xizmatlarni belgilaydi va narxini yozadi. Keyin boshqa xodim ham shu hujjatlarni qayerda turganini ko'ra oladi.
+
+Xodim yoki administrator hujjatlarni qidirishi, tahrirlashi, ro'yxatini ko'rishi va ish tugagach "bajarildi" deb belgilashi mumkin.
+
+1.6. To'lovlar
+
+Hujjatga to'lov qabul qilinganda, xodim uni platformaga yozadi. To'lov bir yo'la yoki bo'lib-bo'lib qabul qilingan bo'lishi mumkin.
+
+Masalan, xizmat narxi 500 000 so'm bo'lsa, mijoz bugun 200 000 so'm beradi, qolganini tayyor bo'lganda to'laydi. Platformada qancha to'langani va qancha qolgani ko'rinadi.
+
+To'lovlar tarixi ham saqlanadi. Bu keyin "mijoz to'laganmi?", "qaysi kuni to'lagan?" degan savollarga tez javob beradi.
+
+1.7. Xarajatlar va asosiy statistika
+
+Platformada filial yoki xodim xarajatlarini ham kiritish mumkin.
+
+Masalan, kuryer xarajati, printer qog'ozi, notariusga berilgan summa yoki boshqa ish xarajatlari kiritiladi.
+
+Administrator quyidagilarni ko'ra oladi:
+
+- xarajatlar ro'yxati;
+- hujjatlar soni;
+- filial bo'yicha ishlar;
+- hujjat va xarajatlar bo'yicha asosiy statistika.
+
+Bu ma'lumotlar rahbarga "qayerda ish ko'p?", "qaysi filial ko'p xarajat qilyapti?" degan savollarda yordam beradi.
+
+1.8. Kuryer bilan ishlash
+
+Hujjat tayyor bo'lganda uni kuryerga berish mumkin. Kuryer o'z kabinetida unga biriktirilgan hujjatlarni ko'radi.
+
+Masalan, administrator "bu hujjatni Anvar kuryer olib boradi" deb biriktiradi. Anvar o'z telefonidan yoki kompyuteridan platformaga kirib, hujjatni qabul qilganini belgilaydi. Agar muammo bo'lsa, qaytarilganini ham belgilashi mumkin.
+
+Shu tariqa hujjat kimda ekanini izlab telefon qilish kamayadi.
+
+1.9. Kalendar, bayramlar va eslatmalar
+
+Platformada ish kunlari va bayram kunlarini yuritish mumkin. Bu muddatlarni rejalashda foydali.
+
+Masalan, bayram sababli markaz 2 kun ishlamasa, administrator bu kunlarni kalendarga kiritadi. Shunda bajarilish muddatlarini hisoblashda shu holatni e'tiborga olish mumkin.
+
+Bayramlarni qo'shish, tahrirlash, ko'chirish va ro'yxatni import/export qilish mumkin. Oylik bildirishnomalar ham ko'rinadi.
+
+1.10. Hisobotlar va zaxira nusxa
+
+Super administrator ma'lumotlarni Excelga yuklab olishi mumkin: mijozlar, hujjatlar, xodimlar yoki umumiy ma'lumotlar.
+
+Masalan, oy oxirida rahbar barcha filialdagi mijozlar yoki hujjatlar ro'yxatini Excelda olishni xohlasa, buni platformadan yuklab oladi.
+
+Ma'lumotlar bazasining zaxira nusxasini yaratish imkoni ham bor. Bu platformadagi muhim ma'lumotlarni xavfsiz saqlash uchun kerak.
+
+MASTER QISQACHA:
+Master - ichki jamoa uchun qulay CRM. U mijozni qabul qilish, hujjat ochish, to'lovni yozish, xodim va filial ishini ajratish, xarajatni ko'rish hamda kuryerga topshirish jarayonini tartibga soladi.
+
+======================================================================
+2. CLIENT-DEMO - KENGAYTIRILGAN PLATFORMA
+======================================================================
+
+Client-demo masterdagi hamma asosiy ishlarni saqlab qoladi. Lekin u faqat ichki hujjat daftaridek ishlamaydi. Unda mijozning butun buyurtmasi, mijoz bilan aloqa, to'lov jarayoni, sifat nazorati, foyda, hamkorlar va tashqi integratsiyalar ham boshqariladi.
+
+Oddiy misol: masterda xodim hujjat yaratadi. Client-demo'da esa mijoz kelgan paytdan boshlab uning buyurtmasi ochiladi, narxi tasdiqlanadi, to'lov olinadi, ishlar ro'yxati yuritiladi, mijoz o'zi ham holatni ko'radi va yakunda hujjat yetkazib berilgani qayd qilinadi.
+
+2.1. Bitta mijoz uchun to'liq buyurtma kartasi
+
+Client-demo'da asosiy ish birligi faqat hujjat emas, buyurtma bo'ladi. Bitta buyurtma ichiga bir nechta hujjat va bir nechta xizmatni birlashtirish mumkin.
+
+Masalan, mijoz chet el universitetiga topshirish uchun diplom, ilova va pasport tarjimasini olib keldi. Masterda bular alohida hujjatlar sifatida yuritilishi mumkin. Client-demo'da esa ular bitta "Universitet uchun hujjatlar" buyurtmasiga jamlanadi.
+
+Buyurtmada quyidagilar aniq ko'rinadi:
+
+- mijoz kimligi;
+- qaysi filial qabul qilgani;
+- qaysi xodim mas'ul ekani;
+- qaysi paket yoki xizmatlar tanlangani;
+- buyurtma qayerdan kelgani: Instagram, tavsiya, sayt, reklama va hokazo;
+- ish qanchalik shoshilinchligi;
+- mijozga qaysi sana va'da qilingani;
+- yetkazib berish turi: mijoz olib ketadi, kuryer olib boradi yoki elektron yuboriladi;
+- qancha summa chiqgani, qancha to'langani va qancha qolgani;
+- buyurtma hozir qaysi holatda ekani.
+
+Buyurtma bo'yicha barcha o'zgarishlar tarixi saqlanadi.
+
+Masalan, xodim buyurtmani "jarayonda"dan "tayyor"ga o'tkazsa, tizim kim o'zgartirgani va qachon o'zgartirganini saqlab qo'yadi. Keyin biror savol tug'ilsa, taxmin emas, aniq tarix bo'ladi.
+
+2.2. Ishlar ro'yxati va muddatni nazorat qilish
+
+Har bir buyurtma yoki hujjat uchun bajariladigan ishlar ro'yxatini tuzish mumkin.
+
+Masalan, diplom tarjimasi uchun quyidagi ishlar bo'lishi mumkin:
+
+1. original hujjat qabul qilindi;
+2. tarjima tayyorlandi;
+3. tarjima tekshirildi;
+4. notarial tasdiq qilindi;
+5. mijozga topshirishga tayyor.
+
+Mas'ul xodim har bir bandni bajarilgan deb belgilab boradi. Rahbar esa qaysi buyurtma qaysi joyda to'xtab qolganini tez ko'radi.
+
+Platforma va'da qilingan sana yaqinlashganda yoki o'tib ketganda eslatma berishi mumkin.
+
+Masalan, mijozga "juma kuni tayyor bo'ladi" deb va'da qilingan, lekin chorshanba kuni hali tarjima boshlanmagan bo'lsa, mas'ul xodim buni oldindan ko'radi. Bu mijozga kech qolib qo'ng'iroq qilishdan ko'ra ancha yaxshi.
+
+2.3. Narx, paket va chegirmalar ustidan nazorat
+
+Client-demo'da narxlar oddiy raqam sifatida emas, tartibli tarif sifatida yuritiladi. Narx qachondan kuchga kirgani ham saqlanadi.
+
+Masalan, sentabrdan diplom tarjimasi narxi o'zgarsa, avval avgustda olingan mijozning narxi o'zgarmaydi. Yangi narx faqat sentabrdan keyingi buyurtmalarga tushadi.
+
+Platformada quyidagilar mumkin:
+
+- standart, korporativ yoki mavsumiy narxlar;
+- filialga qarab turli narx;
+- hamkor kompaniya uchun maxsus narx;
+- tayyor paketlar;
+- paketga qo'shimcha xizmat qo'shish;
+- narx satrlarini alohida ko'rish: asosiy xizmat, notarius, kuryer, apostil va boshqalar.
+
+Chegirmaga ham nazorat bor.
+
+Masalan, xodim 20 foiz chegirma bermoqchi bo'lsa, u o'zicha yakuniy narxni o'zgartirib yubormaydi. Platforma administrator tasdig'ini so'raydi. Administrator tasdiqlasa, chegirma qo'llanadi; tasdiqlamasa, avvalgi narx qoladi.
+
+Bu nima beradi? Daromadning nazoratsiz kamayib ketishi oldi olinadi va xodimlar bir xil qoidada ishlaydi.
+
+2.4. Mijozning o'zi ko'ra oladigan sahifa
+
+Client-demo'dagi eng katta qulayliklardan biri - mijoz uchun maxsus kuzatuv sahifasi.
+
+Mijozga alohida havola yuboriladi. U login-parolsiz, faqat o'z buyurtmasiga tegishli sahifani ochadi.
+
+Masalan, mijozga Telegram yoki SMS orqali havola yuboriladi. U havolani ochib:
+
+- buyurtma qabul qilinganini;
+- hozir qaysi bosqichdaligini;
+- qachon tayyor bo'lishini;
+- qancha to'laganini va qancha qolgani;
+- hisob-faktura yoki kvitansiyani;
+- ruxsat berilgan tayyor fayllarni ko'rishi mumkin.
+
+Mijoz shu sahifadan savol ham yubora oladi.
+
+Masalan, "Hujjatim tayyormi?" deb telefon qilishi shart emas. Portal orqali savol yuboradi, xodim esa buyurtma ichidan murojaatni ko'radi.
+
+Mijoz avvalgi xizmatni yana buyurtma qilish uchun takroriy so'rov yuborishi ham mumkin.
+
+Masalan, bir marta pasport tarjimasini qilgan mijoz keyingi oy yana shu xizmat kerak bo'lsa, noldan hammasini tushuntirib o'tirmaydi.
+
+2.5. To'lovni kengroq boshqarish
+
+Client-demo'da to'lov oddiy "pul keldi" yozuvi bilan cheklanmaydi. To'lovni bir necha yo'l bilan yuritish va tekshirish mumkin.
+
+- naqd pul;
+- karta;
+- bank o'tkazmasi;
+- onlayn to'lov;
+- boshqa ruxsat berilgan to'lov turlari.
+
+Masalan, mijoz uydan turib to'lov qilmoqchi bo'lsa, xodim unga to'lov havolasini yuboradi. Mijoz to'laydi, natija platformaga keladi va buyurtmadagi to'lov holati yangilanadi.
+
+To'lov bo'yicha chek yoki rasm ham biriktirish mumkin.
+
+Yana quyidagilar bor:
+
+- to'lovni tasdiqlash;
+- xato kiritilgan to'lovni bekor qilish;
+- pul qaytarilgan bo'lsa, refund sifatida qayd etish;
+- har bir to'lovning tarixini ko'rish.
+
+Kassa bilan ishlaydigan filiallar uchun smena ochish va yopish imkoniyati ham bor.
+
+Masalan, kassir ertalab smena ochadi. Kun oxirida platformadagi naqd summa bilan kassadagi haqiqiy pulni solishtiradi. Farq chiqsa, bu holat darrov bilinadi.
+
+2.6. Rahbar uchun tushum, xarajat va foydani ko'rish
+
+Masterda xarajat va asosiy statistika bor. Client-demo'da esa rahbar pul qayerdan kelayotgani va qayerga ketayotganini chuqurroq ko'ra oladi.
+
+Dashboardda quyidagilar ko'rinadi:
+
+- jami tushum;
+- qancha pul qabul qilingani;
+- qancha qarzdorlik qolgani;
+- xarajatlar;
+- buyurtmalardan olinayotgan foyda;
+- filiallar kesimidagi natija.
+
+Masalan, bir filialda buyurtma soni ko'p, lekin kuryer va chegirma xarajatlari juda yuqori bo'lishi mumkin. Client-demo buni ko'rishga yordam beradi. Shunda rahbar faqat "ko'p ish bo'lyapti" demaydi, balki "haqiqatan foyda qolyaptimi?" degan savolga javob oladi.
+
+Xarajatlarni kategoriya, yetkazib beruvchi, budjet yoki xarajat markazi bo'yicha ajratish mumkin.
+
+Masalan, ofis xarajati, notarius xarajati va marketing xarajati aralashib ketmaydi. Har biri alohida ko'rinadi.
+
+Platforma foydaga zarar berishi mumkin bo'lgan holatlarni ham ko'rsatadi.
+
+Masalan, juda katta chegirma berilgan, buyurtma narxiga nisbatan xarajat ko'payib ketgan yoki to'lov uzoq vaqt olinmagan bo'lsa, rahbar buni alohida ro'yxatda ko'radi va chora ko'radi.
+
+2.7. Sifat tekshiruvi va asl hujjat xavfsizligi
+
+Client-demo'da ish tugadi deb belgilashdan oldin sifat tekshiruvini o'tkazish mumkin.
+
+Masalan, tarjimon tarjimani tugatadi. Tekshiruvchi xodim ism-familiya, sana, muhr va matn to'g'riligini tekshiradi. Agar kamchilik bo'lsa, izoh qoldiradi; hammasi yaxshi bo'lsa, tasdiqlaydi.
+
+Asl qog'oz hujjatlar qabul qilingani, kimga berilgani va qaytarilgani ham alohida qayd qilinadi.
+
+Masalan, mijoz original diplomini topshirdi. Platformada qabul qilingan vaqt va mas'ul xodim yoziladi. Keyin kuryerga berilsa yoki mijozga qaytarilsa, u ham qayd qilinadi. Kerak bo'lsa foto-dalil biriktiriladi.
+
+Bu juda muhim: "original kimda?" degan savolga telefon qilib izlash emas, platformadan aniq tarixni ko'rish mumkin.
+
+Hujjat fayllari ham oddiy ochiq papkada saqlanmaydi. Ularni yuklab olishdan oldin platforma foydalanuvchining ruxsatini tekshiradi.
+
+2.8. Mijozga avtomatik xabarlar
+
+Xodim buyurtma bo'yicha mijozga xabar yuborishi mumkin:
+
+- SMS;
+- Telegram;
+- e-mail;
+- WhatsApp;
+- ichki xabar.
+
+Masalan, hujjat tayyor bo'lganda mijozga "Hujjatingiz tayyor, soat 18:00 gacha olib ketishingiz mumkin" degan xabar yuboriladi.
+
+Yoki to'lov qolgani bo'lsa, muloyim eslatma yuborish mumkin.
+
+Xabarlar fon rejimida yuboriladi. Ya'ni bir vaqtning o'zida ko'p xabar ketayotgan bo'lsa ham, xodimning platformasi qotib qolmaydi.
+
+2.9. Mijozni dastlabki qabul qilish va hujjatdan ma'lumot olish
+
+Client-demo'da oddiy dastlabki ariza sahifasi mavjud. Mijoz yoki operator bir nechta savolga javob beradi, platforma esa mos xizmatni tavsiya qiladi.
+
+Masalan, mijoz "diplomimni Koreyaga topshirish uchun tayyorlamoqchiman" deb yozadi. Platforma unga mos xizmat, taxminiy narx, muddat va kerak bo'ladigan fayllarni chiqarishi mumkin.
+
+Hujjatdan matnni avtomatik olish (OCR) imkoniyati ham bor.
+
+Masalan, pasport rasmi yuklanadi. Platforma undagi ayrim ma'lumotlarni o'qib berishga harakat qiladi. Lekin yakuniy ma'lumotni xodim tekshiradi va tasdiqlaydi. Ya'ni platforma yordam beradi, lekin inson tekshiruvi saqlanadi.
+
+2.10. Kuryerni buyurtma darajasida boshqarish
+
+Masterda kuryer asosan hujjat bilan ishlaydi. Client-demo'da esa buyurtma uchun alohida yetkazib berish topshirig'i ochiladi.
+
+Masalan, bitta buyurtmada 3 ta tayyor hujjat bor. Ularni bir marta kuryerga topshirish mumkin. Kuryer buyurtmani qabul qilganini, yetkazganini yoki qaytarib olib kelganini belgilaydi.
+
+Rahbar buyurtma ichida kuryer kimligini va yetkazib berish qaysi holatda ekanini ko'radi.
+
+2.11. Korporativ hamkorlar bilan ishlash (B2B)
+
+Client-demo'da oddiy jismoniy mijozlardan tashqari kompaniya hamkorlari bilan ishlash uchun alohida imkoniyat bor.
+
+Masalan, o'quv markazi, viza agentligi yoki boshqa kompaniya o'z mijozlarini sizning markazingizga yuboradi. Bunday hamkor uchun alohida profil yaratiladi.
+
+Hamkor bo'yicha quyidagilar sozlanadi:
+
+- kompaniya ma'lumotlari;
+- qaysi filiallar bilan ishlashi;
+- korporativ chegirma;
+- to'lov shartlari;
+- o'z buyurtmalarini ko'rish huquqi.
+
+Hamkorning o'z kabineti bo'ladi. U yerda hamkor:
+
+- buyurtma yaratadi;
+- buyurtmalari holatini ko'radi;
+- statistikasini ko'radi;
+- hisob-fakturalarini ochadi.
+
+Masalan, viza agentligi 20 ta mijozining hujjatini yuborsa, har biri bo'yicha telefon qilmasdan o'z kabinetidan holatlarni ko'radi.
+
+Hamkor uchun alohida API kalit ham berish mumkin. Bu uning sayti yoki ichki dasturini platformaga ulash uchun kerak.
+
+Masalan, hamkorning saytidagi forma orqali tushgan buyurtma to'g'ridan-to'g'ri sizning platformangizga kelishi mumkin.
+
+Oylik hamkor hisob-fakturalarini tayyorlash imkoniyati ham bor. Bu ayniqsa keyin to'laydigan korporativ mijozlar uchun qulay.
+
+2.12. API va tashqi platformalar bilan ulanish
+
+Client-demo mobil ilova, sayt yoki boshqa ichki dastur bilan xavfsiz ulanish uchun API beradi.
+
+API orqali ruxsat berilgan foydalanuvchi yoki dastur:
+
+- mijozni qidirishi;
+- yangi mijoz qo'shishi;
+- mijoz ma'lumotini yangilashi;
+- hujjat yaratishi;
+- hujjatlar holatini ko'rishi;
+- bir nechta hujjatni bir marta yuborishi;
+- ruxsati bo'lsa, hujjat faylini olishi mumkin.
+
+Masalan, kelajakda Android yoki iPhone ilova qilinsa, u shu API orqali platforma bilan ishlaydi. Qaytadan butun tizim yozib chiqilmaydi.
+
+2.13. Xavfsizlik, zaxira nusxa va barqaror ishlash
+
+Client-demo'da ma'lumotlar xavfsizligiga alohida e'tibor berilgan.
+
+- foydalanuvchi faqat o'ziga ruxsat berilgan ma'lumotni ko'radi;
+- filial xodimi boshqa filial ma'lumotini ko'ra olmaydi;
+- hujjat va faylni yuklab olishdan oldin ruxsat tekshiriladi;
+- API kalitlari va tokenlari cheklangan ruxsatlar bilan ishlaydi;
+- ochiq sahifalarda ko'p so'rov yuborishni cheklash bor;
+- platforma holatini tekshirish uchun health-check mavjud;
+- ma'lumotlar bazasining backup nusxasi yaratiladi;
+- katta Excel export yoki backup kabi og'ir ishlar fon rejimida bajariladi.
+
+Masalan, administrator katta Excel hisobotini yuklab olayotganda, boshqa xodimlarning ishi sekinlashib qolmaydi. Hisobot tayyor bo'lgach, uni yuklab oladi.
+
+======================================================================
+3. ASOSIY FARQ NIMADA?
+======================================================================
+
+Quyida ikki talqin o'rtasidagi farq oddiy qilib aytilgan.
+
+1. Asosiy yondashuv
+
+Master: hujjatlarni ichki tartibda yuritish uchun.
+Client-demo: mijoz kelganidan boshlab xizmat yakunlanguncha butun buyurtmani boshqarish uchun.
+
+2. Mijoz uchun qulaylik
+
+Master: mijoz haqida ma'lumotni asosan xodim ko'radi.
+Client-demo: mijozning o'zi havola orqali buyurtmasini ko'radi, to'lov qiladi, fayl oladi va savol yuboradi.
+
+3. To'lov va moliya
+
+Master: hujjat bo'yicha to'lov va xarajat yoziladi.
+Client-demo: to'lov havolasi, kassa, refund, qarzdorlik, filial foydasi, budjet va zarar keltirayotgan holatlarni ko'rish mavjud.
+
+4. Narx va chegirma
+
+Master: xizmat narxi kiritiladi.
+Client-demo: narx tarix bilan yuradi, filial yoki hamkor uchun alohida tarif beriladi va katta chegirma tasdiqlashdan o'tadi.
+
+5. Ish sifati va javobgarlik
+
+Master: hujjat yaratiladi, bajariladi va topshiriladi.
+Client-demo: checklist, mas'ul xodim, o'zgarishlar tarixi, QA tekshiruvi, original hujjat harakati va foto-dalil bor.
+
+6. Biznesni o'stirish
+
+Master: ichki markaz ishini yengillashtiradi.
+Client-demo: mijoz portal, online to'lov, avtomatik xabarlar, B2B hamkorlar va API orqali yangi savdo kanallarini ochishga yordam beradi.
+
+7. Rahbar nazorati
+
+Master: asosiy hujjat va xarajat statistikasi bor.
+Client-demo: qaysi filial foydali, qaysi buyurtma zarar keltiryapti, qancha qarzdorlik bor va pul qayerga ketayotgani aniqroq ko'rinadi.
+
+======================================================================
+4. NIMA UCHUN CLIENT-DEMO ALOHIDA QO'SHIMCHA QIYMATGA EGA?
+======================================================================
+
+Client-demo faqat chiroyli ekranlar yoki bir nechta yangi tugmalar emas. Unda quyidagi katta qo'shimcha ishlar bor:
+
+- buyurtma, to'lov, kassa, tarif, hamkor, invoice va boshqa yangi ma'lumotlar tuzilmasi;
+- mijoz portalidagi alohida xavfsiz sahifalar;
+- buyurtma holatlari, muddat, checklist va tarix logikasi;
+- narx va chegirma tasdiqlash qoidalari;
+- to'lov havolasi, webhook, refund va to'lovlar reyestri;
+- filiallar bo'yicha foyda/zarar va moliyaviy dashboard;
+- B2B hamkor kabineti va tashqi API;
+- fayllarni xavfsiz saqlash va foydalanuvchi ruxsatlarini tekshirish;
+- xabarlar, backup va exportlarni fon rejimida ishlatish;
+- platformani production muhitida xavfsiz o'rnatish, tekshirish va zaxiralash imkoniyatlari.
+
+XULOSA
+
+Master - markazning ichki ishini tartibga soladigan mustahkam asosiy platforma.
+
+Client-demo - shu asos ustida ishlaydigan kengaytirilgan mahsulot. U xodimga ishlashni osonlashtiradi, mijozga shaffof va qulay xizmat beradi, rahbarga esa pul, muddat, sifat va filiallar ustidan ancha kuchli nazorat beradi.
+
+Shuning uchun client-demo uchun qo'shimcha qiymat so'raladi: unda faqat masterdagi funksiyalar emas, balki mijoz tajribasi, to'liq buyurtma jarayoni, online to'lov, moliyaviy tahlil, B2B hamkorlik, API, avtomatlashtirish va kuchaytirilgan xavfsizlik ham bor.

@@ -38,10 +38,15 @@ class SmartIntakeService
 
     public function start(?string $token = null): IntakeSession
     {
-        return IntakeSession::firstOrCreate(
-            ['token' => $token ?: Str::random(80)],
-            ['status' => 'started', 'current_step' => 1]
-        );
+        if ($token !== null) {
+            return IntakeSession::query()->where('token', $token)->firstOrFail();
+        }
+
+        return IntakeSession::create([
+            'token' => Str::random(80),
+            'status' => 'started',
+            'current_step' => 1,
+        ]);
     }
 
     private function resolveService(array $answers): ?ServicesModel
@@ -54,8 +59,8 @@ class SmartIntakeService
         $serviceQuery = ServicesModel::query()->orderBy('price');
         if ($query !== '') {
             $serviceQuery->where(function ($builder) use ($query): void {
-                $builder->where('name', 'like', '%' . addcslashes($query, '%_') . '%')
-                    ->orWhere('description', 'like', '%' . addcslashes($query, '%_') . '%');
+                $builder->where('name', 'like', '%'.addcslashes($query, '%_').'%')
+                    ->orWhere('description', 'like', '%'.addcslashes($query, '%_').'%');
             });
         }
 

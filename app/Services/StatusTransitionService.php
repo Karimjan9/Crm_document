@@ -38,6 +38,8 @@ class StatusTransitionService
                 'reason' => $reason,
             ]);
 
+            DB::afterCommit(fn () => app(TelegramBotIntegrationService::class)->queueOrderStatus($order->fresh()));
+
             return $order->fresh();
         });
     }

@@ -10,7 +10,7 @@
         <div class="d-flex gap-2">
             <a class="btn btn-outline-secondary" href="{{ route($routePrefix . '.document.index') }}">Orqaga</a>
             <a class="btn btn-primary" href="{{ route($routePrefix . '.document.edit', $document) }}">Tahrirlash</a>
-            <a class="btn btn-outline-primary" href="{{ route('documents.workflow.index') }}">Ishlar Kanban</a>
+            <a class="btn btn-outline-primary" href="{{ route('documents.workflow.index') }}">Kanban doska</a>
         </div>
     </div>
 

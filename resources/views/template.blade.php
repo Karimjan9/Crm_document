@@ -7,9 +7,9 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-	<!--favicon-->
-	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/favicon-32x32.png') }}" />
-	<link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
+	<!-- favicon: login va kabinet uchun yagona brand icon -->
+	<link rel="icon" href="{{ asset('favicon.svg') }}?v=3" type="image/svg+xml" sizes="any" />
+	<link rel="shortcut icon" href="{{ asset('favicon.svg') }}?v=3" type="image/svg+xml" />
 	<!--plugins-->
 	{{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> --}}
 	<link href="{{ url('assets/plugins/notifications/css/lobibox.min.css') }}" rel="stylesheet"/>

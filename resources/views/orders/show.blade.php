@@ -213,7 +213,7 @@
             </div></div>
 
             <div class="panel"><div class="panel-head"><h3>Order xarajatlari</h3><span>{{ number_format($order->cost_amount, 0, ',', ' ') }} UZS</span></div><div class="panel-body">
-                @if($canManage)<form method="POST" action="{{ route('orders.costs.store', $order) }}" class="delivery-form mb-3">@csrf<div class="row"><div class="col-5"><input name="category" class="form-control" placeholder="Kategoriya" required></div><div class="col-7"><input name="amount" class="form-control" type="number" min="0.01" step="0.01" placeholder="Summa" required></div></div><textarea name="description" class="form-control" rows="2" placeholder="Izoh"></textarea><button class="btn btn-outline-danger">Xarajat qo‘shish</button></form>@endif
+                @if($canManage)<form method="POST" action="{{ route('orders.costs.store', $order) }}" class="delivery-form mb-3">@csrf<div class="row"><div class="col-5"><input name="category" class="form-control" placeholder="Kategoriya" required></div><div class="col-7"><input name="amount" class="form-control" type="number" min="0.01" step="0.01" placeholder="Summa" required></div></div><textarea name="description" class="form-control" rows="2" placeholder="Izoh"></textarea><input name="margin_reason" class="form-control" placeholder="Marja pastlasa izoh"><button class="btn btn-outline-danger">Xarajat qo‘shish</button></form>@endif
                 @if($order->costs->isEmpty())
                     <div class="text-muted small">Hali xarajat kiritilmagan.</div>
                 @else

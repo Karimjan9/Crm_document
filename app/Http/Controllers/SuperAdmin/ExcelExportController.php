@@ -7,6 +7,8 @@ use App\Jobs\GenerateExcelExport;
 use App\Models\ClientsModel;
 use App\Models\DocumentsModel;
 use App\Models\User;
+use App\Services\AuditLogger;
+use App\Services\SecurityAlertService;
 use App\Support\ExcelWorkbookBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
@@ -15,11 +17,18 @@ use Illuminate\Support\Str;
 
 class ExcelExportController extends Controller
 {
+    private bool $maskSensitive = true;
+
     public function __construct(private ExcelWorkbookBuilder $builder) {}
 
     public function queue(string $dataset): JsonResponse
     {
         abort_unless(in_array($dataset, ['clients', 'documents', 'employees', 'all'], true), 404);
+        app(AuditLogger::class)->event('export.queued', ['dataset' => $dataset]);
+        app(SecurityAlertService::class)->raise('export_requested', 'info', [
+            'user_id' => auth()->id(),
+            'dataset' => $dataset,
+        ]);
         $token = Str::random(64);
 
         Cache::put($this->cacheKey($token), [
@@ -57,13 +66,17 @@ class ExcelExportController extends Controller
         $disk = Storage::disk('private');
         abort_unless($disk->exists($export['path']), 404);
 
-        return $disk->download($export['path'], $export['filename'], [
+        $response = response()->download($disk->path($export['path']), $export['filename'], [
             'X-Content-Type-Options' => 'nosniff',
         ]);
+        Cache::forget($this->cacheKey($token));
+
+        return $response->deleteFileAfterSend(true);
     }
 
-    public function buildQueuedExport(string $dataset): array
+    public function buildQueuedExport(string $dataset, ?User $actor = null): array
     {
+        $this->maskSensitive = ! $actor?->hasRole('super_admin');
         $payload = $this->buildPayload($dataset);
 
         return [
@@ -158,7 +171,7 @@ class ExcelExportController extends Controller
             return [
                 $this->intCell($client->id),
                 $this->wrapCell($client->name),
-                $this->textCell($client->phone_number),
+                $this->textCell($this->mask($client->phone_number)),
                 $this->intCell($documents->count()),
                 $this->intCell($documents->where('status_doc', '!=', 'finish')->count()),
                 $this->intCell($documents->where('status_doc', 'finish')->count()),
@@ -183,7 +196,7 @@ class ExcelExportController extends Controller
                 return [
                     $this->intCell($client->id),
                     $this->wrapCell($client->name),
-                    $this->textCell($client->phone_number),
+                    $this->textCell($this->mask($client->phone_number)),
                     $this->textCell($document->document_code),
                     $this->textCell($document->status_doc),
                     $this->wrapCell(optional($document->service)->name),
@@ -307,7 +320,7 @@ class ExcelExportController extends Controller
                 $this->textCell($document->document_code),
                 $this->textCell($document->status_doc),
                 $this->wrapCell(optional($document->client)->name),
-                $this->textCell(optional($document->client)->phone_number),
+                $this->textCell($this->mask(optional($document->client)->phone_number)),
                 $this->wrapCell(optional($document->filial)->name),
                 $this->wrapCell(optional($document->service)->name),
                 $this->wrapCell(optional($document->documentType)->name),
@@ -588,7 +601,7 @@ class ExcelExportController extends Controller
                     $this->wrapCell(optional($user->filial)->name),
                     $this->textCell($document->document_code),
                     $this->wrapCell(optional($document->client)->name),
-                    $this->textCell(optional($document->client)->phone_number),
+                    $this->textCell($this->mask(optional($document->client)->phone_number)),
                     $this->wrapCell(optional($document->service)->name),
                     $this->textCell($document->status_doc),
                     $this->moneyCell($document->final_price),
@@ -727,7 +740,19 @@ class ExcelExportController extends Controller
             return '';
         }
 
-        return $login !== '' ? trim($name.' ('.$login.')') : $name;
+        return $this->maskSensitive
+            ? 'Xodim #'.($user->id ?? '?')
+            : ($login !== '' ? trim($name.' ('.$login.')') : $name);
+    }
+
+    private function mask(mixed $value): string
+    {
+        $value = trim((string) $value);
+        if (! $this->maskSensitive || $value === '') {
+            return $value;
+        }
+
+        return mb_substr($value, 0, 2).str_repeat('*', max(3, mb_strlen($value) - 4)).mb_substr($value, -2);
     }
 
     private function implodeUnique(iterable $values, string $separator = "\n"): string

@@ -298,10 +298,12 @@
                 <h4>Hujjat monitoringi</h4>
                 <p>Filtrlar, to'lov nazorati va oylar kesimidagi umumiy ko'rsatkichlar.</p>
             </div>
-            <a href="{{ route($routePrefix . '.document.create') }}" class="doc-action">
-                <i class="bx bx-plus"></i>
-                Yangi hujjat
-            </a>
+            @if($routePrefix !== 'superadmin')
+                <a href="{{ route($routePrefix . '.document.create') }}" class="doc-action">
+                    <i class="bx bx-plus"></i>
+                    Yangi hujjat
+                </a>
+            @endif
         </div>
 
         <form method="GET" action="{{ route($routePrefix . '.document.index') }}" class="filter-panel">

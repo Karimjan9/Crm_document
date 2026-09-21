@@ -54,6 +54,15 @@
 .empty-state { padding:14px; border-radius:16px; border:1px dashed rgba(148,163,184,.45); background:rgba(248,250,252,.92); }
 @media (max-width:1199px){ .template-builder{grid-template-columns:1fr}.template-builder__card--sticky{position:static} }
 @media (max-width:767px){ .template-grid--double,.addon-grid{grid-template-columns:1fr}.item-card__head,.item-card__footer,.form-actions{flex-direction:column;align-items:stretch}.btn-primary-strong,.btn-secondary-soft{width:100%} }
+.builder-guide { display:flex; align-items:center; justify-content:space-between; gap:22px; margin-top:24px; padding:18px 21px; border:1px solid rgba(37,99,235,.16); border-radius:20px; background:linear-gradient(115deg,rgba(239,246,255,.96),rgba(255,255,255,.96)); box-shadow:0 12px 30px rgba(30,64,175,.06); }
+.builder-guide__copy { display:grid; gap:4px; }.builder-guide__copy strong { color:#183962; font-size:1rem; }.builder-guide__copy small { color:#6b7e98; }.builder-guide__eyebrow,.builder-section__number { color:#c62649; font-size:.7rem; font-weight:800; letter-spacing:.09em; text-transform:uppercase; }
+.builder-guide__steps { display:flex; align-items:center; gap:9px; margin:0; padding:0; list-style:none; }.builder-guide__steps li { display:flex; align-items:center; gap:7px; color:#71819a; font-size:.73rem; font-weight:800; white-space:nowrap; }.builder-guide__steps b { display:grid; place-items:center; width:27px; height:27px; border-radius:50%; color:#61728d; background:#e9eff7; }.builder-guide__steps li.is-current { color:#214f85; }.builder-guide__steps li.is-current b { color:#fff; background:linear-gradient(135deg,#df214b,#f25b78); }
+.builder-section { scroll-margin-top:100px; }.builder-section__icon { display:grid; place-items:center; flex:0 0 38px; width:38px; height:38px; border-radius:12px; color:#d52e51; background:#fff0f3; font-size:1.18rem; }.builder-section__number { display:block; margin-bottom:5px; }.field__required { color:#d52e51; }.field__hint { color:#75839a; font-size:.74rem; font-weight:500; line-height:1.35; }.field__label em { color:#75839a; font-size:.75rem; font-style:normal; font-weight:500; }.field__input-wrap { position:relative; }.field__input-wrap .field__control { padding-right:53px; }.field__input-wrap > span { position:absolute; top:50%; right:13px; color:#74829a; font-size:.77rem; font-weight:800; pointer-events:none; transform:translateY(-50%); }
+.builder-callout { display:flex; align-items:flex-start; gap:10px; margin-bottom:18px; padding:13px 14px; border:1px solid #d9e7f8; border-radius:14px; color:#536a8a; background:#f7fbff; font-size:.82rem; line-height:1.5; }.builder-callout i { color:#2374c7; font-size:1.15rem; }.builder-callout strong { color:#294e7d; }
+.builder-choice-group { padding:16px; border:1px solid #e0e9f4; border-radius:17px; background:#fbfdff; }.builder-choice-group__head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:13px; }.builder-choice-group__head strong { display:block; color:#28466e; font-size:.88rem; }.builder-choice-group__head span { display:block; margin-top:3px; color:#74839a; font-size:.75rem; }.builder-choice-group__badge { display:inline-flex; flex:0 0 auto; padding:5px 8px; border-radius:999px; color:#416b9d; background:#eaf3ff; font-size:.7rem; font-weight:800; }.builder-choice-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }.builder-choice-grid--addons { grid-template-columns:repeat(2,minmax(0,1fr)); }.builder-choice { min-height:55px; margin:0; padding:10px; border:1px solid #dde7f2; border-radius:12px; background:#fff; cursor:pointer; }.builder-choice:has(input:checked) { border-color:#7ab4eb; background:#f2f8ff; }.builder-choice input { accent-color:#1e73cb; }.builder-choice span { display:grid; gap:3px; min-width:0; }.builder-choice b { color:#355274; font-size:.78rem; }.builder-choice small { color:#7b899f; font-size:.71rem; }.builder-status-toggle { align-items:flex-start; margin-bottom:0; padding:13px; border:1px solid #dce7f4; border-radius:13px; background:#f9fcff; }.builder-status-toggle input { margin-top:3px; accent-color:#1e73cb; }.builder-status-toggle span { display:grid; gap:3px; }.builder-status-toggle b { color:#284a75; }.builder-status-toggle small { color:#74839a; font-size:.75rem; font-weight:500; }.builder-status-toggle--compact { min-height:100%; }
+.builder-preview .template-builder__section-head { margin-bottom:16px; }.price-chip { position:relative; overflow:hidden; }.price-chip small { display:block; margin-top:4px; color:#8291a6; font-size:.71rem; line-height:1.3; }.price-chip--accent small { color:rgba(255,255,255,.78); }.price-chip--saving { border-color:#d4ecdf; background:#f4fcf7; }.price-chip--saving strong { color:#197449; }.btn-primary-strong { display:inline-flex; align-items:center; justify-content:center; gap:7px; cursor:pointer; }.btn-primary-strong:hover { filter:brightness(1.05); }.mode-btn { cursor:pointer; }.mode-row::before { content:'Jarayon turi:'; align-self:center; color:#718199; font-size:.72rem; font-weight:800; }.item-card__head { align-items:center; }.item-card__footer { align-items:center; margin-top:16px; }
+@media (max-width:1199px){ .builder-guide{align-items:flex-start;flex-direction:column}.builder-guide__steps{flex-wrap:wrap}.builder-choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:767px){ .builder-guide{padding:16px}.builder-guide__steps{display:grid;grid-template-columns:1fr 1fr;width:100%}.builder-guide__steps li{white-space:normal}.builder-choice-grid,.builder-choice-grid--addons{grid-template-columns:1fr}.builder-choice-group__head{flex-direction:column}.builder-choice-group__badge{align-self:flex-start}.mode-row::before{width:100%;} }
 </style>
 
 <script>
@@ -64,6 +73,7 @@
     const list = document.getElementById('packageItemBuilderList');
     const payloadInput = document.getElementById('itemsPayloadInput');
     const promoInput = document.getElementById('promoPriceInput');
+    const standardPriceInput = document.getElementById('standardPriceInput');
     const addButton = document.getElementById('addPackageItemButton');
     const basePriceValue = document.getElementById('basePriceValue');
     const promoPricePreview = document.getElementById('promoPricePreview');
@@ -408,7 +418,8 @@
         payloadInput.value = JSON.stringify(payload);
 
         const total = state.items.reduce((carry, item) => carry + calculate(item).basePrice, 0);
-        const promo = Number(promoInput?.value || 0);
+        const promoValue = Number(promoInput?.value || 0);
+        const promo = promoValue > 0 ? promoValue : Number(standardPriceInput?.value || 0);
         basePriceValue.textContent = money(total);
         promoPricePreview.textContent = money(promo);
         savingValue.textContent = money(Math.max(total - promo, 0));
@@ -433,6 +444,7 @@
     });
 
     promoInput?.addEventListener('input', sync);
+    standardPriceInput?.addEventListener('input', sync);
     render();
 })();
 </script>

@@ -9,15 +9,14 @@ use App\Models\FilialModel;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\PaymentRefund;
-use App\Models\PaymentStatusHistory;
 use App\Models\PaymentsModel;
+use App\Models\PaymentStatusHistory;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class PaymentLedgerService
@@ -92,7 +91,7 @@ class PaymentLedgerService
         ];
 
         if ($proof instanceof UploadedFile) {
-            $path = $proof->store('payment-proofs', 'private');
+            $path = app(FileSecurityService::class)->store($proof, 'payment-proofs');
             $attributes += [
                 'payment_proof_path' => $path,
                 'payment_proof_original_name' => $proof->getClientOriginalName(),
@@ -189,7 +188,7 @@ class PaymentLedgerService
                 'confirmed_at' => now(),
             ]);
             $refund->forceFill([
-                'refund_number' => 'RFND-' . ($payment->receipt_number ?: $payment->id) . '-' . $refund->id,
+                'refund_number' => 'RFND-'.($payment->receipt_number ?: $payment->id).'-'.$refund->id,
             ])->save();
 
             $newRefundAmount = round((float) $payment->refund_amount + $amount, 2);
@@ -202,7 +201,7 @@ class PaymentLedgerService
                 'refunded_by_id' => $actor?->id,
             ])->save();
 
-            $this->recordHistory($payment, $from, $newStatus, $actor, 'Refund: ' . $refund->refund_number);
+            $this->recordHistory($payment, $from, $newStatus, $actor, 'Refund: '.$refund->refund_number);
             $this->syncAggregates($payment);
 
             return $refund->fresh(['payment']);
@@ -226,6 +225,7 @@ class PaymentLedgerService
         if ($order) {
             $paid = $this->effectiveSum(PaymentsModel::query()->where('order_id', $order->id));
             $order->forceFill(['paid_amount' => $paid])->save();
+            DB::afterCommit(fn () => app(TelegramBotIntegrationService::class)->queuePaymentUpdate($order->fresh()));
         }
 
         if ($payment->invoice_id) {
@@ -258,7 +258,7 @@ class PaymentLedgerService
                     'client_id' => $order->client_id,
                     'filial_id' => $order->filial_id,
                     'issued_by_id' => $actor?->id,
-                    'invoice_number' => 'INV-' . $order->order_code,
+                    'invoice_number' => 'INV-'.$order->order_code,
                     'status' => $paid >= $total ? 'paid' : ($paid > 0 ? 'partially_paid' : 'issued'),
                     'currency' => $order->currency ?: 'UZS',
                     'subtotal_amount' => $order->subtotal_amount,
@@ -414,7 +414,7 @@ class PaymentLedgerService
     {
         $this->assertBranchAccess((int) $session->filial_id, $actor);
 
-        return DB::transaction(function () use ($session, $actor, $notes): CashSession {
+        return DB::transaction(function () use ($session, $notes): CashSession {
             $session = CashSession::query()->lockForUpdate()->findOrFail($session->id);
             if ($session->status !== 'closed') {
                 throw ValidationException::withMessages(['cash_session' => 'Faqat yopilgan cash session reconciliation qilinadi.']);

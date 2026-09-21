@@ -16,30 +16,91 @@
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    background-color: #15172a !important;
-    padding: 10px 25px !important;
+    background: linear-gradient(100deg, #17192d 0%, #15172a 52%, #101525 100%) !important;
+    padding: 13px 26px !important;
     width: 100% !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     z-index: 1000 !important;
-    border-bottom: 1px solid #0c0f0f33 !important;
+    border-bottom: 1px solid rgba(116, 157, 213, 0.18) !important;
+    box-shadow: 0 5px 22px rgba(5, 9, 23, 0.24) !important;
     flex-wrap: wrap !important;
   }
 
   .navbar {
     display: flex !important;
-    align-items: flex-end !important;
+    align-items: center !important;
     justify-content: space-between !important;
     width: 100% !important;
+    min-height: 54px;
+  }
+
+  @media (min-width: 769px) {
+    .topbar {
+      height: 84px !important;
+      padding: 0 26px !important;
+    }
+
+    .topbar .navbar {
+      height: 100% !important;
+      padding: 0 !important;
+    }
+
+    .page-wrapper {
+      margin-left: 250px !important;
+      margin-top: 84px !important;
+    }
+
+    .wrapper.toggled .page-wrapper {
+      margin-left: 70px !important;
+    }
+  }
+
+  .brand-identity {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 280px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .brand-mark {
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    filter: drop-shadow(0 7px 14px rgba(225, 29, 72, 0.26));
+  }
+
+  .brand-mark svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .brand-copy {
+    display: grid;
+    gap: 2px;
+    line-height: 1;
+  }
+
+  .brand-eyebrow {
+    color: #90a1bd;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.35px;
   }
 
   .brand-animated {
     font-family: 'Poppins', sans-serif !important;
-    font-size: 30px !important;
+    font-size: 24px !important;
     font-weight: 700 !important;
-    color: #b31b1b;
-    /* transition: color 0.5s ease !important; */
+    letter-spacing: -0.6px;
+    color: #f7f9ff !important;
   }
 
   .weather-date {
@@ -63,7 +124,10 @@
   .user-box {
     display: flex !important;
     align-items: center !important;
-    gap: 10px !important;
+    gap: 12px !important;
+    min-height: 48px;
+    padding-left: 18px;
+    border-left: 1px solid rgba(255,255,255,0.14);
     cursor: pointer !important;
     transition: transform 0.2s ease, color 0.2s ease !important;
   }
@@ -71,7 +135,13 @@
   .topbar-actions {
     display: flex !important;
     align-items: center !important;
-    gap: 12px !important;
+    gap: 20px !important;
+    margin-left: auto;
+    padding: 2px 6px 2px 18px;
+  }
+
+  .topbar-actions > * {
+    flex: 0 0 auto;
   }
 
   .topbar-shortcut {
@@ -79,7 +149,8 @@
     background: rgba(255,255,255,0.06);
     color: #e8f6ff;
     border-radius: 14px;
-    padding: 10px 14px;
+    min-height: 44px;
+    padding: 10px 18px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -106,6 +177,14 @@
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
 
+  #themeToggle {
+    width: 46px !important;
+    height: 44px !important;
+    border-radius: 14px !important;
+    border-color: rgba(121, 186, 255, 0.28) !important;
+    background: rgba(255,255,255,0.07) !important;
+  }
+
   .theme-toggle-image {
     width: 25px;
     height: 25px;
@@ -130,11 +209,11 @@
     background: linear-gradient(145deg, rgba(18, 35, 68, 0.94), rgba(9, 18, 38, 0.98));
     color: #eef7ff;
     border-radius: 20px;
-    /* min-width: 188px; */
-    padding: 1px;
+    min-width: 176px;
+    padding: 2px 12px 2px 2px;
     display: inline-flex;
     align-items: center;
-    gap: 1px;
+    gap: 10px;
     cursor: pointer;
     box-shadow: 0 18px 36px rgba(6, 13, 29, 0.24);
     transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease, background 0.24s ease;
@@ -1476,6 +1555,37 @@
   }
 
   @media (max-width: 768px) {
+    .topbar {
+      position: sticky !important;
+      height: auto !important;
+      padding: 10px 14px !important;
+    }
+
+    .page-wrapper {
+      margin-top: 0 !important;
+      margin-left: 0 !important;
+    }
+
+    .brand-identity {
+      min-width: 0;
+      gap: 9px;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      flex-basis: 38px;
+      border-radius: 12px;
+    }
+
+    .brand-eyebrow {
+      display: none;
+    }
+
+    .brand-animated {
+      font-size: 21px !important;
+    }
+
     .profile-content--panel {
       padding: 18px;
     }
@@ -1511,7 +1621,13 @@
     .topbar-actions {
       width: 100% !important;
       justify-content: flex-end !important;
+      gap: 12px !important;
+      padding-left: 0;
       flex-wrap: wrap !important;
+    }
+
+    .user-box {
+      padding-left: 12px;
     }
 
     .deadline-bell__trigger {
@@ -1907,21 +2023,34 @@
       snowflakes.forEach(s => s.style.left = Math.random() * window.innerWidth + 'px');
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const brand = document.getElementById('brandName');
-      const colors = ['#00d1ff', '#ff9800', '#28a745', '#e91e63', '#6f42c1', '#007bff'];
-      let index = 0;
-
-      setInterval(() => {
-        brand.style.setProperty('color', colors[index], 'important');
-        index = (index + 1) % colors.length;
-      }, 5000);
-    });
   </script>
 
   <div class="topbar">
     <nav class="navbar navbar-expand">
-      <div class="brand-animated" id="brandName">Global Voice</div>
+      <div class="brand-identity" aria-label="Global Voice platformasi">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="headerBrandRed" x1="8" y1="5" x2="56" y2="61" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#ff6b81"/>
+                <stop offset=".48" stop-color="#e11d48"/>
+                <stop offset="1" stop-color="#881337"/>
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="18" fill="url(#headerBrandRed)"/>
+            <circle cx="32" cy="32" r="19" stroke="white" stroke-opacity=".28"/>
+            <g stroke="white" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="32" cy="32" r="14"/>
+              <path d="M18 32H46M32 18C38 24.5 38 39.5 32 46M32 18C26 24.5 26 39.5 32 46"/>
+            </g>
+            <circle cx="24" cy="22" r="8" fill="white" fill-opacity=".16"/>
+          </svg>
+        </span>
+        <span class="brand-copy">
+          <span class="brand-eyebrow">DOCUMENT PLATFORM</span>
+          <span class="brand-animated" id="brandName">Global Voice</span>
+        </span>
+      </div>
 
       {{-- <div class="weather-date" id="weatherDate">
         <div class="weather"><i class='bx bx-cloud'></i><span id="weatherInfo">Yuklanmoqda...</span></div>

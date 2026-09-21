@@ -213,6 +213,21 @@ class Order extends Model
         return $this->hasMany(OrderCost::class)->latest();
     }
 
+    public function workItems()
+    {
+        return $this->hasMany(WorkItem::class);
+    }
+
+    public function approvals()
+    {
+        return $this->morphMany(BusinessApproval::class, 'subject');
+    }
+
+    public function feedback()
+    {
+        return $this->hasOne(CustomerFeedback::class);
+    }
+
     public function scopeVisibleTo(Builder $query, ?User $user): Builder
     {
         if (! $user) {

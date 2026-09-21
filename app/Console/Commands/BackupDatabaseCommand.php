@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\BackupEncryptionService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\ExecutableFinder;
@@ -16,7 +17,7 @@ class BackupDatabaseCommand extends Command
 
     protected $description = 'Create a protected MySQL backup without exposing the database password in the process arguments.';
 
-    public function handle(): int
+    public function handle(BackupEncryptionService $encryption): int
     {
         $connectionName = (string) config('database.default');
         $database = config("database.connections.{$connectionName}", []);
@@ -29,7 +30,7 @@ class BackupDatabaseCommand extends Command
 
         $binary = (string) config('database.dump_binary', 'mysqldump');
 
-        if (!$this->binaryExists($binary)) {
+        if (! $this->binaryExists($binary)) {
             $this->error("Database dump binary was not found: {$binary}");
 
             return self::FAILURE;
@@ -38,7 +39,7 @@ class BackupDatabaseCommand extends Command
         $backupDirectory = (string) ($this->option('path') ?: storage_path('app/backups'));
         File::ensureDirectoryExists($backupDirectory, 0700);
 
-        if (!is_writable($backupDirectory)) {
+        if (! is_writable($backupDirectory)) {
             $this->error("Backup directory is not writable: {$backupDirectory}");
 
             return self::FAILURE;
@@ -54,13 +55,13 @@ class BackupDatabaseCommand extends Command
 
         $safeDatabaseName = preg_replace('/[^A-Za-z0-9_.-]+/', '_', $databaseName) ?: 'database';
         $fileName = sprintf('%s-sql-backup-%s-%s.sql', $safeDatabaseName, now()->format('Y-m-d_H-i-s'), getmypid());
-        $path = rtrim($backupDirectory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $fileName;
+        $path = rtrim($backupDirectory, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$fileName;
 
         $command = [
             $binary,
-            '--host=' . ($database['host'] ?? '127.0.0.1'),
-            '--port=' . ($database['port'] ?? 3306),
-            '--user=' . ($database['username'] ?? ''),
+            '--host='.($database['host'] ?? '127.0.0.1'),
+            '--port='.($database['port'] ?? 3306),
+            '--user='.($database['username'] ?? ''),
             '--single-transaction',
             '--quick',
             '--skip-lock-tables',
@@ -99,7 +100,7 @@ class BackupDatabaseCommand extends Command
             fclose($file);
         }
 
-        if (!$process->isSuccessful() || !is_file($path) || filesize($path) === false || filesize($path) === 0) {
+        if (! $process->isSuccessful() || ! is_file($path) || filesize($path) === false || filesize($path) === 0) {
             File::delete($path);
             $message = trim($errorOutput) ?: trim($process->getErrorOutput()) ?: 'The database dump process failed.';
             $this->error($message);
@@ -108,6 +109,19 @@ class BackupDatabaseCommand extends Command
         }
 
         chmod($path, 0600);
+        if (config('security.backups.encrypt')) {
+            try {
+                $encryptedPath = $encryption->encryptFile($path);
+                File::delete($path);
+                $path = $encryptedPath;
+            } catch (\Throwable $exception) {
+                File::delete($path);
+                report($exception);
+                $this->error('Backup encryption failed; the unencrypted dump was removed.');
+
+                return self::FAILURE;
+            }
+        }
         $this->pruneOldBackups($backupDirectory, max(1, (int) $this->option('keep')));
 
         $this->info("Backup created: {$path}");
@@ -122,13 +136,13 @@ class BackupDatabaseCommand extends Command
             return is_file($binary);
         }
 
-        return (new ExecutableFinder())->find($binary) !== null;
+        return (new ExecutableFinder)->find($binary) !== null;
     }
 
     private function pruneOldBackups(string $directory, int $keep): void
     {
         $files = collect(File::files($directory))
-            ->filter(fn ($file): bool => strtolower($file->getExtension()) === 'sql')
+            ->filter(fn ($file): bool => str_ends_with($file->getFilename(), '.sql') || str_ends_with($file->getFilename(), '.sql.enc'))
             ->sortByDesc(fn ($file): int => $file->getMTime())
             ->values();
 

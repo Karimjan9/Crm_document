@@ -252,7 +252,7 @@
 </style>
 @endsection
 
-@section('content')
+@section('body')
 @php
     $payloadMap = collect($templatePayloads)->keyBy('id');
 @endphp

@@ -205,7 +205,7 @@
                     </div>
 
                     {{-- Filial --}}
-                    <div class="mb-3" id="filial_box" style="{{ in_array($currentRole, ['employee', 'admin_filial'], true) ? 'display: block;' : 'display: none;' }}">
+                    <div class="mb-3" id="filial_box" style="{{ in_array($currentRole, ['employee', 'admin_filial', 'courier'], true) ? 'display: block;' : 'display: none;' }}">
                         <label for="filial">Filialni tanlang</label>
                         <select name="filial_id" id="filial" class="form-control">
                             <option value="">-- Filialni tanlang --</option>
@@ -260,7 +260,7 @@
 
         function toggleFilial() {
             const currentRole = roleSelect.value.trim().toLowerCase();
-            if (currentRole === 'employee' || currentRole === 'admin_filial') {
+            if (['employee', 'admin_filial', 'courier'].includes(currentRole)) {
                 filialBox.style.display = 'block';
                 filialSelect.required = true;
             } else {

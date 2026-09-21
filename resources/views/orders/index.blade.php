@@ -29,12 +29,13 @@
     .money { white-space:nowrap; font-weight:700; color:#0f172a; }
     .progress { height:7px; min-width:90px; background:#e2e8f0; }
     .progress-bar { background:linear-gradient(90deg,#2563eb,#06b6d4); }
-    @media(max-width:1100px){ .metric-grid{grid-template-columns:repeat(3,1fr);} }
+    @media(max-width:1100px){ .orders-page{padding:20px;} .orders-head{flex-direction:column;} .orders-head .d-flex{flex-wrap:wrap;} .metric-grid{grid-template-columns:repeat(3,1fr);} }
     @media(max-width:700px){ .orders-page{padding:16px;} .orders-head{flex-direction:column;} .metric-grid{grid-template-columns:repeat(2,1fr);} .toolbar>*{width:100%;} .toolbar input,.toolbar select{width:100%;} }
 </style>
 @endsection
 
 @section('body')
+<div class="page-wrapper">
 <div class="orders-page">
     <div class="orders-head">
         <div>
@@ -87,5 +88,6 @@
         </div>
         <div class="p-3">{{ $orders->links() }}</div>
     </div>
+</div>
 </div>
 @endsection

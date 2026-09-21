@@ -99,7 +99,17 @@ class FinanceLedgerController extends Controller
             ]);
         }
 
-        return view('admin.finance.ledger', compact('payments', 'summary', 'debt', 'debtTotal', 'filials', 'sessions', 'data'));
+        return view('admin.finance.ledger', [
+            'payments' => $payments,
+            'summary' => $summary,
+            'debt' => $debt,
+            'debtTotal' => $debtTotal,
+            'filials' => $filials,
+            'sessions' => $sessions,
+            'data' => $data,
+            'paymentStatuses' => PaymentsModel::STATUSES,
+            'paymentTypes' => PaymentsModel::TYPES,
+        ]);
     }
 
     public function confirm(Request $request, PaymentsModel $payment)
@@ -114,6 +124,7 @@ class FinanceLedgerController extends Controller
     public function cancel(Request $request, PaymentsModel $payment)
     {
         $this->assertPaymentAccess($request, $payment);
+        abort_if((int) $payment->paid_by_admin_id === (int) $request->user()->id && ! $request->user()->hasAnyRole(['super_admin', 'admin_manager']), 422, 'Xodim o‘zi kiritgan to‘lovni bekor qila olmaydi. Manager tasdig‘i kerak.');
         $data = $request->validate(['reason' => ['required', 'string', 'max:1000']]);
         $this->ledger->cancel($payment, $request->user(), $data['reason']);
         $this->syncOrder($payment);
@@ -128,6 +139,10 @@ class FinanceLedgerController extends Controller
             'amount' => ['required', 'numeric', 'min:0.01'],
             'reason' => ['required', 'string', 'max:1000'],
         ]);
+        $approval = app(\App\Services\BusinessApprovalService::class)->requestRefund($payment, $request->user(), (float) $data['amount'], $data['reason']);
+        if ($approval) {
+            return redirect()->back()->with('success', 'Refund manager tasdig‘iga yuborildi: #' . $approval->id);
+        }
         $refund = $this->ledger->refund($payment, (float) $data['amount'], $request->user(), $data['reason']);
         $this->syncOrder($payment);
 
@@ -149,13 +164,14 @@ class FinanceLedgerController extends Controller
 
     public function openSession(Request $request)
     {
+        $this->assertCashOperator($request);
         $data = $request->validate([
             'filial_id' => ['required', 'integer', 'exists:filial,id'],
             'session_date' => ['nullable', 'date'],
             'opening_balance' => ['required', 'numeric', 'min:0'],
         ]);
-        $filialId = $this->filterFilial($request->user(), (int) $data['filial_id']);
-        abort_unless($filialId, 403);
+        $filialId = (int) $request->user()->filial_id;
+        abort_unless($filialId && $filialId === (int) $data['filial_id'], 403);
         $session = $this->ledger->openCashSession(
             $filialId,
             $request->user(),
@@ -168,6 +184,7 @@ class FinanceLedgerController extends Controller
 
     public function closeSession(Request $request, CashSession $cashSession)
     {
+        $this->assertCashOperator($request, $cashSession);
         $this->assertSessionAccess($request, $cashSession);
         $data = $request->validate([
             'actual_cash' => ['required', 'numeric', 'min:0'],
@@ -180,7 +197,7 @@ class FinanceLedgerController extends Controller
 
     public function reconcileSession(Request $request, CashSession $cashSession)
     {
-        abort_unless($request->user()->hasAnyRole(['super_admin', 'admin_manager']), 403);
+        abort_unless($request->user()->hasRole('admin_manager'), 403);
         $data = $request->validate(['notes' => ['nullable', 'string', 'max:2000']]);
         $this->ledger->reconcileCashSession($cashSession, $request->user(), $data['notes'] ?? null);
 
@@ -209,10 +226,25 @@ class FinanceLedgerController extends Controller
     private function assertSessionAccess(Request $request, CashSession $session): void
     {
         abort_unless(
-            $request->user()->hasAnyRole(['super_admin', 'admin_manager'])
-                || ($request->user()->hasRole('admin_filial') && (int) $request->user()->filial_id === (int) $session->filial_id),
+            $request->user()->hasRole('admin_filial')
+                && (int) $request->user()->filial_id === (int) $session->filial_id,
             403
         );
+    }
+
+    private function assertCashOperator(Request $request, ?CashSession $session = null): void
+    {
+        $user = $request->user();
+        abort_unless($user->hasRole('admin_filial') && $user->filial_id, 403, 'Kassa smenasini faqat filial administratori boshqaradi.');
+
+        if ($session) {
+            abort_unless(
+                (int) $session->filial_id === (int) $user->filial_id
+                    && (int) $session->cashier_id === (int) $user->id,
+                403,
+                'Faqat o\'zingiz ochgan kassa smenasini yopishingiz mumkin.'
+            );
+        }
     }
 
     private function filterFilial($user, ?int $requested): ?int
