@@ -59,6 +59,11 @@ class Lead extends Model
         return $this->hasMany(TelegramMessage::class)->latest();
     }
 
+    public function botIntakeRequest()
+    {
+        return $this->hasOne(BotIntakeRequest::class);
+    }
+
     public function scopeVisibleTo(Builder $query, ?User $user): Builder
     {
         if (! $user) {

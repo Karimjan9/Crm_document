@@ -16,7 +16,10 @@
     .lead-table tbody td { padding: 14px 16px; border-color: #edf2f7; color: #24334a; }
     .lead-table tbody tr:hover { background: #fbfdff; }
     .lead-actions .d-flex { flex-wrap: wrap; }
-    .lead-attachments h5 { color: #17305d; font-size: 16px; font-weight: 800; }
+    .lead-intake { min-width: 240px; max-width: 440px; }
+    .lead-intake summary { color: #17305d; cursor: pointer; font-size: 13px; font-weight: 700; }
+    .lead-intake-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
+    .lead-intake-file { border-top: 1px solid #e1e8f2; padding-top: 8px; margin-top: 8px; }
     @media (max-width: 768px) {
         .leads-shell .page-content { padding: 16px 14px; }
         .leads-page-head { align-items: flex-start !important; flex-direction: column; }
@@ -103,10 +106,11 @@
                                 <td>
                                     <strong>{{ $lead->name }}</strong>
                                     <small class="d-block text-muted">{{ $lead->phone }}</small>
+                                    @include('leads._telegram-intake', ['lead' => $lead])
                                 </td>
                                 <td>
                                     {{ $lead->source ?: '—' }}
-                                    <small class="d-block text-muted">{{ $lead->interested_service }}</small>
+                                    <small class="d-block text-muted">{{ $lead->interested_service ?: ($lead->source === 'telegram' ? 'Aniqlashtiriladi' : '—') }}</small>
                                 </td>
                                 <td>{{ $lead->assignedTo?->name ?: '—' }}</td>
                                 <td>
@@ -135,6 +139,24 @@
                                         <span class="text-muted small"><i class="bx bx-lock-alt me-1"></i>Kuzatuv rejimi</span>
                                     @else
                                         <div class="d-flex gap-1">
+                                            @if($lead->source === 'telegram')
+                                                <details>
+                                                    <summary class="btn btn-sm btn-outline-secondary">Xizmatni aniqlashtirish</summary>
+                                                    <form method="POST" action="{{ route('leads.update', $lead) }}" class="p-2 bg-white border">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <input type="hidden" name="name" value="{{ $lead->name }}">
+                                                        <input type="hidden" name="phone" value="{{ $lead->phone }}">
+                                                        <input type="hidden" name="status" value="{{ $lead->status }}">
+                                                        <input type="hidden" name="assigned_to_id" value="{{ $lead->assigned_to_id }}">
+                                                        <label class="small mb-1" for="lead-service-{{ $lead->id }}">Xizmat yoki hujjat turi</label>
+                                                        <input id="lead-service-{{ $lead->id }}" name="interested_service" class="form-control form-control-sm mb-2" maxlength="180" value="{{ $lead->interested_service }}">
+                                                        <label class="small mb-1" for="lead-follow-up-{{ $lead->id }}">Qayta bog‘lanish vaqti</label>
+                                                        <input id="lead-follow-up-{{ $lead->id }}" type="datetime-local" name="next_follow_up_at" class="form-control form-control-sm mb-2" value="{{ $lead->next_follow_up_at?->format('Y-m-d\TH:i') }}">
+                                                        <button class="btn btn-sm btn-primary">Saqlash</button>
+                                                    </form>
+                                                </details>
+                                            @endif
                                             <details>
                                                 <summary class="btn btn-sm btn-outline-primary">Telegram javob</summary>
                                                 <form method="POST" action="{{ route('leads.telegram.reply', $lead) }}" class="p-2 bg-white border">
@@ -165,7 +187,7 @@
                                         </div>
                                     @endif
                                     @if($lead->activities->isNotEmpty())
-                                        <small class="d-block text-muted mt-1">{{ $lead->activities->first()->body }}</small>
+                                        <small class="d-block text-muted mt-1">{{ \Illuminate\Support\Str::limit($lead->activities->first()->body, 160) }}</small>
                                     @endif
                                 </td>
                             </tr>
@@ -178,26 +200,6 @@
             <div class="p-3">{{ $leads->links() }}</div>
         </div>
 
-        <div class="card shadow-sm mt-4 lead-attachments">
-            <div class="card-body">
-                <h5 class="mb-3">Telegramdan kelgan hujjatlar</h5>
-                @forelse($leads as $lead)
-                    @php($attachments = $lead->telegramMessages->filter(fn ($message) => $message->attachment_path))
-                    @if($attachments->isNotEmpty())
-                        <div class="border-bottom py-2">
-                            <strong>{{ $lead->name }}</strong>
-                            @foreach($attachments as $message)
-                                <a class="btn btn-sm btn-outline-primary ms-2" href="{{ route('telegram-messages.file', $message) }}">
-                                    {{ data_get($message->attachment_meta, 'file_name', 'Hujjat') }}
-                                </a>
-                            @endforeach
-                        </div>
-                    @endif
-                @empty
-                    <p class="text-muted mb-0">Telegramdan hujjat kelmagan.</p>
-                @endforelse
-            </div>
-        </div>
     </div>
 </div>
 @endsection

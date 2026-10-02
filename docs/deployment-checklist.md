@@ -29,6 +29,17 @@ The script checks the target commit, enters maintenance mode, creates database/s
 - [ ] Login, filial isolation, document creation, private file download and payment are smoke-tested.
 - [ ] The latest dump and storage archive are present under `storage/app/backups`.
 
+## Telegram “Yangi murojaat” update
+
+Deploy the companion `crm_bot` update together with the CRM API/controller, integration service, Lead relation and `resources/views/leads/` changes. The two-step intake uses `request.mode=compact`: the customer sends text/files and then their own contact. Missing document type and urgency are allowed and clarified by the employee. Legacy detailed requests are still accepted.
+
+- [ ] `CRM_BOT_API_KEY` matches the bot configuration. Set `CRM_BOT_DEFAULT_FILIAL_ID` and optionally `CRM_BOT_DEFAULT_ASSIGNEE_ID` to route response tasks; otherwise the integration uses an existing filial and an employee/admin of that filial.
+- [ ] Existing bot integration migrations are installed. This compact intake change adds no migration.
+- [ ] Run `php artisan optimize:clear`, then restore the release's normal cache warmup. Restart the bot and its separate outbox worker.
+- [ ] `php artisan test --compact --filter="TelegramBotApiTest|OperationsGrowthTest"` passes in the isolated testing environment, and `python -m pytest -q` passes in the bot project.
+- [ ] With an authorized test account, submit text-only and file-only requests through “Yangi murojaat”. In CRM `/leads`, open “Telegram murojaati” on the customer row and check full text, contact, captions and private downloads. Verify the response task and “Xizmatni aniqlashtirish” action.
+- [ ] Retrying an intake/upload returns the existing record; any pending files show their received/expected count until the outbox worker completes the uploads.
+
 ## Rollback
 
 Do not overwrite production data without explicit approval. Select the exact code commit and matching backups first:
