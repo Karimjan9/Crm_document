@@ -8,6 +8,7 @@ use App\Models\BotIntakeRequest;
 use App\Models\Lead;
 use App\Models\Order;
 use App\Models\OperatorRequest;
+use App\Services\BotBranchDirectory;
 use App\Services\TelegramBotIntegrationService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -15,7 +16,10 @@ use Illuminate\Validation\Rule;
 
 class TelegramBotController extends Controller
 {
-    public function __construct(private readonly TelegramBotIntegrationService $bot) {}
+    public function __construct(
+        private readonly TelegramBotIntegrationService $bot,
+        private readonly BotBranchDirectory $branches,
+    ) {}
 
     public function lead(Request $request)
     {
@@ -158,6 +162,9 @@ class TelegramBotController extends Controller
     public function content(string $key)
     {
         abort_unless(in_array($key, ['branches', 'useful-information'], true), 404);
+        if ($key === 'branches') {
+            return response()->json($this->branches->content())->header('Cache-Control', 'no-store');
+        }
 
         return response()->json(['text' => $this->bot->content($key, 'Ma’lumot hozir yangilanmoqda.')]);
     }

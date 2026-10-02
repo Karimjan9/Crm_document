@@ -30,12 +30,12 @@ class TelegramBotApiTest extends TestCase
     public function test_bot_api_returns_only_configured_customer_content(): void
     {
         config(['bot.api_key' => 'bot-test-key']);
-        BotContent::create(['key' => 'branches', 'text' => 'Toshkent, 09:00–18:00']);
+        BotContent::create(['key' => 'useful-information', 'text' => 'Tarjima uchun hujjatning originali kerak.']);
 
         $this->withHeader('Authorization', 'Bearer bot-test-key')
-            ->getJson('/api/v1/bot/content/branches')
+            ->getJson('/api/v1/bot/content/useful-information')
             ->assertOk()
-            ->assertJsonPath('text', 'Toshkent, 09:00–18:00');
+            ->assertJsonPath('text', 'Tarjima uchun hujjatning originali kerak.');
     }
 
     public function test_courier_cannot_open_lead_customer_data(): void

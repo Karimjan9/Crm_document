@@ -2,7 +2,8 @@
 @section('body')
 <div class="page-wrapper"><div class="page-content">
 <h4 class="mb-3">Telegram bot matnlari</h4>
-<p class="text-muted">Manzil, foydali ma’lumotlar va status xabarlarini shu yerda yangilang. Status kaliti: <code>notification.status.ready_for_delivery</code>.</p>
+<p class="text-muted">Foydali ma’lumotlar va status xabarlarini shu yerda yangilang. Status kaliti: <code>notification.status.ready_for_delivery</code>.</p>
+<div class="alert alert-info">Manzil, telefon, ish vaqti va ish kunlari «Filiallar» bo‘limidan avtomatik olinadi. Ish vaqti kiritilmagan bo‘lsa, bot 09:00–18:00 ko‘rsatadi.</div>
 <div class="card shadow-sm"><div class="card-body">
 @foreach($items as $item)
 <form method="POST" action="{{ route('bot-content.store') }}" class="border-bottom pb-3 mb-3">@csrf
