@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClientsModel;
+use App\Models\BotIntakeRequest;
 use App\Models\Lead;
 use App\Models\Order;
+use App\Models\OperatorRequest;
 use App\Services\TelegramBotIntegrationService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 
 class TelegramBotController extends Controller
 {
@@ -77,10 +80,23 @@ class TelegramBotController extends Controller
 
     public function operatorRequest(Request $request)
     {
-        $data = $request->validate(['telegram_chat_id' => ['required', 'string', 'max:80'], 'telegram_message_id' => ['nullable', 'integer'], 'reason' => ['required', 'string', 'max:160']]);
-        $this->bot->requestOperator($data['telegram_chat_id'], $data['telegram_message_id'] ?? null, $data['reason']);
+        $detailed = $request->hasAny(['external_id', 'text', 'customer']);
+        $data = $request->validate([
+            'telegram_chat_id' => ['required', 'string', 'max:80'],
+            'telegram_user_id' => ['nullable', 'string', 'max:80'],
+            'telegram_username' => ['nullable', 'string', 'max:120'],
+            'telegram_message_id' => ['nullable', 'integer', 'min:1'],
+            'reason' => ['required', 'string', 'max:160'],
+            'external_id' => [Rule::requiredIf($detailed), 'uuid'],
+            'text' => [Rule::requiredIf($detailed), 'string', 'max:2000'],
+            'customer' => [Rule::requiredIf($detailed), 'array'],
+            'customer.name' => [Rule::requiredIf($detailed), 'string', 'max:160'],
+            'customer.phone' => [Rule::requiredIf($detailed), 'string', 'max:40', 'regex:/^\+?[0-9]{7,15}$/'],
+            'customer.phone_verified' => [Rule::requiredIf($detailed), 'boolean', $detailed ? 'accepted' : 'nullable'],
+        ]);
+        $operatorRequest = $this->bot->requestOperator($data);
 
-        return response()->json(['ok' => true]);
+        return response()->json(['ok' => true, 'data' => ['id' => $operatorRequest->id]]);
     }
 
     public function orders(Request $request)
@@ -97,6 +113,22 @@ class TelegramBotController extends Controller
         $orders = Order::query()->where('client_id', $client->id)->whereNotIn('status', ['completed', 'cancelled'])->latest()->get()->map(fn (Order $order) => ['code' => $order->order_code, 'status' => $order->status, 'promised_at' => optional($order->promised_at)->timezone('Asia/Tashkent')->format('d.m.Y H:i'), 'paid_amount' => (float) $order->paid_amount, 'balance_amount' => $order->balance_amount, 'currency' => $order->currency ?: 'UZS', 'delivery_type' => $order->delivery_type]);
 
         return response()->json(['data' => $orders]);
+    }
+
+    public function verifiedContact(Request $request, string $chatId)
+    {
+        $data = $request->validate(['telegram_user_id' => ['required', 'string', 'max:80']]);
+        $operatorRequest = OperatorRequest::query()->where('telegram_chat_id', $chatId)
+            ->where('telegram_user_id', $data['telegram_user_id'])->where('phone_verified', true)->latest('id')->first();
+        $intake = BotIntakeRequest::query()->where('payload->customer->telegram_chat_id', $chatId)
+            ->where('payload->customer->telegram_user_id', $data['telegram_user_id'])
+            ->where('payload->customer->phone_verified', true)->latest('id')->first();
+        $phone = $operatorRequest?->phone;
+        if ($intake && (! $operatorRequest || $intake->created_at->gt($operatorRequest->created_at))) {
+            $phone = data_get($intake->payload, 'customer.phone');
+        }
+
+        return response()->json(['data' => $phone ? ['phone' => $phone] : null]);
     }
 
     public function marketingConsent(Request $request)

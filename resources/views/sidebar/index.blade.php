@@ -97,6 +97,15 @@
 </li>
 
 <!-- Users -->
+@role('super_admin')
+<li class="{{ request()->routeIs('operators.*') ? 'active' : '' }}">
+    <a href="{{ route('operators.index') }}">
+        <div class="parent-icon"><i class='bx bx-support'></i></div>
+        <div class="menu-title">Operatorlar</div>
+    </a>
+</li>
+@endrole
+
 <li>
     <a href="{{ route('superadmin.index') }}">
         <div class="parent-icon"><i class='bx bx-user'></i></div>

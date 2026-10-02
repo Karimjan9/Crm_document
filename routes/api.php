@@ -36,6 +36,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/messages', [TelegramBotController::class, 'message']);
         Route::post('/messages/attachments', [TelegramBotController::class, 'messageAttachment']);
         Route::post('/operator-requests', [TelegramBotController::class, 'operatorRequest']);
+        Route::get('/contacts/{chatId}', [TelegramBotController::class, 'verifiedContact'])->where('chatId', '-?[0-9]+');
         Route::get('/orders', [TelegramBotController::class, 'orders']);
         Route::put('/marketing-consents', [TelegramBotController::class, 'marketingConsent']);
         Route::post('/delivery-reports', [TelegramBotController::class, 'deliveryReport']);

@@ -13,8 +13,10 @@ use App\Models\CustomerFeedback;
 use App\Models\FilialModel;
 use App\Models\Lead;
 use App\Models\Order;
+use App\Models\OperatorRequest;
 use App\Models\TelegramMessage;
 use App\Models\User;
+use App\Models\WorkItem;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -95,14 +97,66 @@ class TelegramBotIntegrationService
         return $message;
     }
 
-    public function requestOperator(string $chatId, ?int $messageId, string $reason): void
+    public function requestOperator(array $payload): OperatorRequest
     {
-        $client = ClientsModel::query()->where('telegram_chat_id', $chatId)->first();
-        $lead = $client ? Lead::query()->where('client_id', $client->id)->whereNotIn('status', ['won', 'lost'])->latest()->first() : null;
-        $this->recordIncoming($client, $lead, $chatId, $messageId, 'Operator so‘rovi: '.$reason, 'operator_request');
-        if ($lead) {
-            $lead->workItems()->updateOrCreate(['type' => 'operator_request', 'status' => 'open'], ['filial_id' => $lead->filial_id, 'assigned_to_id' => $lead->assigned_to_id, 'title' => 'Telegram operator so‘rovi: '.$lead->name, 'priority' => 'urgent', 'due_at' => now()->addMinutes(5)]);
-        }
+        return DB::transaction(function () use ($payload): OperatorRequest {
+            $chatId = $payload['telegram_chat_id'];
+            $messageId = $payload['telegram_message_id'] ?? null;
+            // Lock an existing customer while recording the inquiry; unique request
+            // indexes also protect against concurrent outbox retries.
+            $client = ClientsModel::query()->where('telegram_chat_id', $chatId)->lockForUpdate()->first();
+            $existing = OperatorRequest::query()->where(function ($query) use ($payload, $chatId, $messageId): void {
+                $query->whereRaw('1 = 0');
+                if (! empty($payload['external_id'])) {
+                    $query->orWhere('external_id', $payload['external_id']);
+                }
+                if ($messageId !== null) {
+                    $query->orWhere(fn ($q) => $q->where('telegram_chat_id', $chatId)->where('telegram_message_id', $messageId));
+                }
+            })->first();
+            if ($existing) {
+                abort_unless($existing->telegram_chat_id === $chatId, 409);
+
+                return $existing;
+            }
+
+            $customer = $payload['customer'] ?? null;
+            if ($customer) {
+                $phone = $this->normalizePhone($customer['phone']);
+                $client = ClientsModel::query()->where('phone_number', $phone)->lockForUpdate()->first();
+                $filialId = $client?->filial_id ?: $this->filialId();
+                $client ??= ClientsModel::create(['name' => $customer['name'], 'phone_number' => $phone, 'filial_id' => $filialId]);
+                $client->forceFill(['telegram_chat_id' => $chatId, 'name' => $client->name ?: $customer['name'], 'filial_id' => $filialId])->save();
+            }
+            $lead = $client ? Lead::query()->where('client_id', $client->id)->whereNotIn('status', ['won', 'lost'])->latest()->first() : null;
+            $text = trim($payload['text'] ?? '') ?: 'Operator so‘rovi: '.$payload['reason'];
+            $operatorRequest = OperatorRequest::create([
+                'external_id' => $payload['external_id'] ?? null,
+                'client_id' => $client?->id, 'lead_id' => $lead?->id,
+                'telegram_chat_id' => $chatId,
+                'telegram_user_id' => $payload['telegram_user_id'] ?? null,
+                'telegram_username' => $payload['telegram_username'] ?? null,
+                'telegram_message_id' => $messageId,
+                'name' => $customer['name'] ?? $client?->name ?? 'Telegram mijoz',
+                'phone' => $customer['phone'] ?? $client?->phone_number,
+                'phone_verified' => (bool) ($customer['phone_verified'] ?? false),
+                'message' => $text, 'reason' => $payload['reason'], 'status' => 'new',
+            ]);
+            $this->recordIncoming($client, $lead, $chatId, $messageId, $text, 'operator_request');
+            $filialId = $client?->filial_id ?: $this->filialId();
+            $workItem = WorkItem::create([
+                'filial_id' => $filialId, 'lead_id' => $lead?->id,
+                'assigned_to_id' => $lead?->assigned_to_id ?: $this->assigneeId($filialId),
+                'assigned_role' => 'employee', 'type' => 'operator_request',
+                'title' => 'Operator murojaati: '.$operatorRequest->name,
+                'description' => $text, 'status' => 'open', 'priority' => 'urgent',
+                'due_at' => now()->addMinutes(5),
+                'metadata' => ['operator_request_id' => $operatorRequest->id, 'telegram_chat_id' => $chatId, 'phone' => $operatorRequest->phone],
+            ]);
+            $operatorRequest->forceFill(['work_item_id' => $workItem->id])->save();
+
+            return $operatorRequest;
+        });
     }
 
     public function setMarketingConsent(string $chatId, bool $consent): BotMarketingConsent

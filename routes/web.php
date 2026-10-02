@@ -20,6 +20,7 @@ use App\Http\Controllers\OperationsDashboardController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\BusinessApprovalController;
 use App\Http\Controllers\BotContentController;
+use App\Http\Controllers\OperatorRequestController;
 use App\Http\Controllers\TelegramMessageFileController;
 use App\Http\Controllers\PricingApprovalController;
 use App\Http\Controllers\SmartIntakeController;
@@ -113,6 +114,11 @@ Route::get('/payment/{paymentToken}', [CustomerPortalController::class, 'payment
     ->name('orders.portal.payment');
 
 // holidays
+
+Route::middleware(['auth', 'role:super_admin'])->group(function (): void {
+    Route::get('/operators', [OperatorRequestController::class, 'index'])->name('operators.index');
+    Route::patch('/operators/{operatorRequest}', [OperatorRequestController::class, 'update'])->name('operators.update');
+});
 
 Route::middleware(['auth', 'role:admin_manager|super_admin'])->group(function () {
     Route::get('/bot-content', [BotContentController::class, 'index'])->name('bot-content.index');
