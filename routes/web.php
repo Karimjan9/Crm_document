@@ -21,6 +21,7 @@ use App\Http\Controllers\LeadController;
 use App\Http\Controllers\BusinessApprovalController;
 use App\Http\Controllers\BotContentController;
 use App\Http\Controllers\BotRequestController;
+use App\Http\Controllers\BotUsefulInformationController;
 use App\Http\Controllers\OperatorRequestController;
 use App\Http\Controllers\TelegramMessageFileController;
 use App\Http\Controllers\PricingApprovalController;
@@ -124,6 +125,8 @@ Route::middleware(['auth', 'role:super_admin'])->group(function (): void {
 Route::middleware(['auth', 'role:admin_manager|super_admin'])->group(function () {
     Route::get('/bot-content', [BotContentController::class, 'index'])->name('bot-content.index');
     Route::post('/bot-content', [BotContentController::class, 'store'])->name('bot-content.store');
+    Route::get('/bot-useful-information', [BotUsefulInformationController::class, 'edit'])->name('bot-useful-information.edit');
+    Route::put('/bot-useful-information', [BotUsefulInformationController::class, 'update'])->name('bot-useful-information.update');
     Route::get('/pricing-approvals', [PricingApprovalController::class, 'index'])->name('pricing.approvals.index');
     Route::post('/pricing-approvals/{pricingApproval}/approve', [PricingApprovalController::class, 'approve'])->name('pricing.approvals.approve');
     Route::post('/pricing-approvals/{pricingApproval}/reject', [PricingApprovalController::class, 'reject'])->name('pricing.approvals.reject');

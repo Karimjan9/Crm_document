@@ -58,6 +58,12 @@ Sidebar’dagi **Botdan so‘rovlar** (`/bot-requests`) bo‘limi botning **Yang
 
 Superadmin kuzatadi, admin-manager barcha so‘rovlar bilan, filial admini o‘z filialidagi, xodim esa o‘ziga biriktirilgan so‘rovlar bilan ishlaydi. Xodimlar shu sahifadan holat va xizmatni aniqlashtirishi, bot orqali javob berishi yoki buyurtmaga aylantirishi mumkin. Amallar mavjud lead endpointlari orqali bajariladi. Yangi jadval yoki ma’lumot ko‘chirish talab qilinmaydi; oldingi murojaatlar ham chiqadi.
 
+## Foydali ma’lumotlar kutubxonasi
+
+**Bot ma’lumotlari** sidebar bo‘limida (`/bot-useful-information`) superadmin va admin-manager kirish matni, 12 tagacha mavzu, belgi, qisqa tavsif, tushuntirish, amaliy ro‘yxat va eslatmalarni tahrirlaydi. Mavzularni tartiblash va yashirish mumkin; yon tomondagi jonli Telegram namunasida istalgan faol mavzu ko‘rinadi. `/api/v1/bot/content/useful-information` faqat e’lon qilingan mavzularni qaytaradi, har ochishda yangi ma’lumot olinadi. Eski `text` maydoni saqlangan, yangi tuzilma `title`, `intro` va `topics` maydonlarida keladi. Kutubxona mavjud `bot_contents.metadata` ustunida saqlanadi.
+
+Bu yangilashda avval CRM’ni `bash deploy.sh` orqali, keyin bot va worker’ni Docker orqali yangilang. Alohida migration kerak emas. CRMdagi narx, muddat va hujjat talablari haqida matnlarni o‘zingizning ish tartibingizga moslang.
+
 ## Test va tekshiruv
 
 ```bash

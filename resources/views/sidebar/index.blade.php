@@ -88,6 +88,13 @@
 
 @hasanyrole('super_admin|admin_manager')
 
+<li class="{{ request()->routeIs('bot-useful-information.*', 'bot-content.*') ? 'active' : '' }}">
+    <a href="{{ route('bot-useful-information.edit') }}">
+        <div class="parent-icon"><i class='bx bx-book-open'></i></div>
+        <div class="menu-title">Bot ma’lumotlari</div>
+    </a>
+</li>
+
 <!-- CRM -->
 <li>
     <a href="javascript:;" class="has-arrow">

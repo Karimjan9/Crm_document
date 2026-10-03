@@ -9,6 +9,7 @@ use App\Models\Lead;
 use App\Models\Order;
 use App\Models\OperatorRequest;
 use App\Services\BotBranchDirectory;
+use App\Services\BotUsefulInformation;
 use App\Services\TelegramBotIntegrationService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -19,6 +20,7 @@ class TelegramBotController extends Controller
     public function __construct(
         private readonly TelegramBotIntegrationService $bot,
         private readonly BotBranchDirectory $branches,
+        private readonly BotUsefulInformation $information,
     ) {}
 
     public function lead(Request $request)
@@ -166,6 +168,6 @@ class TelegramBotController extends Controller
             return response()->json($this->branches->content())->header('Cache-Control', 'no-store');
         }
 
-        return response()->json(['text' => $this->bot->content($key, 'Ma’lumot hozir yangilanmoqda.')]);
+        return response()->json($this->information->content())->header('Cache-Control', 'no-store');
     }
 }
