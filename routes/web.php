@@ -20,6 +20,7 @@ use App\Http\Controllers\OperationsDashboardController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\BusinessApprovalController;
 use App\Http\Controllers\BotContentController;
+use App\Http\Controllers\BotRequestController;
 use App\Http\Controllers\OperatorRequestController;
 use App\Http\Controllers\TelegramMessageFileController;
 use App\Http\Controllers\PricingApprovalController;
@@ -170,6 +171,10 @@ Route::post('/pricing-approvals', [PricingApprovalController::class, 'store'])
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/operations', [OperationsDashboardController::class, 'index'])->name('operations.dashboard');
+    Route::get('/bot-requests', [BotRequestController::class, 'index'])
+        ->middleware('role:employee|admin_filial|admin_manager|super_admin')->name('bot-requests.index');
+    Route::get('/bot-requests/{lead}', [BotRequestController::class, 'show'])
+        ->middleware('role:employee|admin_filial|admin_manager|super_admin')->name('bot-requests.show');
     Route::post('/operations/work-items/{workItem}/complete', [OperationsDashboardController::class, 'complete'])->name('operations.work-items.complete');
     Route::get('/leads', [LeadController::class, 'index'])->middleware('role:employee|admin_filial|admin_manager|super_admin')->name('leads.index');
     Route::post('/leads', [LeadController::class, 'store'])->middleware('role:employee|admin_filial|admin_manager|super_admin')->name('leads.store');

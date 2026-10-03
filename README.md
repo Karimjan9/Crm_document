@@ -52,6 +52,12 @@ Javobdagi tokenni `Authorization: Bearer <token>` headerida yuboring. Asosiy end
 
 Cross-origin foydalanish uchun production `.env`da `CORS_ALLOWED_ORIGINS`ga faqat aniq HTTPS originlarni vergul bilan yozing. Wildcard va credential cookie rejimi yoqilmagan.
 
+## Telegram botdan so‘rovlar
+
+Sidebar’dagi **Botdan so‘rovlar** (`/bot-requests`) bo‘limi botning **Yangi murojaat** tugmasidan kelgan mavjud `bot_intake_requests` va leadlarni ko‘rsatadi. Jadvalda mijoz kontakti, murojaat matni, fayllar soni, mas’ul xodim, filial, sana va holat bor; qidiruv va holat filtri ishlaydi. So‘rovning batafsil sahifasida to‘liq matn, himoyalangan fayllar, ularning izohlari va oxirgi Telegram yozishmalari ko‘rinadi.
+
+Superadmin kuzatadi, admin-manager barcha so‘rovlar bilan, filial admini o‘z filialidagi, xodim esa o‘ziga biriktirilgan so‘rovlar bilan ishlaydi. Xodimlar shu sahifadan holat va xizmatni aniqlashtirishi, bot orqali javob berishi yoki buyurtmaga aylantirishi mumkin. Amallar mavjud lead endpointlari orqali bajariladi. Yangi jadval yoki ma’lumot ko‘chirish talab qilinmaydi; oldingi murojaatlar ham chiqadi.
+
 ## Test va tekshiruv
 
 ```bash

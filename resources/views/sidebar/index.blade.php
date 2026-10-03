@@ -77,6 +77,15 @@
 
 <ul class="metismenu" id="menu">
 
+@hasanyrole('super_admin|admin_manager|employee|admin_filial')
+<li class="{{ request()->routeIs('bot-requests.*') ? 'active' : '' }}">
+    <a href="{{ route('bot-requests.index') }}">
+        <div class="parent-icon"><i class='bx bx-message-square-detail'></i></div>
+        <div class="menu-title">Botdan so‘rovlar</div>
+    </a>
+</li>
+@endhasanyrole
+
 @hasanyrole('super_admin|admin_manager')
 
 <!-- CRM -->
