@@ -105,6 +105,15 @@ fi
 [[ "${queue_connection,,}" != 'sync' ]] || fail 'QUEUE_CONNECTION=sync is not allowed in production.'
 [[ "$queue_worker_check" =~ ^(true|false)$ ]] || fail 'DEPLOY_QUEUE_WORKER_CHECK must be true or false.'
 [[ -n "$app_key" && "${app_key,,}" != 'change-me' ]] || fail 'APP_KEY must be configured in production.'
+backup_encryption_enabled="$(env_value BACKUP_ENCRYPTION_ENABLED true)"
+if [[ "${backup_encryption_enabled,,}" == 'true' ]]; then
+    backup_encryption_key="$(env_value BACKUP_ENCRYPTION_KEY '')"
+    BACKUP_KEY_CANDIDATE="$backup_encryption_key" php -r '
+        $value = preg_replace("/^base64:/", "", getenv("BACKUP_KEY_CANDIDATE"));
+        $key = base64_decode($value, true);
+        exit($key !== false && strlen($key) === 32 ? 0 : 1);
+    ' || fail 'BACKUP_ENCRYPTION_KEY must be a base64-encoded 32-byte key before deployment.'
+fi
 
 for binary in git php composer node npm curl tar; do
     command -v "$binary" >/dev/null 2>&1 || fail "Required command not found: $binary"
