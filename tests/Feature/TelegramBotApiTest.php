@@ -2,15 +2,20 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\DeliverBotWebhook;
 use App\Models\BotContent;
 use App\Models\BotIntakeRequest;
+use App\Models\BotWebhookEvent;
 use App\Models\ClientsModel;
 use App\Models\FilialModel;
 use App\Models\Lead;
+use App\Models\Order;
 use App\Models\TelegramMessage;
 use App\Models\User;
+use App\Services\TelegramBotIntegrationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
@@ -20,6 +25,29 @@ use Tests\TestCase;
 class TelegramBotApiTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_orders_without_a_promised_date_can_be_looked_up_and_notified(): void
+    {
+        $operator = $this->configureBot();
+        Queue::fake([DeliverBotWebhook::class]);
+        $client = ClientsModel::create(['name' => 'Telegram Client', 'phone_number' => '900000001',
+            'filial_id' => $operator->filial_id, 'telegram_chat_id' => '123']);
+        $order = Order::create(['client_id' => $client->id, 'filial_id' => $operator->filial_id,
+            'created_by_id' => $operator->id, 'order_code' => 'BOT-NO-DEADLINE',
+            'tracking_token' => Str::random(64), 'status' => 'received', 'currency' => 'UZS',
+            'total_amount' => 100000, 'promised_at' => null]);
+        BotContent::create(['key' => 'notification.status.received', 'text' => ':code — muddat :promised_at']);
+
+        $this->getJson('/api/v1/bot/orders?telegram_chat_id=123&phone=998900000001')
+            ->assertOk()->assertJsonPath('data.0.code', $order->order_code)
+            ->assertJsonPath('data.0.promised_at', null);
+
+        $integration = app(TelegramBotIntegrationService::class);
+        $integration->queueOrderStatus($order);
+        $integration->queuePaymentUpdate($order);
+        $this->assertDatabaseCount('bot_webhook_events', 2);
+        $this->assertStringContainsString('aniqlanmoqda', BotWebhookEvent::where('type', 'order.status_changed')->sole()->payload['message']);
+    }
 
     public function test_bot_api_requires_its_own_machine_key(): void
     {

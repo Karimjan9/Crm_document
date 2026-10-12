@@ -311,6 +311,6 @@ class TelegramBotIntegrationService
 
     private function replace(string $text, Order $order): string
     {
-        return strtr($text, [':code' => $order->order_code, ':status' => $order->status_label, ':balance' => number_format($order->balance_amount, 0, '.', ' '), ':currency' => $order->currency ?: 'UZS', ':promised_at' => optional($order->promised_at)->timezone('Asia/Tashkent')->format('d.m.Y H:i') ?: 'aniqlanmoqda']);
+        return strtr($text, [':code' => $order->order_code, ':status' => $order->status_label, ':balance' => number_format($order->balance_amount, 0, '.', ' '), ':currency' => $order->currency ?: 'UZS', ':promised_at' => $order->promised_at?->copy()->timezone('Asia/Tashkent')->format('d.m.Y H:i') ?: 'aniqlanmoqda']);
     }
 }

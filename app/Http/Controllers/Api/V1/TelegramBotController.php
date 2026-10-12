@@ -116,7 +116,7 @@ class TelegramBotController extends Controller
         if (! $client) {
             return response()->json(['data' => []]);
         }
-        $orders = Order::query()->where('client_id', $client->id)->whereNotIn('status', ['completed', 'cancelled'])->latest()->get()->map(fn (Order $order) => ['code' => $order->order_code, 'status' => $order->status, 'promised_at' => optional($order->promised_at)->timezone('Asia/Tashkent')->format('d.m.Y H:i'), 'paid_amount' => (float) $order->paid_amount, 'balance_amount' => $order->balance_amount, 'currency' => $order->currency ?: 'UZS', 'delivery_type' => $order->delivery_type]);
+        $orders = Order::query()->where('client_id', $client->id)->whereNotIn('status', ['completed', 'cancelled'])->latest()->get()->map(fn (Order $order) => ['code' => $order->order_code, 'status' => $order->status, 'promised_at' => $order->promised_at?->copy()->timezone('Asia/Tashkent')->format('d.m.Y H:i'), 'paid_amount' => (float) $order->paid_amount, 'balance_amount' => $order->balance_amount, 'currency' => $order->currency ?: 'UZS', 'delivery_type' => $order->delivery_type]);
 
         return response()->json(['data' => $orders]);
     }
