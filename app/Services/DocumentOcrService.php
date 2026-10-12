@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class DocumentOcrService
 {
@@ -28,6 +29,13 @@ class DocumentOcrService
 
             $config = (array) config('services.ocr', []);
             if (empty($config['endpoint'])) {
+                if ($config['local_enabled'] ?? false) {
+                    $record->forceFill([
+                        'status' => 'extracted',
+                        'provider' => 'local',
+                        'extracted_data' => app(LocalOcrService::class)->extract($path, $file->getMimeType() === 'application/pdf'),
+                    ])->save();
+                }
                 return $record;
             }
 
@@ -62,14 +70,14 @@ class DocumentOcrService
                 Storage::disk('private')->delete($path);
             }
 
-            throw $exception;
+            throw ValidationException::withMessages(['file' => 'Hujjat matnini o‘qib bo‘lmadi. Aniqroq rasm yoki PDF yuklang.']);
         }
     }
 
     public function approve(IntakeOcrDocument $record, User $actor, ?array $overrides = null, ?string $note = null): IntakeOcrDocument
     {
         if (! in_array($record->status, ['pending_review', 'extracted'], true)) {
-            throw new \InvalidArgumentException('OCR yozuvi tasdiqlash uchun tayyor emas.');
+            throw ValidationException::withMessages(['ocr' => 'OCR yozuvi tasdiqlash uchun tayyor emas.']);
         }
 
         $extracted = $record->extracted_data ?: [];

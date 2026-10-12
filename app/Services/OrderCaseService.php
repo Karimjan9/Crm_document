@@ -246,6 +246,11 @@ class OrderCaseService
 
         $order->loadMissing(['documents', 'checklists', 'deliveries']);
 
+        if (in_array($status, ['ready_for_delivery', 'delivered', 'completed'], true)
+            && $order->approvals()->where('type', 'margin_exception')->where('status', 'pending')->exists()) {
+            throw ValidationException::withMessages(['status' => 'Margin istisnosi manager tomonidan tasdiqlanmaguncha order yakunlanmaydi.']);
+        }
+
         if ($status === 'ready_for_delivery') {
             $allFinished = $order->documents->isNotEmpty()
                 && $order->documents->every(fn (DocumentsModel $document): bool => in_array($document->workflow_status, ['ready_for_delivery', 'delivered', 'completed'], true));

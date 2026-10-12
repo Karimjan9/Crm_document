@@ -36,7 +36,7 @@ class OrderPolicy
             return (int) $order->filial_id === (int) $user->filial_id
                 && ($order->created_by_id === $user->id
                     || $order->responsible_user_id === $user->id
-                    || $order->documents()->where('user_id', $user->id)->exists());
+                    || $order->documents()->where(fn ($query) => $query->where('user_id', $user->id)->orWhere('assigned_to_id', $user->id)->orWhere('qa_user_id', $user->id))->exists());
         }
 
         return false;
@@ -52,6 +52,13 @@ class OrderPolicy
     {
         if ($user->hasRole('courier')) {
             return false;
+        }
+
+        if ($user->hasRole('employee')) {
+            return (int) $order->filial_id === (int) $user->filial_id
+                && ((int) $order->created_by_id === (int) $user->id
+                    || (int) $order->responsible_user_id === (int) $user->id
+                    || $order->documents()->where(fn ($query) => $query->where('user_id', $user->id)->orWhere('assigned_to_id', $user->id))->exists());
         }
 
         return $this->view($user, $order);

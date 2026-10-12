@@ -10,7 +10,11 @@
         <div class="d-flex gap-2">
             <a class="btn btn-outline-secondary" href="{{ route($routePrefix . '.document.index') }}">Orqaga</a>
             <a class="btn btn-primary" href="{{ route($routePrefix . '.document.edit', $document) }}">Tahrirlash</a>
-            <a class="btn btn-outline-primary" href="{{ route('documents.workflow.index') }}">Kanban doska</a>
+            @if(auth()->user()->hasRole('super_admin'))
+                <a class="btn btn-outline-primary" href="{{ route('documents.workflow.index') }}">Kanban doska</a>
+            @else
+                <a class="btn btn-outline-primary" href="{{ route('documents.process.show', $document) }}">Hujjat jarayoni</a>
+            @endif
         </div>
     </div>
 

@@ -162,6 +162,14 @@ Route::post('/pricing-approvals', [PricingApprovalController::class, 'store'])
     ->middleware(['auth', 'role:employee|admin_filial|admin_manager|super_admin'])
     ->name('pricing.approvals.store');
 
+Route::middleware(['auth', 'role:employee|admin_filial|admin_manager'])->prefix('documents/{document}/process')->name('documents.process.')->group(function (): void {
+    Route::get('/', [DocumentWorkflowController::class, 'manage'])->name('show');
+    Route::post('/status', [DocumentWorkflowController::class, 'transition'])->name('status');
+    Route::post('/assignment', [DocumentWorkflowController::class, 'assign'])->name('assignment');
+    Route::post('/checklist/{checklist}', [DocumentWorkflowController::class, 'checklist'])->name('checklist');
+    Route::post('/qa', [DocumentWorkflowController::class, 'qaReview'])->name('qa');
+});
+
 // Route::prefix('admin')->group(function () {
 //     Route::get('/filial/{filial}/employees-stat', [AdminFilialDocumentController::class, 'employeesStat'])
 //         ->name('admin.filial.employees.stat');

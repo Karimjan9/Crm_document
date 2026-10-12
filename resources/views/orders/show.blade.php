@@ -55,6 +55,12 @@
     $createRoute = auth()->user()->hasRole('employee')
         ? 'employee.document.create'
         : (auth()->user()->hasRole('admin_filial') ? 'admin_filial.document.create' : (auth()->user()->hasRole('admin_manager') ? 'admin.document.create' : 'superadmin.document.create'));
+    $canCreateDocument = $canManage && \Illuminate\Support\Facades\Route::has($createRoute);
+    $messageChannels = ['internal' => 'Ichki xabar'];
+    if (config('services.notifications.telegram.bot_token')) $messageChannels['telegram'] = 'Telegram';
+    if (config('services.notifications.sms.endpoint')) $messageChannels['sms'] = 'SMS';
+    if (config('services.notifications.whatsapp.token') && config('services.notifications.whatsapp.phone_number_id')) $messageChannels['whatsapp'] = 'WhatsApp';
+    $messageRecipients = ['internal' => '', 'telegram' => $order->client?->telegram_chat_id, 'sms' => $order->client?->phone_number, 'whatsapp' => $order->client?->whatsapp_phone ?: $order->client?->phone_number];
 @endphp
 <div class="case-page">
     @if(session('success'))
@@ -71,7 +77,7 @@
         </div>
         <div class="case-actions">
             <a href="{{ route('orders.index') }}" class="btn btn-light">Orqaga</a>
-            @if($canManage)
+            @if($canCreateDocument)
                 <a href="{{ route($createRoute, ['order_id' => $order->id]) }}" class="btn btn-primary"><i class="bx bx-plus"></i> Hujjat qo‘shish</a>
             @endif
             <a href="{{ route('orders.invoice', $order) }}" class="btn btn-outline-primary" target="_blank"><i class="bx bx-receipt"></i> Invoice</a>
@@ -113,7 +119,7 @@
                 <h3 class="mb-2">Mijozga xabar</h3>
                 <form method="POST" action="{{ route('orders.notifications.store', $order) }}" class="delivery-form">
                     @csrf
-                    <div class="row"><div class="col-md-4"><select name="channel" class="form-select"><option value="sms">SMS queue</option><option value="telegram">Telegram queue</option><option value="whatsapp">WhatsApp queue</option><option value="internal">Internal</option></select></div><div class="col-md-8"><input name="recipient" class="form-control" value="{{ $order->client?->phone_number }}" placeholder="Qabul qiluvchi"></div></div>
+                    <div class="row"><div class="col-md-4"><select id="message-channel" name="channel" class="form-select">@foreach($messageChannels as $channel => $label)<option value="{{ $channel }}" data-recipient="{{ $messageRecipients[$channel] }}">{{ $label }}</option>@endforeach</select></div><div class="col-md-8"><input id="message-recipient" name="recipient" class="form-control" value="" placeholder="Qabul qiluvchi"></div></div>
                     <textarea name="message" class="form-control" rows="2" placeholder="Mijozga yuboriladigan xabar" required></textarea>
                     <button class="btn btn-outline-primary">Notification queue’ga qo‘shish</button>
                 </form>
@@ -153,6 +159,9 @@
                             @if($document->latestQaReview)<div class="small mt-2"><strong>QA:</strong> {{ $document->latestQaReview->result === 'passed' ? 'Tasdiqlandi' : ucfirst($document->latestQaReview->result) }} · {{ $document->latestQaReview->reviewer?->name ?: 'System' }}</div>@endif
                             @if($document->files?->count())
                                 <div class="file-list mt-2">@foreach($document->files as $file)<a href="{{ $file->file_url }}"><i class="bx bx-file"></i> {{ $file->original_name }}</a>@endforeach</div>
+                            @endif
+                            @if(!auth()->user()->hasRole('super_admin') && auth()->user()->can('workflowView', $document))
+                                <a class="btn btn-sm btn-outline-primary mt-2" href="{{ route('documents.process.show', $document) }}">Jarayon va QA boshqaruvi</a>
                             @endif
                         </div>
                     @endforeach
@@ -241,4 +250,22 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('script')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const channel = document.getElementById('message-channel');
+    const recipient = document.getElementById('message-recipient');
+    if (!channel || !recipient) return;
+    function updateRecipient() {
+        recipient.value = channel.selectedOptions[0].dataset.recipient || '';
+        recipient.disabled = channel.value === 'internal';
+        recipient.required = channel.value !== 'internal';
+        recipient.placeholder = channel.value === 'telegram' ? 'Telegram ID' : 'Qabul qiluvchi';
+    }
+    channel.addEventListener('change', updateRecipient);
+    updateRecipient();
+});
+</script>
 @endsection

@@ -157,6 +157,10 @@ class DocumentWorkflowService
         if (in_array($current, ['waiting_review', 'qa_failed', 'ready_for_delivery', 'courier_sent', 'delivered', 'completed', 'cancelled', 'refunded'], true)) return $document;
 
         $hasFiles = $document->files()->exists();
+        if ($hasFiles && $current === 'waiting_documents') {
+            $document = $this->transition($document, 'received', $actor, 'Yetishmayotgan hujjat fayli qabul qilindi.');
+            $current = 'received';
+        }
         $final = (float) $document->final_price;
         $paid = (float) $document->paid_amount;
         $target = ! $hasFiles ? 'waiting_documents' : ($final > 0 && $paid <= 0 ? 'awaiting_payment' : ($final > 0 && $paid < $final ? 'partially_paid' : 'in_processing'));

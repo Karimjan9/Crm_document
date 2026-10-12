@@ -93,7 +93,7 @@ class DocumentsPolicy
         }
 
         if ($user->hasRole('employee')) {
-            return (int) $document->user_id === (int) $user->id;
+            return $this->workflowView($user, $document);
         }
 
         if ($user->hasRole('courier')) {

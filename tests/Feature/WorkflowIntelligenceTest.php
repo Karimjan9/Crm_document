@@ -21,6 +21,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
@@ -242,6 +244,41 @@ class WorkflowIntelligenceTest extends TestCase
             ])
             ->assertOk()
             ->assertJsonPath('data.status', 'approved');
+    }
+
+    public function test_local_ocr_text_requires_branch_review_and_rejects_duplicate_approval(): void
+    {
+        Storage::fake('private');
+        config()->set('services.ocr.endpoint', null);
+        config()->set('services.ocr.local_enabled', true);
+        Process::fake(fn () => Process::result(output: 'PASSPORT QA123456'));
+        Role::findOrCreate('employee', 'web');
+        $branch = FilialModel::create(['name' => 'OCR local', 'code' => 'OCL']);
+        $actor = User::factory()->create(['filial_id' => $branch->id]);
+        $actor->assignRole('employee');
+        $session = IntakeSession::create(['token' => str_repeat('x', 80), 'filial_id' => $branch->id, 'status' => 'started']);
+        $this->postJson(route('intake.ocr.upload', $session->token), ['file' => UploadedFile::fake()->image('passport.png')])
+            ->assertCreated()->assertJsonPath('data.status', 'extracted')->assertJsonPath('data.extracted_data.text', 'PASSPORT QA123456');
+        $record = $session->ocrDocuments()->firstOrFail();
+        $this->get(route('intake.start', ['session' => $session->token]))->assertDontSee('PASSPORT QA123456');
+        $this->actingAs($actor)->get(route('intake.start', ['session' => $session->token]))->assertSee('PASSPORT QA123456')->assertSee('Natijani tasdiqlash');
+        $this->postJson(route('intake.ocr.approve', [$session->token, $record]), ['extracted_data' => ['text' => 'Corrected passport']])->assertOk();
+        $this->postJson(route('intake.ocr.approve', [$session->token, $record]))->assertUnprocessable();
+        $this->assertSame('Corrected passport', $record->fresh()->extracted_data['text']);
+        $this->assertSame([], Storage::disk('private')->allFiles('ocr-temporary'));
+    }
+
+    public function test_local_ocr_failure_returns_a_useful_validation_error(): void
+    {
+        Storage::fake('private');
+        config()->set('services.ocr.endpoint', null);
+        config()->set('services.ocr.local_enabled', true);
+        Process::fake(fn () => Process::result(errorOutput: 'Private provider failure', exitCode: 1));
+        $session = IntakeSession::create(['token' => str_repeat('f', 80), 'status' => 'started']);
+        $this->postJson(route('intake.ocr.upload', $session->token), ['file' => UploadedFile::fake()->image('unreadable.png')])
+            ->assertUnprocessable()->assertJsonValidationErrors('file')->assertDontSee('Private provider failure');
+        $this->assertSame('failed', $session->ocrDocuments()->firstOrFail()->status);
+        $this->assertSame([], Storage::disk('private')->allFiles('ocr-temporary'));
     }
 
     public function test_notification_adapter_delivers_telegram_message(): void

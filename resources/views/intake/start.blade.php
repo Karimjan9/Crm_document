@@ -70,9 +70,27 @@
         </form>
         @forelse($session->ocrDocuments as $ocr)
             <div class="ocr-row">
-                <span>{{ $ocr->original_name }} <small class="muted">{{ $ocr->provider }}</small></span>
-                <strong>{{ $ocr->status }}</strong>
+                <span>{{ $ocr->original_name }}</span>
+                <strong>{{ ['pending_review' => 'Tekshiruv kutilmoqda', 'extracted' => 'Matn o‘qildi', 'approved' => 'Tasdiqlandi', 'failed' => 'O‘qib bo‘lmadi'][$ocr->status] ?? $ocr->status }}</strong>
             </div>
+            @php
+                $canReview = auth()->check() && (auth()->user()->hasAnyRole(['super_admin', 'admin_manager']) || (auth()->user()->hasAnyRole(['employee', 'admin_filial']) && $session->filial_id !== null && (int) auth()->user()->filial_id === (int) $session->filial_id));
+            @endphp
+            @if($canReview)
+                @if(in_array($ocr->status, ['pending_review', 'extracted'], true))
+                    <form method="POST" action="{{ route('intake.ocr.approve', [$session->token, $ocr]) }}">
+                        @csrf
+                        <label>O‘qilgan matnni tekshiring va kerak bo‘lsa tuzating</label>
+                        <textarea name="extracted_data[text]" rows="7">{{ data_get($ocr->extracted_data, 'text', '') }}</textarea>
+                        @if(data_get($ocr->extracted_data, 'page_limit'))<p class="muted">Hujjatning dastlabki {{ data_get($ocr->extracted_data, 'page_limit') }} sahifasigacha o‘qildi.</p>@endif
+                        <label>Tekshiruv izohi</label>
+                        <input name="approval_note" maxlength="1000">
+                        <button class="btn" type="submit">Natijani tasdiqlash</button>
+                    </form>
+                @elseif($ocr->status === 'approved')
+                    <p class="muted">{{ $ocr->approval_note }}</p>
+                @endif
+            @endif
         @empty
             <p class="muted">Hali OCR fayl yuborilmagan.</p>
         @endforelse

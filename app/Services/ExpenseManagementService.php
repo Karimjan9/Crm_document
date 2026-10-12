@@ -12,6 +12,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class ExpenseManagementService
 {
@@ -179,12 +180,12 @@ class ExpenseManagementService
 
         $allocatedTotal = round((float) $normalized->sum('amount'), 2);
         if (abs($allocatedTotal - round($total, 2)) > 0.01) {
-            throw new \InvalidArgumentException('Filial taqsimoti umumiy xarajat summasiga teng bo‘lishi kerak.');
+            throw ValidationException::withMessages(['allocations' => 'Filial taqsimoti umumiy xarajat summasiga teng bo‘lishi kerak.']);
         }
 
         $validFilials = FilialModel::query()->whereIn('id', $normalized->pluck('filial_id'))->pluck('id');
         if ($validFilials->count() !== $normalized->pluck('filial_id')->unique()->count()) {
-            throw new \InvalidArgumentException('Filial taqsimotida mavjud bo‘lmagan filial bor.');
+            throw ValidationException::withMessages(['allocations' => 'Filial taqsimotida mavjud bo‘lmagan filial bor.']);
         }
 
         $expense->allocations()->delete();

@@ -258,7 +258,7 @@ class Order extends Model
             $query->where(function (Builder $visible) use ($user): void {
                 $visible->where('created_by_id', $user->id)
                     ->orWhere('responsible_user_id', $user->id)
-                    ->orWhereHas('documents', fn (Builder $documents) => $documents->where('user_id', $user->id));
+                    ->orWhereHas('documents', fn (Builder $documents) => $documents->where(fn (Builder $document) => $document->where('user_id', $user->id)->orWhere('assigned_to_id', $user->id)->orWhere('qa_user_id', $user->id)));
             });
         }
 

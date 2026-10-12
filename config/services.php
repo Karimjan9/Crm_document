@@ -67,6 +67,9 @@ return [
     ],
 
     'ocr' => [
+        'local_enabled' => (bool) env('OCR_LOCAL_ENABLED', false),
+        'languages' => env('OCR_LANGUAGES', 'eng+rus+uzb'),
+        'max_pages' => (int) env('OCR_MAX_PAGES', 3),
         'endpoint' => env('OCR_ENDPOINT'),
         'token' => env('OCR_TOKEN'),
         'provider' => env('OCR_PROVIDER', 'external'),

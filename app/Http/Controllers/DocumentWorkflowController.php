@@ -7,6 +7,7 @@ use App\Models\DocumentChecklist;
 use App\Services\DocumentWorkflowService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class DocumentWorkflowController extends Controller
 {
@@ -25,6 +26,18 @@ class DocumentWorkflowController extends Controller
             'filials' => $request->user()->hasAnyRole(['super_admin', 'admin_manager'])
                 ? \App\Models\FilialModel::query()->orderBy('name')->get(['id', 'name'])
                 : collect(),
+        ]);
+    }
+
+    public function manage(Request $request, DocumentsModel $document)
+    {
+        $this->authorize('workflowView', $document);
+        $document->load(['client', 'service', 'filial', 'order', 'files', 'assignedTo', 'qaUser', 'checklists.completedBy', 'latestQaReview.reviewer', 'statusHistories.changedBy']);
+
+        return view('document_workflow.manage', [
+            'document' => $document,
+            'transitions' => $this->workflow->allowedTransitions($document->workflow_status),
+            'workers' => $this->workflow->workersQuery($document->filial_id)->get(['id', 'name', 'filial_id']),
         ]);
     }
 
@@ -129,6 +142,8 @@ class DocumentWorkflowController extends Controller
             $data['notes'] ?? null,
         );
 
+        $this->workflow->syncDerivedStatus($document->fresh(), $request->user());
+
         return $this->respond($request, $document, 'Checklist yangilandi.');
     }
 
@@ -164,15 +179,13 @@ class DocumentWorkflowController extends Controller
         ]);
 
         $force = $request->user()->hasAnyRole(['super_admin', 'admin_manager']) && $request->boolean('force');
-        $document = $this->workflow->transition(
-            $document,
-            $data['status'],
-            $request->user(),
-            $data['reason'] ?? null,
-            $data['comment'] ?? null,
-            [],
-            $force,
-        );
+        $document = DB::transaction(function () use ($document, $data, $request, $force): DocumentsModel {
+            $fresh = $this->workflow->transition($document, $data['status'], $request->user(), $data['reason'] ?? null, $data['comment'] ?? null, [], $force);
+            if ($fresh->order_id) {
+                app(\App\Services\OrderCaseService::class)->syncFromDocuments($fresh->order->fresh(), $request->user());
+            }
+            return $fresh;
+        });
 
         return $this->respond($request, $document, 'Hujjat statusi yangilandi.');
     }
