@@ -1,4 +1,9 @@
 <style>
+    .partner-page .grid{grid-template-columns:minmax(0,1.4fr) minmax(0,.9fr)}
+    .partner-page .grid > *,.partner-page .panel,.partner-page .stat-card{min-width:0}
+    .partner-page h1,.partner-page code,.partner-page .row span{overflow-wrap:anywhere}
+    .partner-page .row{flex-wrap:wrap;margin-left:0;margin-right:0}
+    @media(max-width:900px){.partner-page .grid{grid-template-columns:minmax(0,1fr)}}
     .partner-page{padding:26px;background:#f5f7fb;min-height:calc(100vh - 80px)}
     .partner-wrap{max-width:1180px;margin:0 auto}.partner-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:20px}
     .partner-head h1{margin:0;color:#102a56;font-size:27px}.partner-head p{margin:6px 0;color:#64748b}.partner-actions{display:flex;gap:8px;flex-wrap:wrap}
