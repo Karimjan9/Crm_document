@@ -24,5 +24,6 @@ Bu fayl AI yordamchilari uchun loyiha haqidagi doimiy eslatma.
 - Parollar Windows DPAPI orqali joriy Windows foydalanuvchisi uchun shifrlangan. PowerShell orqali `ConvertTo-SecureString` va `System.Net.NetworkCredential` yordamida zarur bo'lganda ochish mumkin.
 - Parollarni terminal chiqishiga, kuzatiladigan fayllarga yoki javoblarga chiqarmasdan foydalan.
 - SSH: `root@169.58.252.161`, port `22`; serverdagi web loyiha `/var/www/crm_document`, bot `/var/www/crm_bot`.
-- Lokal yordamchi orqali SSH buyruq bajarish: `python .codex/server-access.py 'buyruq'`; baza ulanishini tekshirish: `python .codex/server-access.py --check-database`.
+- SSH buyruqlarini bajarish: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .codex/server-command.ps1 -CommandFile .codex/production/buyruqlar.sh`. Bu yordamchi tekshirilgan server kaliti bilan Plink orqali ulanadi.
+- Baza ulanishini tekshirish: `python .codex/server-access.py --check-database`. SFTP fayl o'tkazish: shu yordamchining `--upload-file` va `--download-file` rejimlari.
 - CRM bazasi `client_demo`, foydalanuvchisi `client_demo_user`; baza paroli lokal konfiguratsiyaning `database.password_dpapi` maydonida shifrlangan holda saqlanadi. Ulanish tekshiruvi holati `database.verified` va `application_database` bo'limida.

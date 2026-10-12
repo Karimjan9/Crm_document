@@ -75,6 +75,7 @@ backup_directory="$(env_value DEPLOY_BACKUP_DIR storage/app/backups)"
 backup_directory_absolute="$(resolve_path "$backup_directory")"
 backup_retention="$(env_value DEPLOY_BACKUP_RETENTION 7)"
 storage_backup_enabled="$(env_value DEPLOY_STORAGE_BACKUP true)"
+web_user="$(env_value DEPLOY_WEB_USER www-data)"
 app_url="$(env_value APP_URL '')"
 app_key="$(env_value APP_KEY '')"
 health_url="$(env_value DEPLOY_HEALTH_URL '')"
@@ -120,6 +121,19 @@ fi
 
 mkdir -p -- "$backup_directory_absolute"
 chmod 700 -- "$backup_directory_absolute"
+
+prepare_app_permissions() {
+    if (( EUID == 0 )); then
+        id "$web_user" >/dev/null 2>&1 || fail "Web process user does not exist: ${web_user}"
+        web_group="$(id -gn "$web_user")"
+        chown -R "$web_user:$web_group" storage bootstrap/cache
+        chown "root:$web_group" .env
+        chmod 640 .env
+    fi
+}
+
+# PHP-FPM and workers must still read .env while config:clear removes the cache.
+prepare_app_permissions
 
 previous_commit="$(git rev-parse --verify HEAD^{commit})"
 
@@ -254,15 +268,31 @@ log 'Caching production configuration and views.'
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+prepare_app_permissions
 
 log 'Restarting queue workers so they load the new release.'
 php artisan queue:restart
 
 if [[ "$queue_worker_check" == 'true' ]]; then
     log "Checking Supervisor queue workers: ${supervisor_program}"
-    supervisorctl status | awk -v program="${supervisor_program}:" \
-        '$1 ~ "^" program && $2 == "RUNNING" { running = 1 } END { exit running ? 0 : 1 }' \
-        || fail "No RUNNING Supervisor worker found for ${supervisor_program}."
+    worker_running=0
+    for attempt in {1..10}; do
+        if supervisorctl status | awk -v program="${supervisor_program}:" \
+            '$1 ~ "^" program && $2 == "RUNNING" { running = 1 } END { exit running ? 0 : 1 }'; then
+            worker_running=1
+            break
+        fi
+        sleep 2
+    done
+    (( worker_running == 1 )) || fail "No RUNNING Supervisor worker found for ${supervisor_program}."
+fi
+
+if (( EUID == 0 )) && command -v systemctl >/dev/null 2>&1; then
+    php_fpm_service="$(env_value DEPLOY_PHP_FPM_SERVICE "php$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')-fpm")"
+    if systemctl is-active --quiet "$php_fpm_service"; then
+        log "Reloading PHP-FPM: ${php_fpm_service}"
+        systemctl reload "$php_fpm_service"
+    fi
 fi
 
 log 'Disabling maintenance mode.'
