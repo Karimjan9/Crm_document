@@ -2726,6 +2726,10 @@
     }
 
     async function getWeather(cityName = headerAccountConfig.weatherCity) {
+      if (!weatherInfo) {
+        return;
+      }
+
       const city = (cityName || 'Bukhara').trim();
 
       if (!city) {
