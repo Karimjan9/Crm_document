@@ -26,4 +26,7 @@ Bu fayl AI yordamchilari uchun loyiha haqidagi doimiy eslatma.
 - SSH: `root@169.58.252.161`, port `22`; serverdagi web loyiha `/var/www/crm_document`, bot `/var/www/crm_bot`.
 - SSH buyruqlarini bajarish: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .codex/server-command.ps1 -CommandFile .codex/production/buyruqlar.sh`. Bu yordamchi tekshirilgan server kaliti bilan Plink orqali ulanadi.
 - Baza ulanishini tekshirish: `python .codex/server-access.py --check-database`. SFTP fayl o'tkazish: shu yordamchining `--upload-file` va `--download-file` rejimlari.
+- SFTP ulanishi uzilib qolsa, audit skriptini himoyalangan server katalogiga yuborish: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .codex/server-upload.ps1 -LocalPath <fayl> -RemotePath /root/crm-audit-20261012-161526/<fayl>`. Bu yordamchi tekshirilgan SSH kaliti bilan Plink orqali faylni o'tkazadi.
 - CRM bazasi `client_demo`, foydalanuvchisi `client_demo_user`; baza paroli lokal konfiguratsiyaning `database.password_dpapi` maydonida shifrlangan holda saqlanadi. Ulanish tekshiruvi holati `database.verified` va `application_database` bo'limida.
+- MySQL administratorining `root` paroli 2026-10-12 kuni foydalanuvchi topshirig'i bilan yangilangan; joriy parol `database_admin.password_dpapi` maydonida shifrlangan, ulanish tekshirilgan. Bu MySQL administrator hisobi.
+- Backupni tiklash sinovi uchun `client_demo_restore_test` alohida baza nomi sozlangan. `backup:verify` shu bazani vaqtincha yaratib, tekshirib, o'chiradi. Asosiy `client_demo` bazasini tiklash sinovi sifatida ishlatma.
