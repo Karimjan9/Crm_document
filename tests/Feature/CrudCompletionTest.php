@@ -149,7 +149,7 @@ class CrudCompletionTest extends TestCase
 
     public function test_admin_document_crud_persists_changes(): void
     {
-        $actor = $this->userWithRole('super_admin');
+        $actor = $this->userWithRole('admin_manager');
         $filial = $this->filial('DOC');
         $client = ClientsModel::create([
             'name' => 'CRUD Client',
@@ -178,22 +178,22 @@ class CrudCompletionTest extends TestCase
         ];
 
         $this->actingAs($actor)
-            ->post(route('superadmin.document.store'), $payload)
-            ->assertRedirect(route('superadmin.document.index'));
+            ->post(route('admin.document.store'), $payload)
+            ->assertRedirect(route('admin.document.index'));
 
         $document = DocumentsModel::query()->latest('id')->firstOrFail();
 
         $this->actingAs($actor)
-            ->get(route('superadmin.document.show', $document))
+            ->get(route('admin.document.show', $document))
             ->assertOk();
 
         $this->actingAs($actor)
-            ->put(route('superadmin.document.update', $document), [
+            ->put(route('admin.document.update', $document), [
                 ...$payload,
                 'final_price' => 100000,
                 'description' => 'Updated document',
             ])
-            ->assertRedirect(route('superadmin.document.index'));
+            ->assertRedirect(route('admin.document.index'));
 
         $this->assertDatabaseHas('documents', [
             'id' => $document->id,
@@ -201,8 +201,8 @@ class CrudCompletionTest extends TestCase
         ]);
 
         $this->actingAs($actor)
-            ->delete(route('superadmin.document.destroy', $document))
-            ->assertRedirect(route('superadmin.document.index'));
+            ->delete(route('admin.document.destroy', $document))
+            ->assertRedirect(route('admin.document.index'));
 
         $this->assertDatabaseMissing('documents', ['id' => $document->id]);
     }

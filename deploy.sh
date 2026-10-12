@@ -87,14 +87,20 @@ if [[ "${db_connection,,}" != 'sqlite' ]]; then
         || fail 'Production DB_PASSWORD must be set to a non-placeholder secret.'
 fi
 
-[[ "${mail_mailer,,}" != 'log' ]] || fail 'MAIL_MAILER=log is not allowed in production.'
-[[ -n "$mail_host" ]] || fail 'MAIL_HOST must be configured in production.'
-[[ "${mail_host,,}" != 'mailhog' && "${mail_host,,}" != 'mailhog.local' && "${mail_host,,}" != 'smtp.example.com' ]] \
-    || fail 'MAIL_HOST cannot point to MailHog or an example SMTP host in production.'
-mail_username="$(env_value MAIL_USERNAME '')"
-mail_password="$(env_value MAIL_PASSWORD '')"
-[[ "${mail_username,,}" != 'change-me' && "${mail_password,,}" != 'change-me' ]] \
-    || fail 'SMTP credentials still contain the change-me placeholder.'
+notification_channels="$(env_value NOTIFICATION_CHANNELS internal)"
+if [[ ",${notification_channels//[[:space:]]/}," == *,email,* ]]; then
+    [[ "${mail_mailer,,}" != 'log' && "${mail_mailer,,}" != 'array' ]] \
+        || fail 'Email notifications require a delivery mailer in production.'
+    if [[ "${mail_mailer,,}" == 'smtp' ]]; then
+        [[ -n "$mail_host" ]] || fail 'MAIL_HOST must be configured for email notifications.'
+        [[ "${mail_host,,}" != 'mailhog' && "${mail_host,,}" != 'mailhog.local' && "${mail_host,,}" != 'smtp.example.com' ]] \
+            || fail 'MAIL_HOST cannot point to MailHog or an example SMTP host in production.'
+        mail_username="$(env_value MAIL_USERNAME '')"
+        mail_password="$(env_value MAIL_PASSWORD '')"
+        [[ "${mail_username,,}" != 'change-me' && "${mail_password,,}" != 'change-me' ]] \
+            || fail 'SMTP credentials still contain the change-me placeholder.'
+    fi
+fi
 [[ "${queue_connection,,}" != 'sync' ]] || fail 'QUEUE_CONNECTION=sync is not allowed in production.'
 [[ "$queue_worker_check" =~ ^(true|false)$ ]] || fail 'DEPLOY_QUEUE_WORKER_CHECK must be true or false.'
 [[ -n "$app_key" && "${app_key,,}" != 'change-me' ]] || fail 'APP_KEY must be configured in production.'
@@ -200,7 +206,7 @@ if [[ "$previous_commit" != "$target_commit" ]]; then
     if [[ -z "$requested_ref" && "$target_ref" == "${remote}/${branch}" ]] \
         && git show-ref --verify --quiet "refs/heads/${branch}"; then
         git checkout "$branch"
-        git reset --ff-only "$target_commit"
+        git merge --ff-only --no-edit "$target_commit"
     else
         git -c advice.detachedHead=false checkout --detach "$target_commit"
     fi

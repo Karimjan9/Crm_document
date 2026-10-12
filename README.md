@@ -77,6 +77,10 @@ php artisan view:cache
 
 ## Production deploy
 
+Login va qayta ochilgan `/login` sahifasi foydalanuvchini o'z rolining kabinetiga yo'naltiradi: admin-manager `/admin/index`, superadmin `/superadmin/index`. Foydalanuvchilarni boshqarish formasi va menyu havolalari ham shu rolga mos URLlardan foydalanadi.
+
+Deploy SMTP sozlamalarini `NOTIFICATION_CHANNELS` ichida `email` yoqilgan bo'lsa tekshiradi. Telegram yoki ichki xabarnomalar bilan ishlaydigan o'rnatish uchun SMTP talab qilinmaydi. Queue worker va scheduler namunalari `/var/www/crm_document` katalogiga moslangan; boshqa joyga o'rnatishda ularning yo'lini yangilang.
+
 Production serverda `git pull` ishlatilmaydi. `deploy.sh` worktree tozaligini tekshiradi, remote’dan fetch qiladi, aniq commitni tanlaydi, maintenance mode yoqadi, database va storage backup yaratadi, dependency/frontend buildni bajaradi, migration’dan keyin cache va storage linkni tekshiradi hamda `/health` endpoint orqali smoke-check qiladi.
 
 ```bash

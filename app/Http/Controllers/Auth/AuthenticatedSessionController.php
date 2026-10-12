@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Support\RoleHomeRoute;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,28 +43,9 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
-        $roles = $user->getRoleNames();
-        if ($roles->contains('admin_manager') || $roles->contains('super_admin')) {
-            // dd('here');
-            return redirect()->route('superadmin.index');
-
-        } elseif ($roles->contains('admin_filial')) {
-            // dd(1);
-            return redirect()->route('admin_filial.index');
-
-        } elseif ($roles->contains('employee')) {
-            // dd(1);
-            return redirect()->route('employee.document.index');
-
-        } elseif ($roles->contains('courier')) {
-
-            return redirect()->route('courier.documents.index');
-        } elseif ($roles->contains('partner_admin') || $roles->contains('partner_operator')) {
-
-            return redirect()->route('partner.dashboard');
-        } elseif ($roles->contains('user')) {
-
-            return redirect()->route('account.home');
+        $homeRoute = RoleHomeRoute::for($user);
+        if ($homeRoute !== null) {
+            return redirect()->route($homeRoute);
         } else {
             // An account without an application role must not retain a session.
             Auth::guard('web')->logout();

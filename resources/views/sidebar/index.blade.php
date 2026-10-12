@@ -87,6 +87,9 @@
 @endhasanyrole
 
 @hasanyrole('super_admin|admin_manager')
+@php
+    $managementPrefix = auth()->user()->hasRole('super_admin') ? 'superadmin' : 'admin';
+@endphp
 
 <li class="{{ request()->routeIs('bot-useful-information.*', 'bot-content.*') ? 'active' : '' }}">
     <a href="{{ route('bot-useful-information.edit') }}">
@@ -102,8 +105,8 @@
         <div class="menu-title">Crm document</div>
     </a>
     <ul>
-        <li><a href="{{ route('superadmin.document.statistika') }}"><i class='bx bx-bar-chart'></i> Document</a></li>
-        <li><a href="{{ route('superadmin.document.index') }}"><i class='bx bx-task'></i> Document work</a></li>
+        <li><a href="{{ route($managementPrefix . '.document.statistika') }}"><i class='bx bx-bar-chart'></i> Document</a></li>
+        <li><a href="{{ route($managementPrefix . '.document.index') }}"><i class='bx bx-task'></i> Document work</a></li>
         @role('super_admin')
         <li><a href="{{ route('documents.workflow.index') }}"><i class='bx bx-columns'></i> Kanban doska</a></li>
         @endrole
@@ -123,7 +126,7 @@
 @endrole
 
 <li>
-    <a href="{{ route('superadmin.index') }}">
+    <a href="{{ route($managementPrefix . '.index') }}">
         <div class="parent-icon"><i class='bx bx-user'></i></div>
         <div class="menu-title">Foydalanuvchilar</div>
     </a>
@@ -136,7 +139,7 @@
         <div class="menu-title">Filiallar</div>
     </a>
     <ul>
-        <li><a href="{{ route('superadmin.filial.index') }}"><i class='bx bx-map'></i> Filial qismi</a></li>
+        <li><a href="{{ route($managementPrefix . '.filial.index') }}"><i class='bx bx-map'></i> Filial qismi</a></li>
     </ul>
 </li>
 
@@ -147,8 +150,8 @@
         <div class="menu-title">Xarajatlar</div>
     </a>
     <ul>
-        <li><a href="{{ route('superadmin.expense.index') }}"><i class='bx bx-receipt'></i> Xarajatlar</a></li>
-        <li><a href="{{ route('superadmin.statistika') }}"><i class='bx bx-line-chart'></i> Statistika</a></li>
+        <li><a href="{{ route($managementPrefix . '.expense.index') }}"><i class='bx bx-receipt'></i> Xarajatlar</a></li>
+        <li><a href="{{ route($managementPrefix . '.statistika') }}"><i class='bx bx-line-chart'></i> Statistika</a></li>
         @if(auth()->user()?->hasAnyRole(['admin_filial', 'admin_manager', 'super_admin']))
             <li><a href="{{ route('finance.ledger.index') }}"><i class='bx bx-money'></i> Payment ledger</a></li>
         @endif
@@ -156,6 +159,7 @@
 </li>
 
 <!-- Hujjat sozlama -->
+@role('super_admin')
 <li>
     <a href="javascript:;" class="has-arrow">
         <div class="parent-icon"><i class='bx bx-file'></i></div>
@@ -183,16 +187,27 @@
 </li>
 
 <!-- Kalendar -->
+@endrole
 <li>
-    <a href="{{ route('superadmin.calendar.full.index') }}">
+    <a href="{{ route($managementPrefix === 'superadmin' ? 'superadmin.calendar.full.index' : 'admin.calendar.index') }}">
         <div class="parent-icon"><i class='bx bx-calendar'></i></div>
         <div class="menu-title">Kalendar</div>
     </a>
 </li>
 
-@endrole
+<li><a href="{{ route('orders.index') }}"><div class="parent-icon"><i class='bx bx-package'></i></div><div class="menu-title">Buyurtmalar</div></a></li>
+<li><a href="{{ route('finance.dashboard') }}"><div class="parent-icon"><i class='bx bx-line-chart'></i></div><div class="menu-title">Moliya</div></a></li>
+<li><a href="{{ route('admin.partners.index') }}"><div class="parent-icon"><i class='bx bx-briefcase'></i></div><div class="menu-title">B2B hamkorlar</div></a></li>
+<li><a href="{{ route('admin.pricing.index') }}"><div class="parent-icon"><i class='bx bx-purchase-tag'></i></div><div class="menu-title">Tariflar</div></a></li>
+@endhasanyrole
 
 @hasanyrole('employee|admin_filial')
+@php
+    $branchPrefix = auth()->user()->hasRole('admin_filial') ? 'admin_filial' : 'employee';
+@endphp
+<li><a href="{{ route($branchPrefix . '.document.index') }}"><div class="parent-icon"><i class='bx bx-file'></i></div><div class="menu-title">Hujjatlar</div></a></li>
+<li><a href="{{ route('orders.index') }}"><div class="parent-icon"><i class='bx bx-package'></i></div><div class="menu-title">Buyurtmalar</div></a></li>
+<li><a href="{{ route($branchPrefix . '.expense_admin.index') }}"><div class="parent-icon"><i class='bx bx-wallet'></i></div><div class="menu-title">Xarajatlar</div></a></li>
 <li>
     <a href="{{ route('operations.dashboard') }}">
         <div class="parent-icon"><i class='bx bx-list-check'></i></div>
@@ -208,6 +223,7 @@
 @endrole
 
 @hasrole('courier')
+<li><a href="{{ route('courier.documents.index') }}"><div class="parent-icon"><i class='bx bx-file'></i></div><div class="menu-title">Hujjat yetkazish</div></a></li>
 <li>
     <a href="{{ route('courier.orders.index') }}">
         <div class="parent-icon"><i class='bx bx-package'></i></div>

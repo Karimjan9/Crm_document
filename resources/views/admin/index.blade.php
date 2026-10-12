@@ -27,6 +27,7 @@
 
 @section('body')
 @php
+    $userRoutePrefix = request()->routeIs('superadmin.*') ? 'superadmin' : 'admin';
     $selectedRole = $filters['role'];
     $hasFilters = $filters['search'] !== '' || $selectedRole || $filters['filial_id'];
     $createParameters = $selectedRole ? ['role' => $selectedRole] : [];
@@ -38,23 +39,23 @@
 
         <section class="user-directory__hero">
             <div><p class="user-directory__eyebrow">Tizim boshqaruvi</p><h1>Foydalanuvchilar</h1><p>Xodimlar, kuryerlar va filial administratorlarini qidiring, rol yoki filial bo‘yicha filtrlang va boshqaring.</p></div>
-            <a class="user-directory__create" href="{{ route('superadmin.create', $createParameters) }}"><i class='bx bx-plus'></i> Yangi foydalanuvchi</a>
+            <a class="user-directory__create" href="{{ route($userRoutePrefix . '.create', $createParameters) }}"><i class='bx bx-plus'></i> Yangi foydalanuvchi</a>
         </section>
 
         <section class="user-stats" aria-label="Foydalanuvchilar statistikasi">
-            <a class="user-stat {{ !$selectedRole ? 'user-stat--active' : '' }}" href="{{ route('superadmin.index') }}"><span class="user-stat__icon user-stat__icon--all"><i class='bx bx-group'></i></span><span>Jami foydalanuvchilar<strong>{{ $stats['total'] }}</strong></span></a>
-            <a class="user-stat {{ $selectedRole === 'employee' ? 'user-stat--active' : '' }}" href="{{ route('superadmin.index', ['role' => 'employee']) }}"><span class="user-stat__icon"><i class='bx bx-id-card'></i></span><span>Xodimlar<strong>{{ $stats['employee'] }}</strong></span></a>
-            <a class="user-stat {{ $selectedRole === 'courier' ? 'user-stat--active' : '' }}" href="{{ route('superadmin.index', ['role' => 'courier']) }}"><span class="user-stat__icon user-stat__icon--courier"><i class='bx bx-cycling'></i></span><span>Kuryerlar<strong>{{ $stats['courier'] }}</strong></span></a>
-            <a class="user-stat {{ $selectedRole === 'admin_filial' ? 'user-stat--active' : '' }}" href="{{ route('superadmin.index', ['role' => 'admin_filial']) }}"><span class="user-stat__icon user-stat__icon--admin"><i class='bx bx-buildings'></i></span><span>Filial adminlari<strong>{{ $stats['admin_filial'] }}</strong></span></a>
+            <a class="user-stat {{ !$selectedRole ? 'user-stat--active' : '' }}" href="{{ route($userRoutePrefix . '.index') }}"><span class="user-stat__icon user-stat__icon--all"><i class='bx bx-group'></i></span><span>Jami foydalanuvchilar<strong>{{ $stats['total'] }}</strong></span></a>
+            <a class="user-stat {{ $selectedRole === 'employee' ? 'user-stat--active' : '' }}" href="{{ route($userRoutePrefix . '.index', ['role' => 'employee']) }}"><span class="user-stat__icon"><i class='bx bx-id-card'></i></span><span>Xodimlar<strong>{{ $stats['employee'] }}</strong></span></a>
+            <a class="user-stat {{ $selectedRole === 'courier' ? 'user-stat--active' : '' }}" href="{{ route($userRoutePrefix . '.index', ['role' => 'courier']) }}"><span class="user-stat__icon user-stat__icon--courier"><i class='bx bx-cycling'></i></span><span>Kuryerlar<strong>{{ $stats['courier'] }}</strong></span></a>
+            <a class="user-stat {{ $selectedRole === 'admin_filial' ? 'user-stat--active' : '' }}" href="{{ route($userRoutePrefix . '.index', ['role' => 'admin_filial']) }}"><span class="user-stat__icon user-stat__icon--admin"><i class='bx bx-buildings'></i></span><span>Filial adminlari<strong>{{ $stats['admin_filial'] }}</strong></span></a>
         </section>
 
         <section class="user-filters">
             <h2 class="user-filters__title"><i class='bx bx-filter-alt'></i> Foydalanuvchilarni filtrlash</h2>
-            <form method="GET" action="{{ route('superadmin.index') }}" class="user-filter-form">
+            <form method="GET" action="{{ route($userRoutePrefix . '.index') }}" class="user-filter-form">
                 <div class="user-filter-field"><label for="user_search">Qidiruv</label><input id="user_search" name="search" value="{{ $filters['search'] }}" placeholder="Ism, login yoki telefon"></div>
                 <div class="user-filter-field"><label for="user_role">Rol</label><select id="user_role" name="role"><option value="">Barcha rollar</option>@foreach ($roleLabels as $value => $label)<option value="{{ $value }}" @selected($selectedRole === $value)>{{ $label }}</option>@endforeach</select></div>
                 <div class="user-filter-field"><label for="user_filial">Filial</label><select id="user_filial" name="filial_id"><option value="">Barcha filiallar</option>@foreach ($filials as $filial)<option value="{{ $filial->id }}" @selected((int) $filters['filial_id'] === $filial->id)>{{ $filial->name }}</option>@endforeach</select></div>
-                <div class="user-filter-actions"><button type="submit" class="user-filter-submit"><i class='bx bx-search'></i> Filtrlash</button>@if ($hasFilters)<a class="user-filter-reset" href="{{ route('superadmin.index') }}">Tozalash</a>@endif</div>
+                <div class="user-filter-actions"><button type="submit" class="user-filter-submit"><i class='bx bx-search'></i> Filtrlash</button>@if ($hasFilters)<a class="user-filter-reset" href="{{ route($userRoutePrefix . '.index') }}">Tozalash</a>@endif</div>
             </form>
         </section>
 
@@ -77,7 +78,7 @@
                             <td>+998 {{ $formattedPhone }}</td>
                             <td class="{{ $user->filial ? 'user-branch' : 'user-branch--none' }}">{{ $user->filial?->name ?? 'Biriktirilmagan' }}</td>
                             <td>{{ $user->created_at?->format('d.m.Y') ?? '—' }}</td>
-                            <td><div class="user-actions"><a class="user-action" href="{{ route('superadmin.edit', $user->id) }}"><i class='bx bx-pencil'></i> Tahrirlash</a><form method="POST" action="{{ route('superadmin.destroy', $user->id) }}" onsubmit="return confirm('Foydalanuvchini o‘chirasizmi?')">@csrf @method('DELETE')<button class="user-action user-action--delete" type="submit"><i class='bx bx-trash'></i> O‘chirish</button></form></div></td>
+                            <td><div class="user-actions"><a class="user-action" href="{{ route($userRoutePrefix . '.edit', $user->id) }}"><i class='bx bx-pencil'></i> Tahrirlash</a><form method="POST" action="{{ route($userRoutePrefix . '.destroy', $user->id) }}" onsubmit="return confirm('Foydalanuvchini o‘chirasizmi?')">@csrf @method('DELETE')<button class="user-action user-action--delete" type="submit"><i class='bx bx-trash'></i> O‘chirish</button></form></div></td>
                         </tr>
                     @empty
                         <tr><td colspan="7"><div class="user-empty"><i class='bx bx-search-alt'></i><strong>Foydalanuvchi topilmadi.</strong><br><span>Qidiruv yoki filtr parametrlarini o‘zgartirib ko‘ring.</span></div></td></tr>

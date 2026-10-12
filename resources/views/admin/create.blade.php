@@ -161,12 +161,15 @@
 @endsection
 
 @section('body')
+@php
+    $userRoutePrefix = request()->routeIs('superadmin.*') ? 'superadmin' : 'admin';
+@endphp
 <div class="page-wrapper">
     <div class="page-content">
 
         <div class="page-breadcrumb mb-3">
             <div class="breadcrumb-title">Yangi Foydalanuvchi Qo‘shish</div>
-            <a href="{{ route('superadmin.index') }}" class="btn btn-outline">← Orqaga</a>
+            <a href="{{ route($userRoutePrefix . '.index') }}" class="btn btn-outline">← Orqaga</a>
         </div>
 
         <div class="card radius-10">
@@ -179,7 +182,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('superadmin.store') }}" method="POST">
+                <form action="{{ route($userRoutePrefix . '.store') }}" method="POST">
                     @csrf
                     @if ($selectedRole)<input type="hidden" name="return_role" value="{{ $selectedRole }}">@endif
 
@@ -271,7 +274,7 @@
                     {{-- TUGMALAR --}}
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="submit" class="btn btn-custom">Saqlash</button>
-                        <a href="{{ route('superadmin.index', $selectedRole ? ['role' => $selectedRole] : []) }}" class="btn btn-outline">Bekor qilish</a>
+                        <a href="{{ route($userRoutePrefix . '.index', $selectedRole ? ['role' => $selectedRole] : []) }}" class="btn btn-outline">Bekor qilish</a>
                     </div>
                 </form>
             </div>

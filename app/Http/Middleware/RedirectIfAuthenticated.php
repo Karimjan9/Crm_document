@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Providers\RouteServiceProvider;
+use App\Support\RoleHomeRoute;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,19 +23,9 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                if($request->user()->hasRole("admin_manager") || $request->user()->hasRole("super_admin")){
-                    
-                    return redirect()->route('superadmin.index');
-                }else if($request->user()->hasRole("admin")){
-        
-                    return redirect()->route('admin.employees.index');
-                }else if($request->user()->hasRole("user")){
-        
-                    // return redirect()->route('user_role.employee.index', ["profile" => $request->user()->id ]);
-                }
-                else if($request->user()->hasRole("admin_filial")){
-        
-                    return redirect()->route('admin_filial.index');
+                $homeRoute = RoleHomeRoute::for(Auth::guard($guard)->user());
+                if ($homeRoute !== null) {
+                    return redirect()->route($homeRoute);
                 }
             }
         }

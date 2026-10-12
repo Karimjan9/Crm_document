@@ -17,7 +17,7 @@ class ExampleTest extends TestCase
 
         $response
             ->assertStatus(301)
-            ->assertHeader('Location', 'https://sites.google.com/view/tarjimalarmarkazi');
+            ->assertHeader('Location', 'https://sites.google.com/view/tarjimalarmarkazi/tarjima-xizmatlari?authuser=0');
     }
 
     public function test_login_page_returns_a_successful_response()

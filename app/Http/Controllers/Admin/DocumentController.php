@@ -151,7 +151,7 @@ class DocumentController extends Controller
 
         return redirect($request->filled('order_id')
             ? route('orders.show', $document->order_id)
-            : route('superadmin.document.index'))
+            : route($this->routePrefix() . '.document.index'))
             ->with('success', 'Hujjat muvaffaqiyatli yaratildi.');
     }
 

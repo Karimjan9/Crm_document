@@ -140,13 +140,16 @@
 @endsection
 
 @section('body')
+@php
+    $userRoutePrefix = request()->routeIs('superadmin.*') ? 'superadmin' : 'admin';
+@endphp
 @php($currentRole = old('role', optional($user->roles->first())->name))
 <div class="page-wrapper">
     <div class="page-content">
 
         <div class="page-breadcrumb mb-3">
             <div class="breadcrumb-title">Foydalanuvchini Tahrirlash</div>
-            <a href="{{ route('superadmin.index') }}" class="btn btn-outline">← Orqaga</a>
+            <a href="{{ route($userRoutePrefix . '.index') }}" class="btn btn-outline">← Orqaga</a>
         </div>
 
         <div class="card radius-10">
@@ -158,7 +161,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('superadmin.update', $user->id) }}" method="POST">
+                <form action="{{ route($userRoutePrefix . '.update', $user->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -242,7 +245,7 @@
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="submit" class="btn btn-custom">Yangilash</button>
-                        <a href="{{ route('superadmin.index') }}" class="btn btn-outline">Bekor qilish</a>
+                        <a href="{{ route($userRoutePrefix . '.index') }}" class="btn btn-outline">Bekor qilish</a>
                     </div>
 
                 </form>
