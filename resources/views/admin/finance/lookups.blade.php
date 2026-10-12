@@ -1,7 +1,14 @@
 @extends('template')
 
+@section('style')
+<style>
+    .finance-lookups .badge{max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left}
+    .finance-lookups .card-body > .d-flex{flex-wrap:wrap;gap:4px}
+</style>
+@endsection
+
 @section('body')
-<div class="page-wrapper">
+<div class="page-wrapper finance-lookups">
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div><h3>Finance sozlamalari</h3><p class="text-muted mb-0">Expense category, vendor, budget va cost center katalogi.</p></div>
