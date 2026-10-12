@@ -288,7 +288,7 @@ public function consulateType()
 
     public function custodyEvents()
     {
-        return $this->hasMany(DocumentCustodyEvent::class, 'document_id')->latest('event_at');
+        return $this->hasMany(DocumentCustodyEvent::class, 'document_id')->latest('event_at')->latest('id');
     }
 
 }

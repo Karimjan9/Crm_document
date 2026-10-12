@@ -140,6 +140,7 @@ class WorkflowIntelligenceTest extends TestCase
 
     public function test_document_custody_records_signed_handoff_chain(): void
     {
+        $this->freezeTime();
         Role::findOrCreate('employee', 'web');
         $filial = FilialModel::create(['name' => 'Custody filial', 'code' => 'CUS']);
         $employee = User::factory()->create(['filial_id' => $filial->id]);
@@ -176,6 +177,44 @@ class WorkflowIntelligenceTest extends TestCase
             'to_user_id' => $employee->id,
         ]);
         $this->assertNotEmpty($document->custodyEvents()->firstOrFail()->signature);
+        $first = $document->custodyEvents()->firstOrFail();
+        $reviewer = User::factory()->create(['filial_id' => $filial->id]);
+
+        $this->actingAs($employee)
+            ->postJson(route('document-custody.store', $document), [
+                'event_type' => 'handoff',
+                'from_user_id' => $employee->id,
+                'to_user_id' => $reviewer->id,
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.previous_signature', $first->signature)
+            ->assertJsonPath('chain_valid', true);
+        $second = $document->custodyEvents()->firstOrFail();
+
+        $this->actingAs($employee)
+            ->postJson(route('document-custody.store', $document), [
+                'event_type' => 'qa',
+                'from_user_id' => $reviewer->id,
+                'to_user_id' => $employee->id,
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.previous_signature', $second->signature)
+            ->assertJsonPath('chain_valid', true);
+
+        $this->actingAs($employee)
+            ->getJson(route('document-custody.index', $document))
+            ->assertOk()
+            ->assertJsonPath('chain_valid', true)
+            ->assertJsonPath('data.0.event_type', 'qa');
+        $this->actingAs($employee)
+            ->postJson(route('document-custody.store', $document), [
+                'event_type' => 'handoff',
+                'from_user_id' => $reviewer->id,
+                'to_user_id' => $employee->id,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('from_user_id');
+        $this->assertSame(3, $document->custodyEvents()->count());
     }
 
     public function test_ocr_requires_human_approval_before_use(): void

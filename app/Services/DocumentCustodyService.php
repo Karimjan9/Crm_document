@@ -9,6 +9,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class DocumentCustodyService
 {
@@ -24,7 +25,7 @@ class DocumentCustodyService
         ?User $actor = null
     ): DocumentCustodyEvent {
         if (! in_array($eventType, self::EVENTS, true)) {
-            throw new \InvalidArgumentException('Chain-of-custody eventi noto‘g‘ri.');
+            throw ValidationException::withMessages(['event_type' => 'Chain-of-custody eventi noto‘g‘ri.']);
         }
 
         $path = $photo ? app(FileSecurityService::class)->store($photo, 'custody/'.$document->id) : null;
@@ -32,9 +33,9 @@ class DocumentCustodyService
         try {
             return DB::transaction(function () use ($document, $eventType, $fromUserId, $toUserId, $notes, $path, $actor): DocumentCustodyEvent {
                 $lockedDocument = DocumentsModel::query()->lockForUpdate()->findOrFail($document->id);
-                $previousEvent = $lockedDocument->custodyEvents()->latest('event_at')->first();
+                $previousEvent = $lockedDocument->custodyEvents()->first();
                 if ($previousEvent && $previousEvent->to_user_id && $fromUserId && (int) $previousEvent->to_user_id !== (int) $fromUserId) {
-                    throw new \InvalidArgumentException('Chain-of-custody ketma-ketligi buzilgan: from_user oldingi to_user bilan mos emas.');
+                    throw ValidationException::withMessages(['from_user_id' => 'Chain-of-custody ketma-ketligi buzilgan: from_user oldingi to_user bilan mos emas.']);
                 }
                 $previousSignature = $previousEvent?->signature;
                 $eventAt = now();
@@ -84,7 +85,7 @@ class DocumentCustodyService
     public function verifyChain(DocumentsModel $document): bool
     {
         $previous = null;
-        foreach ($document->custodyEvents()->oldest('event_at')->get() as $event) {
+        foreach ($document->custodyEvents()->reorder()->oldest('event_at')->oldest('id')->get() as $event) {
             if ($event->previous_signature !== $previous) {
                 return false;
             }
