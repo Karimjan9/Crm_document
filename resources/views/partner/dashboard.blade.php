@@ -12,6 +12,7 @@
 @endsection
 
 @section('body')
+<div class="page-wrapper">
 <div class="partner-page"><div class="partner-wrap">
     @if(session('success'))<div class="notice">{{ session('success') }}</div>@endif
     @if(session('newApiKey'))
@@ -37,4 +38,5 @@
         </div>
     </div>
 </div></div>
+</div>
 @endsection

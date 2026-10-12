@@ -7,6 +7,7 @@
 @endsection
 
 @section('body')
+<div class="page-wrapper">
 <div class="pricing-page"><div class="pricing-wrap"><div class="pricing-head"><div><h1>{{ $isEdit ? 'Tarifni tahrirlash' : 'Yangi tarif versiyasi' }}</h1><p>Effective davrlar kesishmasin. Ishlatilgan tarif narxi immutable hisoblanadi.</p></div><a class="btn light" href="{{ route('admin.pricing.index') }}">Orqaga</a></div><div class="panel">
     @if($errors->any())<div class="alert">{{ $errors->first() }}</div>@endif
     <form method="POST" action="{{ $isEdit ? route('admin.pricing.update',$tariff) : route('admin.pricing.store') }}">@csrf @if($isEdit)@method('PUT')@endif
@@ -22,4 +23,5 @@
         <div class="actions"><a class="btn light" href="{{ route('admin.pricing.index') }}">Bekor qilish</a><button class="btn" type="submit">{{ $isEdit ? 'Saqlash' : 'Tarif yaratish' }}</button></div>
     </form>
 </div></div></div>
+</div>
 @endsection

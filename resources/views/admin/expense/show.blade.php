@@ -1,6 +1,7 @@
 @extends('template')
 
 @section('body')
+<div class="page-wrapper">
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -47,5 +48,6 @@
             <span class="text-muted">Taqsimot mavjud emas.</span>
         @endforelse
     </div>
+</div>
 </div>
 @endsection

@@ -7,6 +7,7 @@
 @endsection
 
 @section('body')
+<div class="page-wrapper">
 <div class="pricing-page"><div class="pricing-wrap">
     @if(session('success'))<div class="notice">{{ session('success') }}</div>@endif
     <div class="pricing-head"><div><h1>Tariflar va narxlar tarixi</h1><p>Har bir yangi tarif alohida versiya. Ishlatilgan tarifning narxi o‘zgartirilmaydi.</p></div><div><a class="btn light" href="{{ route('pricing.approvals.index') }}">Chegirma approval’lari</a> <a class="btn" href="{{ route('admin.pricing.create') }}">+ Yangi tarif</a></div></div>
@@ -16,4 +17,5 @@
         </tbody></table>{{ $tariffs->links() }}
     </div>
 </div></div>
+</div>
 @endsection

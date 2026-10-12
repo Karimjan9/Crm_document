@@ -1,6 +1,7 @@
 @extends('template')
 
 @section('body')
+<div class="page-wrapper">
 @php($editing = $apostil->exists)
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -39,5 +40,6 @@
         </div>
         <button class="btn btn-primary" type="submit">Saqlash</button>
     </form>
+</div>
 </div>
 @endsection

@@ -1,6 +1,7 @@
 @extends('template')
 
 @section('body')
+<div class="page-wrapper">
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div><h3>Finance sozlamalari</h3><p class="text-muted mb-0">Expense category, vendor, budget va cost center katalogi.</p></div>
@@ -14,5 +15,6 @@
         <div class="col-lg-6"><div class="card card-body h-100"><h5>Cost center</h5><form method="POST" action="{{ route('finance.lookups.cost-center') }}" class="row g-2">@csrf<div class="col-md-5"><input name="name" class="form-control" placeholder="Nomi" required></div><div class="col-md-3"><input name="code" class="form-control" placeholder="Code" required></div><div class="col-md-4"><select name="filial_id" class="form-select"><option value="">Filial</option>@foreach($filials as $filial)<option value="{{ $filial->id }}">{{ $filial->name }}</option>@endforeach</select></div><div class="col-12"><button class="btn btn-primary">Qo'shish</button></div></form><hr>@foreach($costCenters as $center)<span class="badge text-bg-light me-1 mb-1">{{ $center->name }} · {{ $center->code }}</span>@endforeach</div></div>
         <div class="col-lg-6"><div class="card card-body h-100"><h5>Budget</h5><form method="POST" action="{{ route('finance.lookups.budget') }}" class="row g-2">@csrf<div class="col-md-6"><input name="name" class="form-control" placeholder="Nomi" required></div><div class="col-md-6"><input type="number" name="amount" class="form-control" placeholder="Amount" min="0" step="0.01" required></div><div class="col-md-6"><input type="date" name="period_start" class="form-control" required></div><div class="col-md-6"><input type="date" name="period_end" class="form-control" required></div><div class="col-md-6"><select name="filial_id" class="form-select"><option value="">Filial</option>@foreach($filials as $filial)<option value="{{ $filial->id }}">{{ $filial->name }}</option>@endforeach</select></div><div class="col-md-6"><select name="category_id" class="form-select"><option value="">Kategoriya</option>@foreach($categories as $category)<option value="{{ $category->id }}">{{ $category->name }}</option>@endforeach</select></div><div class="col-12"><button class="btn btn-primary">Qo'shish</button></div></form><hr>@foreach($budgets as $budget)<div class="d-flex justify-content-between border-bottom py-1"><span>{{ $budget->name }}</span><small>{{ number_format($budget->spent_amount,0,',',' ') }} / {{ number_format($budget->amount,0,',',' ') }}</small></div>@endforeach</div></div>
     </div>
+</div>
 </div>
 @endsection

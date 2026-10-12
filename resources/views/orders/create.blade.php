@@ -27,6 +27,7 @@
 @endsection
 
 @section('body')
+<div class="page-wrapper">
 <div class="order-create-page">
     <div class="order-create-card">
         <div class="order-create-head">
@@ -81,6 +82,7 @@
             </form>
         </div>
     </div>
+</div>
 </div>
 @endsection
 

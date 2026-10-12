@@ -3,6 +3,7 @@
 <style>.partner-page{padding:26px;background:#f5f7fb;min-height:calc(100vh - 80px)}.partner-wrap{max-width:980px;margin:0 auto}.partner-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}.partner-head h1{margin:0;color:#102a56}.partner-head p{margin:6px 0;color:#64748b}.panel{background:#fff;border:1px solid #e2e8f0;border-radius:15px;padding:22px}.row-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.form-label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:4px}.form-control{width:100%;box-sizing:border-box;margin-bottom:13px}.product-card{border:1px solid #bfdbfe;border-radius:12px;padding:14px;background:#eff6ff;margin:8px 0 14px}.product-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.badge{display:inline-block;background:#fff;border-radius:999px;padding:6px 10px;font-size:12px;color:#475569}.actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}.btn{display:inline-block;border:0;border-radius:8px;padding:10px 13px;text-decoration:none;cursor:pointer;font-weight:700;font-size:12px;background:#2563eb;color:#fff}.btn.light{background:#eef2ff;color:#1d4ed8}.alert{padding:12px;background:#fef2f2;color:#b91c1c;border-radius:8px;margin-bottom:14px}@media(max-width:650px){.row-grid{grid-template-columns:1fr}.partner-head{flex-direction:column}}</style>
 @endsection
 @section('body')
+<div class="page-wrapper">
 <div class="partner-page"><div class="partner-wrap"><div class="partner-head"><div><h1>Yangi B2B buyurtma</h1><p>{{ $partner->company_name }} uchun korporativ chegirma avtomatik qo‘llanadi.</p></div><a class="btn light" href="{{ route('partner.orders.index') }}">Orqaga</a></div>
     <div class="panel">@if($errors->any())<div class="alert">{{ $errors->first() }}</div>@endif @if(!$filials->count())<div class="alert">Sizga hali filial biriktirilmagan. Administrator filialni ruxsat ro‘yxatiga qo‘shishi kerak.</div>@else
     <form method="POST" action="{{ route('partner.orders.store') }}" id="partnerOrderForm">@csrf
@@ -15,6 +16,7 @@
         <div class="row-grid"><div><label class="form-label">Prioritet</label><select class="form-control" name="priority"><option value="normal">Oddiy</option><option value="high">Yuqori</option><option value="urgent">Shoshilinch</option></select></div><div><label class="form-label">Izoh</label><textarea class="form-control" name="description" rows="2">{{ old('description') }}</textarea></div></div>
         <div class="actions"><a class="btn light" href="{{ route('partner.dashboard') }}">Bekor qilish</a><button class="btn" type="submit">Buyurtma yaratish</button></div>
     </form>@endif</div></div></div>
+</div>
 @endsection
 @section('script')
 <script>

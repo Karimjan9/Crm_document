@@ -7,6 +7,7 @@
 @endsection
 
 @section('body')
+<div class="page-wrapper">
 <div class="partner-admin-page"><div class="partner-admin-wrap"><div class="partner-admin-head"><div><h1>{{ $isEdit ? 'Partner tahrirlash' : 'Yangi B2B partner' }}</h1><p>Partner kabinetiga kirish va filial ruxsatlarini shu yerdan boshqaring.</p></div><a class="btn light" href="{{ route('admin.partners.index') }}">Orqaga</a></div><div class="panel">
     @if($errors->any())<div class="alert">{{ $errors->first() }}</div>@endif
     <form method="POST" action="{{ $isEdit ? route('admin.partners.update',$partner) : route('admin.partners.store') }}">@csrf @if($isEdit)@method('PUT')@endif
@@ -22,4 +23,5 @@
         <div class="section"><label class="form-label">Ichki izoh</label><textarea class="form-control" name="notes" rows="3">{{ old('notes',$partner->notes) }}</textarea></div><div class="actions"><a class="btn light" href="{{ route('admin.partners.index') }}">Bekor qilish</a><button class="btn" type="submit">{{ $isEdit ? 'Saqlash' : 'Partner yaratish' }}</button></div>
     </form>
 </div></div></div>
+</div>
 @endsection

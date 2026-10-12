@@ -8,6 +8,7 @@
 @endsection
 
 @section('body')
+<div class="page-wrapper">
 <div class="partner-admin-page"><div class="partner-admin-wrap">
     @if(session('success'))<div class="notice">{{ session('success') }}</div>@endif
     <div class="partner-admin-head"><div><h1>B2B Partners</h1><p>Partner kompaniyalar, chegirmalar, filiallar va white-label tracking.</p></div><a class="btn" href="{{ route('admin.partners.create') }}">+ Partner qo‘shish</a></div>
@@ -15,4 +16,5 @@
         @forelse($partners as $partner)<tr><td><strong>{{ $partner->company_name }}</strong><br><span class="muted">{{ $partner->contact_name ?: $partner->billing_email }}</span></td><td>{{ $partner->code }}<br><span class="muted">{{ $partner->type }}</span></td><td>{{ $partner->filials->pluck('name')->join(', ') ?: '—' }}</td><td>{{ number_format((float)$partner->discount_percent,2,',',' ') }}%</td><td>{{ $partner->orders_count }}</td><td><span class="badge">{{ $partner->status }}</span></td><td><a class="btn light" href="{{ route('admin.partners.edit',$partner) }}">Tahrirlash</a></td></tr>@empty<tr><td colspan="7" class="muted">Partnerlar hali yo‘q.</td></tr>@endforelse
     </tbody></table>{{ $partners->links() }}</div>
 </div></div>
+</div>
 @endsection

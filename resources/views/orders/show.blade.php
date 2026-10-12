@@ -50,6 +50,7 @@
 @endsection
 
 @section('body')
+<div class="page-wrapper">
 @php
     $canManage = auth()->user()->can('update', $order);
     $createRoute = auth()->user()->hasRole('employee')
@@ -249,6 +250,7 @@
             </div></div>
         </div>
     </div>
+</div>
 </div>
 @endsection
 

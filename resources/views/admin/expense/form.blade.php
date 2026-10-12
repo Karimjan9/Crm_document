@@ -10,6 +10,7 @@
 @endphp
 
 @section('body')
+<div class="page-wrapper">
 @php($editing = $expense->exists)
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -191,4 +192,5 @@
         });
     })();
 </script>
+</div>
 @endsection

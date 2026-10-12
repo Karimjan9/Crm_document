@@ -1,6 +1,7 @@
 @extends('template')
 
 @section('body')
+<div class="page-wrapper">
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between flex-wrap gap-2 mb-4">
         <div><h3>Hujjat jarayoni</h3><div class="text-muted">{{ $document->document_code }} · {{ $document->client?->name }} · {{ $document->service?->name }}</div></div>
@@ -73,5 +74,6 @@
             </div></div>
         </div>
     </div>
+</div>
 </div>
 @endsection

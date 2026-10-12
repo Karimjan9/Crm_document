@@ -7,6 +7,7 @@
 @endsection
 
 @section('body')
+<div class="page-wrapper">
 <div class="pricing-page"><div class="pricing-wrap">
     @if(session('success'))<div class="notice">{{ session('success') }}</div>@endif
     <div class="head"><div><h1>Chegirma approval’lari</h1><p>Katta chegirmalar tasdiqlanmaguncha hujjat hisobiga qo‘llanmaydi.</p></div><a class="btn light" href="{{ route('admin.pricing.index') }}">Tariflarga qaytish</a></div>
@@ -14,4 +15,5 @@
     @forelse($approvals as $approval)<tr><td>#{{ $approval->id }}<br><span class="muted">{{ $approval->document?->document_code ?: $approval->order?->order_code ?: 'Yangi hujjat' }}</span></td><td>{{ number_format((float)$approval->discount_percent,2,',',' ') }}%<br>{{ number_format((float)$approval->discount_amount,2,',',' ') }}</td><td>{{ $approval->reason }}</td><td>{{ $approval->requestedBy?->name ?: $approval->requestedBy?->login ?: '—' }}<br><span class="muted">{{ optional($approval->created_at)->format('d.m.Y H:i') }}</span></td><td><span class="badge {{ $approval->status }}">{{ $approval->status }}</span></td><td>@if($approval->status==='pending')<div class="actions"><form method="POST" action="{{ route('pricing.approvals.approve',$approval) }}">@csrf<button class="btn green">Tasdiqlash</button></form><form method="POST" action="{{ route('pricing.approvals.reject',$approval) }}">@csrf<button class="btn red">Rad etish</button></form></div>@endif</td></tr>@empty<tr><td colspan="6" class="muted">Approval so‘rovlari yo‘q.</td></tr>@endforelse
     </tbody></table>{{ $approvals->links() }}</div>
 </div></div>
+</div>
 @endsection
