@@ -128,3 +128,9 @@ The CRM now supports a separate B2B partner tenant layer:
 - monthly invoice generation with `php artisan b2b:generate-invoices --period=YYYY-MM`.
 
 Create and assign a partner from `admin/partners`. A partner must have at least one allowed branch before it can create an order.
+
+## Hujjat jarayoni va OCR
+
+Buyurtma yoki hujjat tafsilotlaridagi jarayon havolasi orqali xodimlar `/documents/{document}/process` sahifasiga kiradi. Shu yerda mas’ul xodim va QA biriktiriladi, majburiy checklist bajariladi, QA hujjatni tasdiqlaydi yoki qayta ishlashga qaytaradi. Ruxsatlar filial va biriktirilgan xodim bo‘yicha tekshiriladi; QA tekshiruvchisi faylni ko‘ra oladi, to‘lov qabul qilish uchun alohida boshqaruv huquqi kerak. Super-admin Kanban kuzatuv sahifasidan foydalanadi.
+
+`/intake` sahifasi OCR natijasini inson tasdig‘i bilan ishlatadi. `OCR_ENDPOINT` sozlanmasa, `OCR_LOCAL_ENABLED=true` bilan serverda mahalliy matn o‘qishni yoqish mumkin. Buning uchun `tesseract-ocr`, `tesseract-ocr-eng`, `tesseract-ocr-rus`, `tesseract-ocr-uzb` va `poppler-utils` paketlari kerak. `OCR_LANGUAGES=eng+rus+uzb`, `OCR_MAX_PAGES=3` boshlang‘ich sozlamalari; PDFning dastlabki sahifalari o‘qiladi. Natija avtomatik ravishda tasdiqlanmaydi: vakolatli xodim matnni webda tuzatib, tasdiqlaydi. Fayllar va vaqtinchalik OCR fayllari private diskda saqlanadi.

@@ -8,6 +8,8 @@
     .case-head p{margin:6px 0 0;color:#64748b}
     .case-actions{display:flex;gap:8px;flex-wrap:wrap}
     .case-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,.9fr);gap:16px}
+    .case-grid > *{min-width:0}
+    .case-head h1,.case-page a{overflow-wrap:anywhere}
     .panel{background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 8px 24px rgba(15,23,42,.05);overflow:hidden;margin-bottom:16px}
     .panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:15px 17px;border-bottom:1px solid #eef2f7}
     .panel-head h3{margin:0;font-size:16px;color:#102a56}
@@ -44,7 +46,7 @@
     .file-list a{font-size:12px}
     .notification-item{font-size:12px;padding:9px 0;border-bottom:1px solid #eef2f7}
     .notification-item:last-child{border-bottom:0}
-    @media(max-width:950px){.case-grid{grid-template-columns:1fr}.case-head{flex-direction:column}.case-actions{width:100%}.case-actions a{flex:1;text-align:center}}
+    @media(max-width:950px){.case-grid{grid-template-columns:minmax(0,1fr)}.case-head{flex-direction:column}.case-actions{width:100%}.case-actions a{flex:1;text-align:center}}
     @media(max-width:600px){.case-page{padding:15px}.kv{grid-template-columns:1fr}}
 </style>
 @endsection
